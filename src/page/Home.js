@@ -33,6 +33,7 @@ const Home = () => {
   //     .then((json) => setImages(json.items))
   //     .catch((e) => alert(e.message));
   // }, [information]);
+  
 
   const handleAfterChange = (currentSlide) => {
     if (sliderRef.current) {
