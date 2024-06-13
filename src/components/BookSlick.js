@@ -17,7 +17,7 @@ const BookCarouselContainer = styled.div`
 
   .slick-slider {
     margin: 0 auto;
-    max-width: 800px;
+    max-width: 300px;
   }
 
   .slick-list {
@@ -52,8 +52,8 @@ const BookSlick = () => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 3,
-          // centerPadding: '1px',
+          slidesToShow: 1,
+          centerPadding: '20px',
         },
       },
     ],
