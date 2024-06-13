@@ -4,6 +4,11 @@ import SaveBtn from "../components/SaveBtn"
 import { FaRegCalendarAlt } from "react-icons/fa"
 
 const BookEdit= ()=>{
+
+    const save= ()=>{
+        alert("저장합니다")
+    }
+
     return(
         <div style={{textAlign:"center"}}>
             <BookInfo>
@@ -27,11 +32,11 @@ const BookEdit= ()=>{
                 <div className="startToEnd">
                     <span>시작</span>
                     <Date>2024.6.1.</Date>
-                    <FaRegCalendarAlt />
+                    <FaRegCalendarAlt style={{cursor:'pointer'}} />
                     <span>~</span>
                     <span>끝</span>
                     <Date>2024.6.1.</Date>
-                    <FaRegCalendarAlt />
+                    <FaRegCalendarAlt style={{cursor:'pointer'}} />
                 </div>
             </Period>
             <Target>
@@ -69,7 +74,7 @@ const BookEdit= ()=>{
                     <p className="note"><span className="nickname">배추껍질</span>님의 하루 적정 독서 시간은 <span className="point">100분</span>입니다.</p>
                 </div>
             </Target>
-            <SaveBtn value="저장하기"></SaveBtn>
+            <SaveBtn name="저장하기" onClick={save}></SaveBtn>
         </div>
     )
 }
@@ -135,6 +140,7 @@ const BookStatus= styled.div`
     font-size: 14px;
     font-weight: bold;
     vertical-align: center;
+    cursor: pointer;
 
     >p{
         padding: 0;
@@ -244,4 +250,5 @@ const EditBtn= styled.button`
     width: 50px;
     height: 1.5rem;
     font-size: 10px;
+    cursor: pointer;
 `

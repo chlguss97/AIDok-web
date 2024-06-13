@@ -5,10 +5,10 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const books = [
-  { id: 1, title: 'Learning React', image: 'https://via.placeholder.com/150' },
-  { id: 2, title: 'Learning React', image: 'https://via.placeholder.com/150' },
-  { id: 3, title: 'Learning React', image: 'https://via.placeholder.com/150' },
-  { id: 4, title: 'Learning React', image: 'https://via.placeholder.com/150' },
+  { id: 1, title: 'Learning React', image: 'https://image.aladin.co.kr/product/23972/99/cover/8963717569_1.jpg' },
+  { id: 2, title: 'Learning React', image: 'https://image.aladin.co.kr/product/23736/85/cover/k692639764_1.jpg' },
+  { id: 3, title: 'Learning React', image: 'https://image.aladin.co.kr/product/27541/91/cover/8954681174_1.jpg' },
+  { id: 4, title: 'Learning React', image: 'https://image.aladin.co.kr/product/24605/89/cover/k532631174_1.jpg' },
   { id: 5, title: 'Learning React', image: 'https://via.placeholder.com/150' },
 ];
 
