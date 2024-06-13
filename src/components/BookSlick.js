@@ -52,8 +52,8 @@ const BookSlick = () => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 3,
-          // centerPadding: '1px',
+          slidesToShow: 1,
+          centerPadding: '20px',
         },
       },
     ],
