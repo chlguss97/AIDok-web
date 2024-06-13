@@ -3,15 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import BoardPage from './page/BoardPage';
-import BookDetail from './page/BookDetail'
-import Ai from './page/Ai'
-import BookEdit from './page/BookEdit'
-import Home from './page/Home'
-import List from './page/List'
-import NotePage from './page/NotePage'
-import WriteAi from './page/WriteAi'
-import WriteNote from './page/WriteNote'
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -26,6 +18,7 @@ root.render(
     {/* <WriteAi></WriteAi> */}
     {/* <WriteNote></WriteNote> */}
     <App></App>
+
     
   </React.StrictMode>
 );

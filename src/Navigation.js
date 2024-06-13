@@ -6,7 +6,7 @@ const Navigation = () => {
     <nav>
       <ul>
         <li>
-          <Link to="/Ai">Ai</Link>
+          <Link to="/ai">Ai</Link>
         </li>
         <li>
           <Link to="/BookDetail">BookDetail</Link>
@@ -21,7 +21,7 @@ const Navigation = () => {
           <Link to="/List">List</Link>
         </li>
         <li>
-          <Link to="/NotePage">NotePage</Link>
+          <Link to="/notepage">NotePage</Link>
         </li>
         <li>
           <Link to="/WriteAi">WriteAi</Link>
@@ -30,7 +30,7 @@ const Navigation = () => {
           <Link to="/WriteNote">WriteNote</Link>
         </li>
         <li>
-          <Link to="/Board">Board</Link>
+          <Link to="/board">Board</Link>
         </li>
         
 

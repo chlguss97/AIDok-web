@@ -1,5 +1,5 @@
 console.log("dd")
 
-function aaa(msg){
-    alert(msg)
+function aaa(userId){
+    alert(userId)
 }
