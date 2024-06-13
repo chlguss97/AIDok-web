@@ -35,7 +35,7 @@ const BackButton = styled.button`
 
 const Title = styled.h2`
   color: #6F4E37;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: bold;
   text-align: center;
   text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
@@ -159,7 +159,7 @@ const BoardComment = () => {
         <BackButton onClick={handleBackClick}>
           <FaArrowLeft />
         </BackButton>
-        <Title>댓글</Title>
+        <Title>comments</Title>
       </Header>
       <CommentList>
         {comments.map(comment => (

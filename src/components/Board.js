@@ -7,16 +7,17 @@ const BoardContainer = styled.div`
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
-
+  
   @media (max-width: 768px) {
     padding: 10px;
   }
 `;
 
 const PostContainer = styled.div`
-  border: 1px solid #ccc;
+  border: 2px solid #6F4E37;
   margin: 20px 0;
   border-radius: 6px;
+  background-color: #FFFAED;
   padding: 5px;
   overflow: hidden;
 
@@ -46,6 +47,7 @@ const Avatar = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  border: 1.5px solid #6F4E37;
   background-color: #ccc;
   margin: 0.5rem 10px;
   background-size: cover;
@@ -62,11 +64,11 @@ const Avatar = styled.div`
 
 const Username = styled.span`
   font-weight: bold;
-  margin-left: 0.5rem;
-  font-size: 1.3rem;
+  margin-left: 0.6rem;
+  font-size: 1.4rem;
 
   @media (max-width: 768px) {
-    font-size: 0.9em;
+    font-size: 1.0em;
   }
 `;
 
@@ -219,7 +221,7 @@ const Board = () => {
     }
   ]);
 
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState({});
   const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
@@ -232,8 +234,11 @@ const Board = () => {
     navigate('/comments');
   };
 
-  const toggleDropdown = () => {
-    setShowDropdown(prevShowDropdown => !prevShowDropdown);
+  const toggleDropdown = (postId) => {
+    setShowDropdown(prevShowDropdown => ({
+      ...prevShowDropdown,
+      [postId]: !prevShowDropdown[postId]
+    }));
   };
 
   const handleEdit = () => {
@@ -245,8 +250,6 @@ const Board = () => {
     console.log('Delete post');
   };
 
-  
-
   const handleLikeToggle = (postId) => {
     setPosts(prevPosts =>
       prevPosts.map(post =>
@@ -257,7 +260,7 @@ const Board = () => {
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.options-icon')) {
-      setShowDropdown(false);
+      setShowDropdown({});
     }
   };
 
@@ -278,8 +281,8 @@ const Board = () => {
               <Username>{post.username}</Username>
             </HeaderLeft>
             <div style={{ position: 'relative' }}>
-              <OptionsIcon className="options-icon" onClick={toggleDropdown} />
-              <DropdownMenu ref={dropdownRef} show={showDropdown}>
+              <OptionsIcon className="options-icon" onClick={() => toggleDropdown(post.id)} />
+              <DropdownMenu ref={dropdownRef} show={showDropdown[post.id]}>
                 <DropdownItem onClick={handleEdit}><span>수정</span></DropdownItem>
                 <DropdownItem onClick={handleDelete}><span>삭제</span></DropdownItem>
               </DropdownMenu>
