@@ -20,5 +20,5 @@ const Btn= styled.button`
     margin: 0 auto;
     font-size: 18px;
     font-weight: bold;
-    
+    cursor: pointer;
 `
