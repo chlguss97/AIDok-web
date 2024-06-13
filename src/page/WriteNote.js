@@ -12,7 +12,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5%;
+  padding: 8%;
   background-color: white;
   height: 100vh;
   font-family: Arial, sans-serif;

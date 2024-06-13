@@ -27,6 +27,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 8%;
 `;
 
 const FloatingButton = styled.button`

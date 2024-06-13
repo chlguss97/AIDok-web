@@ -21,6 +21,9 @@ const Ai= ()=>{
         alert("QnA를 추가합니다")
     }
 
+
+
+
     return(
         <Container>
 
@@ -52,7 +55,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5%;
+    padding: 8%;
 `
 
 const Search= styled.input`

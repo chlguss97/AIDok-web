@@ -9,7 +9,7 @@ const BoardContainer = styled.div`
   margin: 0 auto;
   
   @media (max-width: 768px) {
-    padding: 10px;
+    padding: 8%;
   }
 `;
 

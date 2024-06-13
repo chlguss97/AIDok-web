@@ -41,11 +41,11 @@ const Icon = styled.img`
 `;
 
 
-const SearchBar = ({ searchTerm, setSearchTerm, onClick }) => {
+const SearchBar = ({ searchTerm, setSearchTerm, onClick,placeholder }) => {
   return (
     <SearchBarContainer>
       <SearchInput 
-        placeholder="노트 검색" 
+        placeholder={placeholder} 
         value={searchTerm} 
         onChange={(e) => setSearchTerm(e.target.value)} 
       />

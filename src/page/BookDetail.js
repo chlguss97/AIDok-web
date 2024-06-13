@@ -10,7 +10,7 @@ const Container = styled.div`
   height: 100vh;
   font-family: Arial, sans-serif;
   overflow: hidden;
-  padding: 5%;
+  padding:0%;
 `;
 
 const Header = styled.div`
@@ -20,6 +20,7 @@ const Header = styled.div`
   justify-content: center;
   padding: 20px;
   position: relative;
+  
 `;
 
 const BackButton = styled.button`

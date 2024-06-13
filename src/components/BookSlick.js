@@ -14,9 +14,8 @@ const books = [
 
 const BookCarouselContainer = styled.div`
   padding: 0 5%;
-
   .slick-slider {
-    margin: 0 auto;
+    margin: 24px auto;
     max-width: 300px;
   }
 

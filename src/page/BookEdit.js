@@ -11,7 +11,7 @@ const BookEdit= ()=>{
     }
 
     return(
-        <div style={{textAlign:"center"}}>
+        <div style={{textAlign:"center", padding:"5%"}}>
             <BackBtn></BackBtn>
             <BookInfo>
                 <div className="info">

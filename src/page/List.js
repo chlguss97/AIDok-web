@@ -41,7 +41,7 @@ const BookCard = styled.div`
   max-width: 150px;
   border: 1px solid #8B4513;
   border-radius: 10px;
-  padding: 10px;
+  padding: 7px;
   background-color: #FFFAED;
   display: flex;
   flex-direction: column;
