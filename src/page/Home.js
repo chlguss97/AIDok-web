@@ -113,12 +113,11 @@ const Container = styled.div`
 
 const BookCardStyledSlider = styled(Slider)`
   width: 130%;
-  margin-left: -3px;
+  margin-left: -6%;
 
 
   .slick-slide {
     position: relative;
-   
     width: 100%;
   }
 
