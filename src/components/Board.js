@@ -196,9 +196,6 @@ const DropdownItem = styled.div`
   &:hover {
     background: #f0f0f0;
   }
-  &.report {
-    color: red;
-  }
 `;
 
 const Board = () => {
@@ -241,10 +238,7 @@ const Board = () => {
     console.log('Delete post');
   };
 
-  const handleReport = () => {
-    // Add your report logic here
-    console.log('Report post');
-  };
+  
 
   const handleLikeToggle = (postId) => {
     setPosts(prevPosts =>
@@ -281,7 +275,6 @@ const Board = () => {
               <DropdownMenu ref={dropdownRef} show={showDropdown}>
                 <DropdownItem onClick={handleEdit}><span>수정</span></DropdownItem>
                 <DropdownItem onClick={handleDelete}><span>삭제</span></DropdownItem>
-                <DropdownItem onClick={handleReport} className="report"><span>신고</span></DropdownItem>
               </DropdownMenu>
             </div>
           </PostHeader>
