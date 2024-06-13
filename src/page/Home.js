@@ -13,18 +13,23 @@ const Home = () => {
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
 
-  useEffect(() => {
-    // const query = '사랑'
-    const url =
-      "./backend/naver_search.php?query=" +
-      information.query +
-      "&display=" +
-      100;
-    fetch(url)
-      .then((res) => res.json())
-      .then((json) => setImages(json.items))
-      .catch((e) => alert(e.message));
-  }, [information]);
+
+  function aaa(message){
+    alert(message)
+  }
+
+  // useEffect(() => {
+  //   // const query = '사랑'
+  //   const url =
+  //     "./backend/naver_search.php?query=" +
+  //     information.query +
+  //     "&display=" +
+  //     100;
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((json) => setImages(json.items))
+  //     .catch((e) => alert(e.message));
+  // }, [information]);
 
   const handleAfterChange = (currentSlide) => {
     if (sliderRef.current) {
