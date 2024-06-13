@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaHeart, FaRegHeart, FaRegCommentDots, FaEllipsisV, FaPen } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaCommentDots, FaEllipsisH, FaPen } from 'react-icons/fa';
 
 const BoardContainer = styled.div`
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
-
+  
   @media (max-width: 768px) {
     padding: 10px;
   }
 `;
 
 const PostContainer = styled.div`
-  border: 1px solid #ccc;
+  border: 2px solid #6F4E37;
   margin: 20px 0;
   border-radius: 6px;
+  background-color: #FFFAED;
   padding: 5px;
   overflow: hidden;
 
@@ -46,6 +47,7 @@ const Avatar = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  border: 1.5px solid #6F4E37;
   background-color: #ccc;
   margin: 0.5rem 10px;
   background-size: cover;
@@ -62,11 +64,11 @@ const Avatar = styled.div`
 
 const Username = styled.span`
   font-weight: bold;
-  margin-left: 0.5rem;
-  font-size: 1.3rem;
+  margin-left: 0.6rem;
+  font-size: 1.4rem;
 
   @media (max-width: 768px) {
-    font-size: 0.9em;
+    font-size: 1.0em;
   }
 `;
 
@@ -122,16 +124,16 @@ const IconText = styled.span`
   }
 `;
 
-const OptionsIcon = styled(FaEllipsisV)`
+const OptionsIcon = styled(FaEllipsisH)`
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin-top: 0.8rem;
-  margin-right: 1rem;
+  margin-right:1.2rem;
 
   @media (max-width: 768px){
     font-size: 1rem;
     margin-top: 3px;
-    margin-right: 0.2rem;
+    margin-right: 0.6rem;
   }
 `;
 
@@ -143,20 +145,17 @@ const CommentIconWrapper = styled.div`
 
 const FloatingButton = styled.button`
   position: fixed;
-  width: 60px;
-  height: 60px;
-  bottom: 60px;
-  right: 60px;
-  background-color: #5E7E71;
-  color: #FFF;
-  border: none;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  box-shadow: 2px 2px 3px #999;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #5E7E71;
+  color: white;
   font-size: 24px;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
 
   @media (max-width: 768px) {
     width: 50px;
@@ -184,6 +183,7 @@ const DropdownMenu = styled.div`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1;
   display: ${props => (props.show ? 'block' : 'none')};
+  min-width: 100px; 
 `;
 
 const DropdownItem = styled.div`
@@ -208,10 +208,21 @@ const Board = () => {
       likes: 0,
       comments: 2,
       liked: false,
+    },
+    {
+      id: 2,
+      username: '노상진',
+      profileImage: 'https://xen-api.linkareer.com/attachments/107214',
+      content: '난 사실 아무 생각이 없어',
+      postImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3ux6b26C7E5tu4xKPTtRD9k6BIWWocpRlYw&s',
+      likes: 0,
+      comments: 2,
+      liked: false,
     }
   ]);
 
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState({});
+  const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -223,8 +234,11 @@ const Board = () => {
     navigate('/comments');
   };
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
+  const toggleDropdown = (postId) => {
+    setShowDropdown(prevShowDropdown => ({
+      ...prevShowDropdown,
+      [postId]: !prevShowDropdown[postId]
+    }));
   };
 
   const handleEdit = () => {
@@ -244,6 +258,19 @@ const Board = () => {
     );
   };
 
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.options-icon')) {
+      setShowDropdown({});
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <BoardContainer>
       {posts.map(post => (
@@ -254,8 +281,8 @@ const Board = () => {
               <Username>{post.username}</Username>
             </HeaderLeft>
             <div style={{ position: 'relative' }}>
-              <OptionsIcon onClick={toggleDropdown} />
-              <DropdownMenu show={showDropdown}>
+              <OptionsIcon className="options-icon" onClick={() => toggleDropdown(post.id)} />
+              <DropdownMenu ref={dropdownRef} show={showDropdown[post.id]}>
                 <DropdownItem onClick={handleEdit}><span>수정</span></DropdownItem>
                 <DropdownItem onClick={handleDelete}><span>삭제</span></DropdownItem>
               </DropdownMenu>
@@ -274,7 +301,7 @@ const Board = () => {
               )}
               <IconText>{post.likes} Likes</IconText>
               <CommentIconWrapper onClick={handleViewComments}>
-                <FaRegCommentDots style={{ marginLeft: '10px' }} />
+                <FaCommentDots style={{ marginLeft: '10px' }} />
                 <IconText>{post.comments} Comments</IconText>
               </CommentIconWrapper>
             </PostFooterIcons>

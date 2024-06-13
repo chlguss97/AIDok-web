@@ -34,11 +34,15 @@ const BackButton = styled.button`
 `;
 
 const Title = styled.h2`
-  margin: 0;
+  color: #6F4E37;
+  font-size: 1.7rem;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
 `;
 
 const CommentList = styled.div`
-  margin-top: 20px;
+  //margin-top: 10px;
 `;
 
 const CommentContainer = styled.div`
@@ -52,7 +56,8 @@ const Avatar = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #ccc;
+  border: 2px solid #5E7E71;
+  background-color: #6F4E37;
   background-size: cover;
   background-position: center;
   background-image: url(${props => props.src});
@@ -154,7 +159,7 @@ const BoardComment = () => {
         <BackButton onClick={handleBackClick}>
           <FaArrowLeft />
         </BackButton>
-        <Title>댓글</Title>
+        <Title>comments</Title>
       </Header>
       <CommentList>
         {comments.map(comment => (
