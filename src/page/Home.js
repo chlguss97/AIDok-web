@@ -6,21 +6,43 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import CircleBook from "../components/CircleBook";
 import CircleBook2 from "../components/CircleBook2";
-import React, {useRef} from "react";
+import React, { useRef } from "react";
+import { useEffect, useState } from "react";
 
 const Home = () => {
-
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
 
-  
+
+  function aaa(message){
+    console.log(message)
+  }
+
+
+
+
+  // useEffect(() => {
+  //   // const query = '사랑'
+  //   const url =
+  //     "./backend/naver_search.php?query=" +
+  //     information.query +
+  //     "&display=" +
+  //     100;
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((json) => setImages(json.items))
+  //     .catch((e) => alert(e.message));
+  // }, [information]);
+
   const handleAfterChange = (currentSlide) => {
     if (sliderRef.current) {
-      const centerSlideIndex = Math.floor(sliderRef.current.props.slidesToShow / 2);
-      centerSlideIndexRef.current = currentSlide === centerSlideIndex ? currentSlide : null;
+      const centerSlideIndex = Math.floor(
+        sliderRef.current.props.slidesToShow / 2
+      );
+      centerSlideIndexRef.current =
+        currentSlide === centerSlideIndex ? currentSlide : null;
     }
   };
-
 
   const homeBookItemSettings = {
     dots: true,
@@ -37,11 +59,7 @@ const Home = () => {
     slidesToShow: 3, // 한번에 보여줄 슬라이드 개수
     slidesToScroll: 1, // 한번에 보여줄 슬라이드 개수
     afterChange: handleAfterChange,
-   
   };
-
-
- 
 
   return (
     <Container>
@@ -51,7 +69,7 @@ const Home = () => {
       </div>
 
       <BookCardStyledSlider {...homeBookItemSettings}>
-        <HomeBookItem onClick={()=>alert("홈북아이템")}/>
+        <HomeBookItem onClick={() => aaa} />
         <HomeBookItem />
         <HomeBookItem />
         <HomeBookItem />
@@ -59,12 +77,11 @@ const Home = () => {
 
       <div className="wantbook">
         <p id="wantbook">읽고 싶은 책</p>
-        <CircleBookStyledSlider ref={sliderRef} {...circleBookItemSettings} >
-          <CircleBook onClick={()=>alert("써클북")}/>
-          <CircleBook/>
-          <CircleBook/>
-          <CircleBook/>
-    
+        <CircleBookStyledSlider ref={sliderRef} {...circleBookItemSettings}>
+          <CircleBook onClick={() => alert("써클북")} />
+          <CircleBook />
+          <CircleBook />
+          <CircleBook />
         </CircleBookStyledSlider>
       </div>
 
@@ -113,12 +130,10 @@ const Container = styled.div`
 
 const BookCardStyledSlider = styled(Slider)`
   width: 130%;
-  margin-left: -3px;
-
+  margin-left: -6%;
 
   .slick-slide {
     position: relative;
-   
     width: 100%;
   }
 
@@ -133,12 +148,9 @@ const BookCardStyledSlider = styled(Slider)`
     margin-top: 10px;
     font-size: 17px;
   }
-
- 
 `;
 
 const CircleBookStyledSlider = styled(Slider)`
-
   margin-bottom: 120px;
   .slick-slide {
     display: flex;
@@ -163,11 +175,10 @@ const CircleBookStyledSlider = styled(Slider)`
     ${({ centerSlideIndex }) =>
       centerSlideIndex === null
         ? "transform: scale(1);"
-        : "transform: scale(1.9);"
-    }
+        : "transform: scale(1.9);"}
   }
 
-   // Slider 컴포넌트에 onClick 이벤트가 전달되도록 설정
+  // Slider 컴포넌트에 onClick 이벤트가 전달되도록 설정
   // 클릭 이벤트가 제대로 전달되지 않을 경우 onClick 이벤트를 전파해야 할 수 있습니다.
   .slick-slide div {
     pointer-events: auto;
