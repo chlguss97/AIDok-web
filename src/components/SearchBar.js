@@ -40,6 +40,7 @@ const Icon = styled.img`
   height: 20px;
 `;
 
+
 const SearchBar = ({ searchTerm, setSearchTerm, onClick }) => {
   return (
     <SearchBarContainer>
@@ -51,6 +52,7 @@ const SearchBar = ({ searchTerm, setSearchTerm, onClick }) => {
       <SearchButton onClick={onClick}>
         <Icon src={searchicon} />
       </SearchButton>
+
     </SearchBarContainer>
   );
 };

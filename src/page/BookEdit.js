@@ -24,10 +24,10 @@ const BookEdit= ()=>{
                 </div>
             </BookInfo>
             <StatusContainer>
-                <BookStatus color="#6F4E37" bgColor="#FAECDC" borderColor="#6F4E37">읽고 싶은 책</BookStatus>
-                <BookStatus color="white" bgColor="#6F4E37" borderColor="white">읽고 있는 책</BookStatus>
-                <BookStatus color="white" bgColor="#5E7E71" borderColor="white">다 읽은 책</BookStatus>
-                <BookStatus color="white" bgColor="#5F5C5C" borderColor="white">선택하지 않음</BookStatus>
+                <BookStatus color="#6F4E37" $bgcolor="#FAECDC" $bordercolor="#6F4E37">읽고 싶은 책</BookStatus>
+                <BookStatus color="white" $bgcolor="#6F4E37" $bordercolor="white">읽고 있는 책</BookStatus>
+                <BookStatus color="white" $bgcolor="#5E7E71" $bordercolor="white">다 읽은 책</BookStatus>
+                <BookStatus color="white" $bgcolor="#5F5C5C" $bordercolor="white">선택하지 않음</BookStatus>
             </StatusContainer>
             <Period>
                 <HeadText>목표 기간</HeadText>
@@ -51,9 +51,9 @@ const BookEdit= ()=>{
                     <EditBtn>수정</EditBtn>
                 </div>
                 <div className="numbers">
-                    <Number left="0%">0p</Number>
-                    <Number left="50%">350p</Number>
-                    <Number left="100%">700p</Number>
+                    <Number $left="0%">0p</Number>
+                    <Number $left="50%">350p</Number>
+                    <Number $left="100%">700p</Number>
                 </div>
                 <div>
                     <p className="note"><span className="nickname">배추껍질</span>님의 하루 적정 독서 페이지는 <span className="point">100p</span>입니다.</p>
@@ -136,9 +136,9 @@ const BookStatus= styled.div`
     line-height: 2rem;
     text-align: center;
     border-radius: 5px;
-    border: 2px dashed ${(props)=>props.borderColor};
+    border: 2px dashed ${(props)=>props.bordercolor};
     color: ${(props)=>props.color};
-    background-color: ${(props)=>props.bgColor};
+    background-color: ${(props)=>props.bgcolor};
     font-size: 14px;
     font-weight: bold;
     vertical-align: center;
