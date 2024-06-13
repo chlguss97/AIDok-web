@@ -14,6 +14,7 @@ const books = [
 
 const BookCarouselContainer = styled.div`
   padding: 0 5%;
+
   margin: 0 auto;
   max-width: 300px;
   overflow: hidden;
@@ -23,6 +24,7 @@ const BookCarouselContainer = styled.div`
   .slick-slider {
     width: 400px;
     margin: 0 auto;
+
   }
 
   .slick-list {

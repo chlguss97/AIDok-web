@@ -38,7 +38,7 @@ const Title = styled.h2`
   font-size: 1.7rem;
   font-weight: bold;
   text-align: center;
-  text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
+  
 `;
 
 const CommentList = styled.div`
