@@ -28,7 +28,7 @@ const Home = () => {
     speed: 500,
     slidesToShow: 1, // 한번에 보여줄 슬라이드 개수
     slidesToScroll: 1, // 한번에 보여줄 슬라이드 개수
-    centerMode: true
+    // centerMode: true 양옆 카드들 보여짐 근데 작아져서 ...
   };
   const circleBookItemSettings = {
     dots: true,
@@ -112,7 +112,9 @@ const Container = styled.div`
 `;
 
 const BookCardStyledSlider = styled(Slider)`
-  width: 100%;
+  width: 130%;
+  margin-left: -3px;
+
 
   .slick-slide {
     position: relative;
@@ -136,6 +138,8 @@ const BookCardStyledSlider = styled(Slider)`
 `;
 
 const CircleBookStyledSlider = styled(Slider)`
+
+  margin-bottom: 120px;
   .slick-slide {
     display: flex;
     justify-content: center;
