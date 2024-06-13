@@ -22,7 +22,7 @@ const ExtractedText= styled.div`
     padding: 10px;
     max-height: 5rem;
     margin: 5%;
-    overflow: scroll;
+    overflow: none;
     margin-bottom: 1rem;
     font-size: 11px;
 `
