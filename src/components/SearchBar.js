@@ -7,18 +7,16 @@ const SearchBarContainer = styled.div`
   align-items: center;
   border: 1px solid #5E7E71;
   border-radius: 20px;
-  padding: 10px;
+  padding: 10px 10px;
   background-color: #6F4E37;
   width: 80%;
-  max-width: 600px;
-  margin: 20px 0;
+  max-width: 240px; /* 최대 너비를 240px로 제한 */
+  margin: 0 auto; /* 중앙 정렬 */
 
   &:focus-within {
-    background-color: #5E7E71;
+    background-color: #5E7E71; /* 초록색으로 변경 */
   }
 `;
-  
-
 
 const SearchInput = styled.input`
   border: none;
@@ -36,16 +34,23 @@ const SearchButton = styled.button`
   font-size: 18px;
   color: #8B4513;
 `;
+
 const Icon = styled.img`
   width: 20px;
   height: 20px;
 `;
 
-const SearchBar = () => {
+const SearchBar = ({ searchTerm, setSearchTerm, onClick }) => {
   return (
     <SearchBarContainer>
-      <SearchInput placeholder="Search..." />
-      <SearchButton><Icon src={searchicon} /></SearchButton>
+      <SearchInput 
+        placeholder="노트 검색" 
+        value={searchTerm} 
+        onChange={(e) => setSearchTerm(e.target.value)} 
+      />
+      <SearchButton onClick={onClick}>
+        <Icon src={searchicon} />
+      </SearchButton>
     </SearchBarContainer>
   );
 };

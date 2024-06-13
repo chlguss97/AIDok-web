@@ -3,33 +3,32 @@ import styled from 'styled-components';
 import book from '../assets/book.png';
 import icon1 from '../assets/icon1.png';
 import icon2 from '../assets/icon2.png';
+import SaveBtn from '../components/SaveBtn';
+import BackBtn from '../components/BackBtn';
+
+
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 5%;
   background-color: white;
   height: 100vh;
   font-family: Arial, sans-serif;
+  position: relative; /* 자식 요소의 절대 위치를 설정하기 위해 필요 */
 `;
+
 
 const Header = styled.div`
   width: 100%;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   margin-bottom: 20px;
 `;
 
-const BackButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-`;
-
 const Content = styled.div`
-  width: 90%;
+  width: 80%;
   max-width: 400px;
   border: 2px solid #6F4E37;
   border-radius: 10px;
@@ -37,7 +36,8 @@ const Content = styled.div`
   background-color: #FFFAED;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  height: calc(100vh - 80px); /* Header와 여백을 고려하여 높이 조정 */
+  height: calc(100vh - 400px); /* Header와 여백을 고려하여 높이 조정 */
+  margin-bottom: 20px;
 `;
 
 const BookInfo = styled.div`
@@ -94,47 +94,43 @@ const NoteInput = styled.textarea`
   &:focus { outline:2px solid #5E7E71; }
 `;
 
-const SaveButton = styled.button`
-  width: 100%;
-  padding: 15px;
-  background-color: #6F4E37;
-  color: white;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 60px;
-  margin-bottom: 50px;
-`;
-
 const Icon = styled.img`
   width: 24px;
   height: 24px;
   margin-right: 10px;
+  align-items: end;
+  display: flex;
+  justify-content: start;
+  align-items: start;
 `;
+
+
+
+
 
 const WriteNote = () => {
   return (
     <Container>
+      <BackBtn></BackBtn>
       <Header>
-        <BackButton>←</BackButton>
-      </Header>
-      <Content>
         <BookInfo>
           <BookImage src={book} alt="Book Cover" />
           <BookTitle>트렌드 코리아 2023</BookTitle>
           <BookAuthors>김난도, 전지현, 박혜수, 최지혜</BookAuthors>
         </BookInfo>
+      </Header>
+      <Content>
         <ActionButton>
           <Icon src={icon1} alt="Underline Icon" />
           사진 & 하이라이트
         </ActionButton>
-       
         <ActionButton>
-        <Icon src={icon2} alt="Underline Icon" />AI로 텍스트 추출</ActionButton>
+          <Icon src={icon2} alt="Underline Icon" />
+          AI로 텍스트 추출
+        </ActionButton>
         <NoteInput placeholder="노트에 저장할 내용을 작성하세요" />
       </Content>
-      <SaveButton>저장하기</SaveButton>
+      <SaveBtn name={"저장하기"} />
     </Container>
   );
 };

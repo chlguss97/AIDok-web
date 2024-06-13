@@ -17,11 +17,13 @@ const Ai= ()=>{
     return(
         <Container>
             <SearchBar></SearchBar>
+            <BookSlick></BookSlick>
             {/* <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
                 <Search type="search" placeholder='AI 검색'></Search><LuSearch style={{position:'absolute', top:10, right:10, color:'white', fontSize:'1.5rem'}}/>
             </form> */}
+            
             <div style={{textAlign:'center'}}>
-                <BookSlick></BookSlick>
+                
                 {/* <img alt='seleted book' style={{display:'inline-block'}}></img> */}
             </div>
             <Content>
@@ -45,10 +47,11 @@ const Ai= ()=>{
 
 export default Ai
 
-const Container= styled.div`
+const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 5%;
 `
 
 const Search= styled.input`

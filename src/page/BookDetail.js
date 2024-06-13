@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import BackBtn from '../components/BackBtn';
 
 const Container = styled.div`
   display: flex;
@@ -9,6 +10,7 @@ const Container = styled.div`
   height: 100vh;
   font-family: Arial, sans-serif;
   overflow: hidden;
+  padding: 5%;
 `;
 
 const Header = styled.div`
@@ -139,8 +141,8 @@ const GridBookTitle = styled.div`
 const BookDetail = () => {
   return (
     <Container>
+      <BackBtn></BackBtn>
       <Header>
-        <BackButton>←</BackButton>
         <Title>트렌드 코리아 2023</Title>
       </Header>
       <ContentWrapper>

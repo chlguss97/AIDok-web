@@ -4,6 +4,8 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import searchIcon from '../assets/searchicon.png'; // 검색 아이콘 이미지를 가져옵니다.
 import backIcon from '../assets/backicon.png'; // 뒤로가기 아이콘 이미지를 가져옵니다.
+import SearchBar from '../components/SearchBar'; // 새로 만든 SearchBar 컴포넌트를 가져옵니다.
+import BackBtn from '../components/BackBtn'
 
 const books = [
   { id: 1, title: 'qwer', image: 'https://via.placeholder.com/150' },
@@ -99,42 +101,6 @@ const BackButton = styled.button`
   }
 `;
 
-const SearchBar = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid #5E7E71;
-  border-radius: 20px;
-  padding: 10px 10px;
-  background-color: #6F4E37;
-  flex: 1; /* 너비를 늘려서 남은 공간을 채웁니다. */
-
-  &:focus-within {
-    background-color: #5E7E71; /* 초록색으로 변경 */
-  }
-`;
-
-const SearchInput = styled.input`
-  border: none;
-  font-size: 16px;
-  outline: none;
-  flex: 1;
-  background: none;
-  color: white;
-`;
-
-const SearchButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #8B4513;
-`;
-
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
 const Note = ({ title, content, date, image }) => (
   <NoteContainer>
     <NoteImage src={image} alt="Book Cover" />
@@ -163,39 +129,33 @@ const NoteList = ({ notes }) => (
   </div>
 );
 
-const SearchBarComponent = ({ searchTerm, setSearchTerm }) => (
-  <SearchBarWrapper>
-    <BackButton>
-      <img src={backIcon} alt="Back" />
-    </BackButton>
-    <SearchBar>
-      <SearchInput
-        type="text"
-        placeholder="노트 검색"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <SearchButton><Icon src={searchIcon} alt="search" /></SearchButton>
-    </SearchBar>
-  </SearchBarWrapper>
-);
-
 const NotePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [notes, setNotes] = useState(initialNotes);
+  const [filteredNotes, setFilteredNotes] = useState(initialNotes);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredNotes = notes.filter(note =>
-    note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    note.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearchClick = () => {
+    const filtered = initialNotes.filter(note =>
+      note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      note.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredNotes(filtered);
+  };
 
   return (
     <Container>
-      <SearchBarComponent searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <BackBtn></BackBtn>
+      <SearchBarWrapper>
+        <SearchBar
+          placeholder="노트 검색"
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          onClick={handleSearchClick}
+        />
+      </SearchBarWrapper>
       <div className="note-details">
         <NoteList notes={filteredNotes} />
       </div>

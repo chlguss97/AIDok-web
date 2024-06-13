@@ -2,6 +2,7 @@ import styled from "styled-components"
 // import BookStatus from "../components/BookStatus"
 import SaveBtn from "../components/SaveBtn"
 import { FaRegCalendarAlt } from "react-icons/fa"
+import BackBtn from "../components/BackBtn"
 
 const BookEdit= ()=>{
 
@@ -11,6 +12,7 @@ const BookEdit= ()=>{
 
     return(
         <div style={{textAlign:"center"}}>
+            <BackBtn></BackBtn>
             <BookInfo>
                 <div className="info">
                     <img className="bookImg" src="https://image.aladin.co.kr/product/23972/99/cover/8963717569_1.jpg" alt="book cover"></img>
