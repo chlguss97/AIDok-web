@@ -41,11 +41,11 @@ const Icon = styled.img`
   height: 20px;
 `;
 
-const SearchBar = () => {
+const SearchBar = ({onClick}) => {
   return (
     <SearchBarContainer>
       <SearchInput placeholder="Search..." />
-      <SearchButton><Icon src={searchicon} /></SearchButton>
+      <SearchButton onClick={()=>onClick()}><Icon src={searchicon} /></SearchButton>
     </SearchBarContainer>
   );
 };
