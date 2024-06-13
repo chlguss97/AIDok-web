@@ -2,34 +2,54 @@ import styled from 'styled-components'
 import { FaPlusCircle } from "react-icons/fa";
 import { LuSearch } from "react-icons/lu";
 import AiList from '../components/AiList';
+import BookSlick from '../components/BookSlick';
+import SearchBar from '../components/SearchBar';
 
 const Ai= ()=>{
+
+    let today= new Date();
+    let date = (today.getFullYear() + '/' + (today.getMonth()+1) + '/' + today.getDate()).toString()
+
+    const addQnA= ()=>{
+        alert("QnA를 추가합니다")
+    }
+
     return(
-        <div style={{width:'100%', height:'100%'}}>
-            <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
+        <Container>
+            <SearchBar></SearchBar>
+            {/* <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
                 <Search type="search" placeholder='AI 검색'></Search><LuSearch style={{position:'absolute', top:10, right:10, color:'white', fontSize:'1.5rem'}}/>
-            </form>
+            </form> */}
             <div style={{textAlign:'center'}}>
-                <img alt='seleted book' style={{display:'inline-block'}}></img>
+                <BookSlick></BookSlick>
+                {/* <img alt='seleted book' style={{display:'inline-block'}}></img> */}
             </div>
-            <Container>
-                <p className='date'>작성일자: 2024/05/01</p>
+            <Content>
+                <p className='date'>작성일자: {date}</p>
                 <AiList></AiList>
-            </Container>
-            <FaPlusCircle style={{
+            </Content>
+            <FloatingButton onClick={addQnA}>+</FloatingButton>
+            {/* <FaPlusCircle onClick={addQnA} style={{
                 width: 50,
                 height: 50,
                 backgroundColor:'white', 
                 color:'#5E7E71',
                 position: 'fixed',
                 bottom: '100px',
-                right: '15px'
-                }}/>
-        </div>
+                right: '15px',
+                cursor: 'pointer'
+                }}/> */}
+        </Container>
     )
 }
 
 export default Ai
+
+const Container= styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
 
 const Search= styled.input`
     text-align: center;
@@ -46,7 +66,7 @@ const Search= styled.input`
     }
 `
 
-const Container= styled.div`
+const Content= styled.div`
     border: 2px solid #6F4E37;
     border-radius: 10px;
     background-color: #FFFAED;
@@ -58,4 +78,19 @@ const Container= styled.div`
         font-size: 12px;
         color: #5F5C5C;
     }
+`
+
+const FloatingButton = styled.button`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #5E7E71;
+  color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
 `
