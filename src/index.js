@@ -12,6 +12,7 @@ import List from './page/List'
 import NotePage from './page/NotePage'
 import WriteAi from './page/WriteAi'
 import WriteNote from './page/WriteNote'
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
@@ -25,6 +26,7 @@ root.render(
     {/* <WriteAi></WriteAi> */}
     {/* <WriteNote></WriteNote> */}
     <App></App>
+    
   </React.StrictMode>
 );
 
