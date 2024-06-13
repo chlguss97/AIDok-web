@@ -12,7 +12,7 @@ import List from './page/List'
 import NotePage from './page/NotePage'
 import WriteAi from './page/WriteAi'
 import WriteNote from './page/WriteNote'
-import Aa from './page/Aa'
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
