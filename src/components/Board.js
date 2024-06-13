@@ -143,20 +143,17 @@ const CommentIconWrapper = styled.div`
 
 const FloatingButton = styled.button`
   position: fixed;
-  width: 60px;
-  height: 60px;
-  bottom: 60px;
-  right: 60px;
-  background-color: #5E7E71;
-  color: #FFF;
-  border: none;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  box-shadow: 2px 2px 3px #999;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #5E7E71;
+  color: white;
   font-size: 24px;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
 
   @media (max-width: 768px) {
     width: 50px;
@@ -206,6 +203,16 @@ const Board = () => {
       profileImage: 'https://images.ddengle.com/files/attach/images/11334861/189/465/015/4b9097d5699b7fa4b153b1dd8d97814c.jpeg',
       content: '집에 가고 싶다..',
       postImage: 'https://jjal.today/data/file/gallery/1028612757_NCiaYZQs_77b66db361dba5c22df56f4cb7da21a078a2539f.jpeg',
+      likes: 0,
+      comments: 2,
+      liked: false,
+    },
+    {
+      id: 2,
+      username: '노상진',
+      profileImage: 'https://xen-api.linkareer.com/attachments/107214',
+      content: '난 사실 아무 생각이 없어',
+      postImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3ux6b26C7E5tu4xKPTtRD9k6BIWWocpRlYw&s',
       likes: 0,
       comments: 2,
       liked: false,

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaPlus, FaArrowLeft } from 'react-icons/fa';
+import SaveBtn from './SaveBtn';
 
 const Container = styled.div`
   padding: 20px;
@@ -11,14 +12,21 @@ const Container = styled.div`
 `;
 
 const Title = styled.h2`
+  color: #6F4E37;
+  font-size: 2rem;
+  font-weight: bold;
   text-align: center;
-  margin-bottom: 20px;
+  text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #FFFAED;
+  border: 2px solid #6F4E37;
+  padding: 20px;
+  border-radius: 10px;
 `;
 
 const BackButton = styled.button`
@@ -41,7 +49,8 @@ const ImageUploadWrapperBase = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
-  border: 2px dashed #ccc;
+  border: 2px solid #5E7E71;
+  background-color: white;
 
   ${({ hasImage }) => hasImage && `
     border: none;
@@ -74,13 +83,13 @@ const ImagePreview = styled.img`
 
 const PlusIcon = styled(FaPlus)`
   font-size: 2rem;
-  color: #ccc;
+  color: #5E7E71;
 `;
 
 const AddPhotoText = styled.span`
   margin-top: 10px;
   font-size: 1rem;
-  color: #ccc;
+  color: #5E7E71;
 `;
 
 const InfoContainer = styled.div`
@@ -104,26 +113,10 @@ const Textarea = styled.textarea`
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
+  border: 1px solid #5E7E71;
   border-radius: 5px;
   font-size: 1rem;
   resize: none;
-`;
-
-const Button = styled.button`
-  padding: 8px 30px;
-  background-color: #6F4E37;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  margin-top: 2rem;
-
-  &:hover {
-    background-color: #8A5638;
-  }
 `;
 
 const WriteBoard = () => {
@@ -213,7 +206,7 @@ const WriteBoard = () => {
           onChange={(e) => setContent(e.target.value)}
           placeholder="공유하고 싶은 내용을 작성하세요"
         />
-        <Button type="submit">저장하기</Button>
+        <SaveBtn name="저장하기" />
       </Form>
     </Container>
   );
