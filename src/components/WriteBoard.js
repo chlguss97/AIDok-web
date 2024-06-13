@@ -51,6 +51,7 @@ const ImageUploadWrapperBase = styled.div`
 const ImageUploadWrapper = styled(ImageUploadWrapperBase)`
   width: 130px;
   height: 150px;
+  flex-direction: column;
 `;
 
 const FullWidthImageUploadWrapper = styled(ImageUploadWrapperBase)`
@@ -173,7 +174,12 @@ const WriteBoard = () => {
       <Form onSubmit={handleSubmit}>
         <InfoContainer>
           <ImageUploadWrapper hasImage={!!image1} onClick={handleImageUploadClick1}>
-            {image1 ? <ImagePreview src={image1} alt="이미지 미리보기" /> : <PlusIcon />}
+            {image1 ? <ImagePreview src={image1} alt="이미지 미리보기" /> : (
+              <>
+                <PlusIcon />
+                <AddPhotoText>책 검색</AddPhotoText>
+              </>
+            )}
           </ImageUploadWrapper>
           <InfoText>
             <p><BoldSpan>제목</BoldSpan> : 트렌드 코리아 2023</p>

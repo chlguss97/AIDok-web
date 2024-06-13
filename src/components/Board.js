@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaHeart, FaRegHeart, FaRegCommentDots, FaEllipsisV, FaPen } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaCommentDots, FaEllipsisH, FaPen } from 'react-icons/fa';
 
 const BoardContainer = styled.div`
   padding: 20px;
@@ -122,16 +122,16 @@ const IconText = styled.span`
   }
 `;
 
-const OptionsIcon = styled(FaEllipsisV)`
+const OptionsIcon = styled(FaEllipsisH)`
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin-top: 0.8rem;
-  margin-right: 1rem;
+  margin-right:1.2rem;
 
   @media (max-width: 768px){
     font-size: 1rem;
     margin-top: 3px;
-    margin-right: 0.2rem;
+    margin-right: 0.6rem;
   }
 `;
 
@@ -184,6 +184,7 @@ const DropdownMenu = styled.div`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1;
   display: ${props => (props.show ? 'block' : 'none')};
+  min-width: 100px; 
 `;
 
 const DropdownItem = styled.div`
@@ -194,6 +195,9 @@ const DropdownItem = styled.div`
   align-items: center;
   &:hover {
     background: #f0f0f0;
+  }
+  &.report {
+    color: red;
   }
 `;
 
@@ -212,6 +216,7 @@ const Board = () => {
   ]);
 
   const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -224,7 +229,7 @@ const Board = () => {
   };
 
   const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
+    setShowDropdown(prevShowDropdown => !prevShowDropdown);
   };
 
   const handleEdit = () => {
@@ -236,6 +241,11 @@ const Board = () => {
     console.log('Delete post');
   };
 
+  const handleReport = () => {
+    // Add your report logic here
+    console.log('Report post');
+  };
+
   const handleLikeToggle = (postId) => {
     setPosts(prevPosts =>
       prevPosts.map(post =>
@@ -243,6 +253,19 @@ const Board = () => {
       )
     );
   };
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.options-icon')) {
+      setShowDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <BoardContainer>
@@ -254,10 +277,11 @@ const Board = () => {
               <Username>{post.username}</Username>
             </HeaderLeft>
             <div style={{ position: 'relative' }}>
-              <OptionsIcon onClick={toggleDropdown} />
-              <DropdownMenu show={showDropdown}>
+              <OptionsIcon className="options-icon" onClick={toggleDropdown} />
+              <DropdownMenu ref={dropdownRef} show={showDropdown}>
                 <DropdownItem onClick={handleEdit}><span>수정</span></DropdownItem>
                 <DropdownItem onClick={handleDelete}><span>삭제</span></DropdownItem>
+                <DropdownItem onClick={handleReport} className="report"><span>신고</span></DropdownItem>
               </DropdownMenu>
             </div>
           </PostHeader>
@@ -274,7 +298,7 @@ const Board = () => {
               )}
               <IconText>{post.likes} Likes</IconText>
               <CommentIconWrapper onClick={handleViewComments}>
-                <FaRegCommentDots style={{ marginLeft: '10px' }} />
+                <FaCommentDots style={{ marginLeft: '10px' }} />
                 <IconText>{post.comments} Comments</IconText>
               </CommentIconWrapper>
             </PostFooterIcons>
