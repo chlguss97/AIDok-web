@@ -25,7 +25,7 @@ function App() {
           {/* <Route path="/BoardPage" element={<BoardPage />} /> */}
           <Route path="/BookDetail" element={<BookDetail />} />
           <Route path="/BookEdit" element={<BookEdit />} />
-          <Route path="/Home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/List" element={<List />} />
           <Route path="/NotePage" element={<NotePage />} />
           <Route path="/WriteAi" element={<WriteAi />} />
