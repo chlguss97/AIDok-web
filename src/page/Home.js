@@ -15,8 +15,11 @@ const Home = () => {
 
 
   function aaa(message){
-    alert(message)
+    console.log(message)
   }
+
+
+
 
   // useEffect(() => {
   //   // const query = '사랑'
@@ -66,7 +69,7 @@ const Home = () => {
       </div>
 
       <BookCardStyledSlider {...homeBookItemSettings}>
-        <HomeBookItem onClick={() => alert("홈북아이템")} />
+        <HomeBookItem onClick={() => aaa} />
         <HomeBookItem />
         <HomeBookItem />
         <HomeBookItem />
