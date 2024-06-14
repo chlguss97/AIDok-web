@@ -8,6 +8,7 @@ import CircleBook from "../components/CircleBook";
 import CircleBook2 from "../components/CircleBook2";
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
+import SearchBar from "../components/SearchBar";
 
 const Home = () => {
   const sliderRef = useRef(null);
@@ -65,9 +66,10 @@ const Home = () => {
   return (
     <Container>
       <div className="headers">
-        <img src={userImg} alt="user"></img>
-        <span>검색 입력박스 컴포넌트 추가</span>
+        <img src={userImg} alt="user" className="user"></img>
+        <SearchBar placeholder={"책 검색"} ></SearchBar>
       </div>
+      
 
       <BookCardStyledSlider {...homeBookItemSettings}>
         <HomeBookItem onClick={() => aaa} />
@@ -108,14 +110,12 @@ const Container = styled.div`
     justify-content: flex-start;
     margin-bottom: 10%;
 
-    img {
-      width: 10%;
-      margin-right: 6%;
+    .user {
+      width: 12%;
+      height: 12%;
+      
     }
-    span {
-      border: 1px solid black;
-      flex-grow: 1;
-    }
+    
   }
   #wantbook {
     margin-top: 15%;
@@ -142,6 +142,7 @@ const BookCardStyledSlider = styled(Slider)`
     margin-top: 10px;
     font-size: 12px; /* 도트의 크기를 조정할 수 있습니다. */
     color: #e8b897; /* 도트의 색상을 변경할 수 있습니다. */
+    margin-left: -140%;
   }
 
   .slick-dots li.slick-active button:before {
