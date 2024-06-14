@@ -1,16 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import BackBtn from '../components/BackBtn';
+import Toolbar from '../components/Toolbar';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: white;
-  height: 100vh;
+  height: 100%;
   font-family: Arial, sans-serif;
   overflow: hidden;
-  padding:0%;
+  padding-top: 8%;
+  padding-bottom: 20%;
+  
 `;
 
 const Header = styled.div`
@@ -141,6 +144,7 @@ const GridBookTitle = styled.div`
 
 const BookDetail = () => {
   return (
+  
     <Container>
       <BackBtn></BackBtn>
       <Header>
@@ -208,6 +212,7 @@ const BookDetail = () => {
         </Content>
       </ContentWrapper>
     </Container>
+    
   );
 };
 

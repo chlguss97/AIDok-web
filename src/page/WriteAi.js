@@ -72,7 +72,10 @@ const Title= styled.p`
 const Container= styled.div`
     display: flex;
     flex-direction: column;
-    padding: 8%;
+    padding-top: 8%;
+    padding-bottom: 35%;
+    padding-left: 8%;
+    padding-right: 8%;
 `
 
 const AddImg= styled.div`

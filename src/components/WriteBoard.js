@@ -9,6 +9,10 @@ const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
   position: relative;
+  padding-top:8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
 `;
 
 const Title = styled.h2`

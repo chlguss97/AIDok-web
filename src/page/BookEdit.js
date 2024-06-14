@@ -11,7 +11,7 @@ const BookEdit= ()=>{
     }
 
     return(
-        <div style={{textAlign:"center", padding:"5%"}}>
+        <Container style={{textAlign:"center"}}>
             <BackBtn></BackBtn>
             <BookInfo>
                 <div className="info">
@@ -77,7 +77,7 @@ const BookEdit= ()=>{
                 </div>
             </Target>
             <SaveBtn name="저장하기" onClick={save}></SaveBtn>
-        </div>
+        </Container>
     )
 }
 
@@ -253,4 +253,13 @@ const EditBtn= styled.button`
     height: 1.5rem;
     font-size: 10px;
     cursor: pointer;
+
+`
+
+const Container= styled.div`
+    padding-top: 8%;
+    padding-bottom: 35%;
+    padding-left: 8%;
+    padding-right: 8%;
+    
 `

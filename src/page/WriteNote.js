@@ -12,9 +12,12 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8%;
+  padding-top: 8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
   background-color: white;
-  height: 100vh;
+  height: 100%;
   font-family: Arial, sans-serif;
   position: relative; /* 자식 요소의 절대 위치를 설정하기 위해 필요 */
 `;

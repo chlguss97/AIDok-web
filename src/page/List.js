@@ -11,7 +11,8 @@ const Container = styled.div`
   height: 100vh;
   font-family: Arial, sans-serif;
   overflow: hidden; /* Prevents body scroll */
-  padding: 5%;
+  padding-top:8%;
+  
 `;
 
 const Header = styled.div`
@@ -19,7 +20,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 10%;
   position: relative; /* Allows positioning of the back button */
 `;
 
@@ -30,7 +31,9 @@ const Content = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   justify-items: center;
-  padding: 4%;
+  padding-bottom: 35%;
+  padding-left: 5%;
+  padding-right: 5%;
   overflow-y: auto;
   height: calc(100vh - 120px); /* Adjust height based on header size */
   box-sizing: border-box; /* Include padding in height calculation */

@@ -4,13 +4,14 @@ import styled from 'styled-components';
 import { FaHeart, FaRegHeart, FaCommentDots, FaEllipsisH, FaPen } from 'react-icons/fa';
 
 const BoardContainer = styled.div`
-  padding: 20px;
+  padding-top:8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
   max-width: 600px;
   margin: 0 auto;
   
-  @media (max-width: 768px) {
-    padding: 8%;
-  }
+  
 `;
 
 const PostContainer = styled.div`

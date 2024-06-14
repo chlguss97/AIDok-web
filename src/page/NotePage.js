@@ -23,19 +23,22 @@ const initialNotes = [
 ];
 
 const Container = styled.div`
-  padding: 20px;
+  padding-top: 8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8%;
+  
 `;
 
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
+  bottom: 12%;
+  right: 6%;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: #5E7E71;
   color: white;

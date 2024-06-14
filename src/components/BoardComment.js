@@ -5,10 +5,13 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { PiArrowElbowRightUpBold } from 'react-icons/pi';
 
 const Container = styled.div`
-  padding: 20px;
+  padding-top: 8%;
+  padding-left: 8%;
+  padding-right: 8%;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
+  
 `;
 
 const Header = styled.div`

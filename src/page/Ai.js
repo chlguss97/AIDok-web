@@ -4,6 +4,7 @@ import { LuSearch } from "react-icons/lu";
 import AiList from '../components/AiList';
 import BookSlick from '../components/BookSlick';
 import SearchBar from '../components/SearchBar';
+import Toolbar from '../components/Toolbar';
 
 const items= [
     {no:1, date: "2024/5/1", text: "text1 ", q: "질문1", a: "질문1"},
@@ -26,7 +27,7 @@ const Ai= ()=>{
 
     return(
         <Container>
-
+            <Toolbar title={"AI 독서 학습"}></Toolbar>
             <SearchBar ></SearchBar>
             <BookSlick></BookSlick>
 
@@ -55,17 +56,20 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8%;
+    padding-top: 8%;
+    padding-bottom: 35%;
+    padding-left: 8%;
+    padding-right: 8%;
 `
 
 
 
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
+  bottom: 10%;
+  right: 6%;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: #5E7E71;
   color: white;

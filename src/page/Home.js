@@ -9,6 +9,7 @@ import CircleBook2 from "../components/CircleBook2";
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
+import Toolbar from "../components/Toolbar";
 
 const Home = () => {
   const sliderRef = useRef(null);
@@ -62,13 +63,20 @@ const Home = () => {
     afterChange: handleAfterChange,
   };
 
-  return (
+
+  const Title= styled.p`
+    color: #6F4E37;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
+`
+
+return (
+  <div>
+    <Title title={"홈"}></Title>
     <Container>
-      <div className="headers">
-        <img src={userImg} alt="user" className="user"></img>
-        <SearchBar placeholder={"책 검색"} ></SearchBar>
-      </div>
-      
+    <img src={userImg} alt="user" className="user"></img>  
 
       <BookCardStyledSlider {...homeBookItemSettings}>
         <HomeBookItem onClick={() => aaa} />
@@ -78,7 +86,7 @@ const Home = () => {
       </BookCardStyledSlider>
 
       <div className="wantbook">
-        <p id="wantbook">읽고 싶은 책</p>
+        <p id="wantbook" style={{paddingLeft:"5%"}}>읽고 싶은 책</p>
         <CircleBookStyledSlider ref={sliderRef} {...circleBookItemSettings}>
           <CircleBook onClick={() => alert("써클북")} />
           <CircleBook />
@@ -87,8 +95,8 @@ const Home = () => {
         </CircleBookStyledSlider>
       </div>
 
-      <div className="endbook">
-        <p id="endbook">다 읽은 책</p>
+      <div className="endbook" >
+        <p id="endbook" style={{paddingLeft:"7%"}}>다 읽은 책</p>
         <CircleBookStyledSlider {...circleBookItemSettings}>
           <CircleBook2 />
           <CircleBook2 />
@@ -97,13 +105,17 @@ const Home = () => {
         </CircleBookStyledSlider>
       </div>
     </Container>
+  </div>  
+  
   );
 };
 
 export default Home;
 
 const Container = styled.div`
-  padding: 5%;
+  padding-top: 8%;
+  padding-bottom: 20%;
+  
   .headers {
     display: flex;
     justify-content: flex-start;
@@ -120,6 +132,7 @@ const Container = styled.div`
     margin-top: 15%;
     color: #6f4e37;
     font-weight: bold;
+   
   }
   #endbook {
     margin-top: 15%;
