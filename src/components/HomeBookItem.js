@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import book1 from "../assets/HomeBook1.png";
 import memoImg from "../assets/memo2.png";
-import ggalpi from "../assets/ggalpi2.png";
+import ggalpi from "../assets/tek.png";
 import { useState } from "react";
 
 const HomeBookItem = ({ onClick }) => {
@@ -67,14 +67,15 @@ const Container = styled.div`
     flex-direction: row;
 
     .ggalpiTotal {
-      width: 7%;
+      width: 8%;
       position: relative;
-      left: 90%;
+      left: 85%;
       margin-top: -4%;
 
       #ggalpi {
         width: 100%;
         position: absolute;
+        height: 50%;
         left: 1%;
       }
     }
@@ -110,7 +111,7 @@ const Container = styled.div`
         height: 15%;
         margin-top: 25%;
         img{
-          width: 80%;
+          width: 85%;
           height: 80%;
         }
     }

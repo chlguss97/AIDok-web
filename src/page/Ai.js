@@ -21,14 +21,22 @@ const Ai= ()=>{
         alert("QnA를 추가합니다")
     }
 
+
+
+
     return(
         <Container>
-            <SearchBar onClick={search}></SearchBar>
+
+            <SearchBar ></SearchBar>
+            <BookSlick></BookSlick>
+
+
             {/* <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
                 <Search type="search" placeholder='AI 검색'></Search><LuSearch style={{position:'absolute', top:10, right:10, color:'white', fontSize:'1.5rem'}}/>
             </form> */}
+            
             <div style={{textAlign:'center'}}>
-                <BookSlick></BookSlick>
+                
                 {/* <img alt='seleted book' style={{display:'inline-block'}}></img> */}
             </div>
             <>
@@ -43,26 +51,14 @@ const Ai= ()=>{
 
 export default Ai
 
-const Container= styled.div`
+const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 8%;
 `
 
-const Search= styled.input`
-    text-align: center;
-    border: none;
-    background-color: #6F4E37;
-    border-radius: 15px;
-    height: 3rem;
-    color: white;
-    width: 100%;
 
-    &::placeholder{
-        color: white;
-        font-size: 1.2rem;
-    }
-`
 
 const FloatingButton = styled.button`
   position: fixed;

@@ -1,29 +1,27 @@
-const initState= {
+const initState= { //처음에 한번만 초기화..
     userInformation: {
-        id : "아이디없음",
-        pw : "비밀번호없음",
-        img : null,
+        userId : "",
+        userImg : "",
     },
 }
 
-// 액션 객체를 리턴해주는 함수 (회원가입(로그인) 후 받아온 response를 리덕스에 저장)
-export const loginUserInfo = (id, pw, img)=>{
+// 내다 여기저기서 쓸 함수 - 액션객체 리턴해준다. (회원가입(로그인) 후 받아온 response를 리덕스에 저장)
+export const loginUserInfo = (id, img)=>{
     return {
         type: 'login', 
-        loginUser:{id, pw, img}
+        loginUser:{id, img}  //이게 리턴해주는 액션객체
     }
 }
 
-export const logoutUserInfo = ()=>{
-    return {
-        type : 'logout',
-        logoutUser:{
-            id: "아이디는 뭘까",
-            pw: "패쓰워드는 뭘까",
-            img:null,
-        }
-    }
-}
+// export const logoutUserInfo = ()=>{
+//     return {
+//         type : 'logout',
+//         logoutUser:{
+//             id: "아이디는 뭘까",
+//             img:null,
+//         }
+//     }
+// }
 
 export default function userInformationReducer(state = initState, action){
 
@@ -32,20 +30,19 @@ export default function userInformationReducer(state = initState, action){
             return{
                 ...state,
                 userInformation: {
-                    id: action.loginUser.id,
-                    pw: action.loginUser.pw,
-                    imgs: action.loginUser.img,
+                    userId: action.loginUser.id,   //저 위에있는 loginUserInfo함수에서 반환된 액션객체 loginUser에있는 id를  userInformation에 다시 세팅한다. 
+                    userImg: action.loginUser.img,
                 }
             }
-        case 'logout':
-            return{
-                ...state,
-                userInformation: {
-                    id: action.logoutUser.id,
-                    pw: action.logoutUser.pw,
-                    imgs: action.logoutUser.img,
-                }
-            }
+        // case 'logout':
+        //     return{
+        //         ...state,
+        //         userInformation: {
+        //             id: action.logoutUser.id,
+        //             pw: action.logoutUser.pw,
+        //             imgs: action.logoutUser.img,
+        //         }
+        //     }
         default:
             return state
     }

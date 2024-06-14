@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import searchicon from '../assets/searchicon.png';
+import BackBtn from '../components/BackBtn';
+import SearchBar from '../components/SearchBar';
 
 const Container = styled.div`
   display: flex;
@@ -10,6 +11,7 @@ const Container = styled.div`
   height: 100vh;
   font-family: Arial, sans-serif;
   overflow: hidden; /* Prevents body scroll */
+  padding: 5%;
 `;
 
 const Header = styled.div`
@@ -21,46 +23,6 @@ const Header = styled.div`
   position: relative; /* Allows positioning of the back button */
 `;
 
-const BackButton = styled.button`
-  position: absolute;
-  left: 20px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  margin-left: 16px;
-`;
-
-const SearchBar = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid #5E7E71;
-  border-radius: 20px;
-  padding: 10px 10px;
-  background-color: #6F4E37;
-  width: 60%;
-
-  &:focus-within {
-    background-color: #5E7E71; /* 초록색으로 변경 */}
-`;
-
-const SearchInput = styled.input`
-  border: none;
-  font-size: 16px;
-  outline: none;
-  flex: 1;
-  background: none;
-  color: white;
-`;
-
-const SearchButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #8B4513;
-`;
-
 const Content = styled.div`
   width: 100%;
   max-width: 400px;
@@ -68,10 +30,11 @@ const Content = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   justify-items: center;
-  padding: 20px;
+  padding: 4%;
   overflow-y: auto;
   height: calc(100vh - 120px); /* Adjust height based on header size */
   box-sizing: border-box; /* Include padding in height calculation */
+  
 `;
 
 const BookCard = styled.div`
@@ -79,7 +42,7 @@ const BookCard = styled.div`
   max-width: 150px;
   border: 1px solid #8B4513;
   border-radius: 10px;
-  padding: 10px;
+  padding: 7px;
   background-color: #FFFAED;
   display: flex;
   flex-direction: column;
@@ -108,12 +71,9 @@ const Icon = styled.img`
 const List = () => {
   return (
     <Container>
+      <BackBtn></BackBtn>
       <Header>
-        <BackButton>←</BackButton>
-        <SearchBar>
-          <SearchInput type="text" placeholder="  책 검색" />
-          <SearchButton><Icon src={searchicon} /></SearchButton>
-        </SearchBar>
+        <SearchBar placeholder={'책 검색'}></SearchBar>
       </Header>
       <Content>
         {Array.from({ length: 20 }, (_, index) => (
