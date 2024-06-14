@@ -12,6 +12,10 @@ import List from './page/List'
 import NotePage from './page/NotePage'
 import WriteAi from './page/WriteAi'
 import WriteNote from './page/WriteNote'
+import {combineReducers, legacy_createStore as createStore} from 'redux'
+import {Provider} from 'react-redux'
+import userInformationReducer from './redux/account';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -25,7 +29,13 @@ root.render(
     {/* <NotePage></NotePage> */}
     {/* <WriteAi></WriteAi> */}
     {/* <WriteNote></WriteNote> */}
+  
+
+    <Provider store={createStore(
+      combineReducers( {userInformationReducer})
+    )}>
     <App></App>
+  </Provider>
     
   </React.StrictMode>
 );

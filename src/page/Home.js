@@ -9,16 +9,39 @@ import CircleBook2 from "../components/CircleBook2";
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
+import {useNavigate} from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+
+
+
 
 const Home = () => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const imgRef = useRef()
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
+  
+  // user정보 보여주기
+  // const userInfo = useSelector(
+  //   (state) => state.userInformationReducer.userInformation
+  // );
 
+  useEffect(()=>{
+  
+    window.sendToWeb = function(route, userId, userProfileImg){
+      navigate(route);
+      alert(userId);
+    }
+   
+  },[navigate])
 
-  function aaa(message){
-    console.log(message)
-  }
-
+  // useEffect(() => {
+  //   if (userInfo.img && imgRef.current) {
+  //     imgRef.current.src = userInfo.img;
+  //   }
+  // }, [userInfo]);
 
 
 
@@ -66,20 +89,20 @@ const Home = () => {
   return (
     <Container>
       <div className="headers">
-        <img src={userImg} alt="user" className="user"></img>
+        <img ref={imgRef}  src={userImg} alt="user" className="user"></img>
         <SearchBar placeholder={"책 검색"} ></SearchBar>
       </div>
       
 
       <BookCardStyledSlider {...homeBookItemSettings}>
-        <HomeBookItem onClick={() => aaa} />
+        <HomeBookItem />
         <HomeBookItem />
         <HomeBookItem />
         <HomeBookItem />
       </BookCardStyledSlider>
 
       <div className="wantbook">
-        <p id="wantbook">읽고 싶은 책</p>
+        <p id="wantbook">일꼬싶은책</p>
         <CircleBookStyledSlider ref={sliderRef} {...circleBookItemSettings}>
           <CircleBook onClick={() => alert("써클북")} />
           <CircleBook />
