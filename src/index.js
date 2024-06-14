@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
 import BoardPage from './page/BoardPage';
 import BookDetail from './page/BookDetail'
 import Ai from './page/Ai'
@@ -15,6 +16,7 @@ import WriteNote from './page/WriteNote'
 import {combineReducers, legacy_createStore as createStore} from 'redux'
 import {Provider} from 'react-redux'
 import userInformationReducer from './redux/account';
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -36,6 +38,7 @@ root.render(
     )}>
     <App></App>
   </Provider>
+
     
   </React.StrictMode>
 );

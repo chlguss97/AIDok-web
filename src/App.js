@@ -27,10 +27,10 @@ function App() {
           <Route path="/BookEdit" element={<BookEdit />} />
           <Route path="/" element={<Home />} />
           <Route path="/List" element={<List />} />
-          <Route path="/NotePage" element={<NotePage />} />
+          <Route path="/Notepage" element={<NotePage />} />
           <Route path="/WriteAi" element={<WriteAi />} />
           <Route path="/WriteNote" element={<WriteNote />} />
-          <Route path="Board/" element={<Board />} />
+          <Route path="/Board" element={<Board />} />
           <Route path="/write" element={<WriteBoard />} />
           <Route path="/comments" element={<BoardComment />} />
           

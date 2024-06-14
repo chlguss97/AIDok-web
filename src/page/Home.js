@@ -29,7 +29,6 @@ const Home = () => {
   // );
 
   useEffect(()=>{
-  
     window.sendToWeb = function(route, userId, userProfileImg){
       navigate(route);
       alert(userId);
@@ -94,8 +93,10 @@ const Home = () => {
       </div>
       
 
+
       <BookCardStyledSlider {...homeBookItemSettings}>
-        <HomeBookItem />
+
+        <HomeBookItem  />
         <HomeBookItem />
         <HomeBookItem />
         <HomeBookItem />
