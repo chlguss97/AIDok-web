@@ -13,6 +13,10 @@ const Home = () => {
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
 
+  function bnvRoute(route){
+    alert(route)
+}
+
 
   function aaa(message){
     console.log(message)

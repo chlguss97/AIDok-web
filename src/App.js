@@ -21,16 +21,16 @@ function App() {
     <Router>
       <Navigation/>
         <Routes>
-          <Route path="/ai" element={<Ai />} />
+          <Route path="/Ai" element={<Ai />} />
           {/* <Route path="/BoardPage" element={<BoardPage />} /> */}
           <Route path="/BookDetail" element={<BookDetail />} />
           <Route path="/BookEdit" element={<BookEdit />} />
           <Route path="/" element={<Home />} />
           <Route path="/List" element={<List />} />
-          <Route path="/notepage" element={<NotePage />} />
+          <Route path="/Notepage" element={<NotePage />} />
           <Route path="/WriteAi" element={<WriteAi />} />
           <Route path="/WriteNote" element={<WriteNote />} />
-          <Route path="/board" element={<Board />} />
+          <Route path="/Board" element={<Board />} />
           <Route path="/write" element={<WriteBoard />} />
           <Route path="/comments" element={<BoardComment />} />
           
