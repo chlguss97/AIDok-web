@@ -30,10 +30,11 @@ const Content = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   justify-items: center;
-  padding: 20px;
+  padding: 4%;
   overflow-y: auto;
   height: calc(100vh - 120px); /* Adjust height based on header size */
   box-sizing: border-box; /* Include padding in height calculation */
+  
 `;
 
 const BookCard = styled.div`

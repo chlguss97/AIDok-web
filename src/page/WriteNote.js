@@ -36,7 +36,7 @@ const Content = styled.div`
   background-color: #FFFAED;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  height: calc(100vh - 400px); /* Header와 여백을 고려하여 높이 조정 */
+  height: calc(100vh - 500px); /* Header와 여백을 고려하여 높이 조정 */
   margin-bottom: 20px;
 `;
 
@@ -84,7 +84,7 @@ const ActionButton = styled.button`
 
 const NoteInput = styled.textarea`
   width: 92%;
-  height: 45%;
+  height: 60%;
   margin-top: 20px;
   border: 1px solid #6F4E37;
   border-radius: 5px;

@@ -27,7 +27,7 @@ const Ai= ()=>{
     return(
         <Container>
 
-            <SearchBar></SearchBar>
+            <SearchBar ></SearchBar>
             <BookSlick></BookSlick>
 
 
@@ -58,20 +58,7 @@ const Container = styled.div`
     padding: 8%;
 `
 
-const Search= styled.input`
-    text-align: center;
-    border: none;
-    background-color: #6F4E37;
-    border-radius: 15px;
-    height: 3rem;
-    color: white;
-    width: 100%;
 
-    &::placeholder{
-        color: white;
-        font-size: 1.2rem;
-    }
-`
 
 const FloatingButton = styled.button`
   position: fixed;
