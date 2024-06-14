@@ -65,7 +65,7 @@ const Home = () => {
   return (
     <Container>
       <div className="headers">
-        <img src={userImg} alt="user"></img>
+        <img src={userImg} alt="user" className="user"></img>
         <SearchBar placeholder={"책 검색"} ></SearchBar>
       </div>
       
@@ -109,8 +109,9 @@ const Container = styled.div`
     justify-content: flex-start;
     margin-bottom: 10%;
 
-    img {
-      width: 10%;
+    .user {
+      width: 12%;
+      height: 12%;
       
     }
     

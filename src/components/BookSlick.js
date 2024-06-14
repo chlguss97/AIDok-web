@@ -15,7 +15,7 @@ const books = [
 const BookCarouselContainer = styled.div`
   padding: 0 5%;
 
-  margin: 0 auto;
+  margin: 10% auto;
   max-width: 300px;
   overflow: hidden;
   display: flex;
