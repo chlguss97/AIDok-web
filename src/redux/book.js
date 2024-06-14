@@ -1,9 +1,41 @@
-const initState= { //처음에 한번만 초기화..
-    userInformation: {
-        userId : "",
-        userImg : "",
+const initState= {
+    wantBook: {
+        ISBN:"",
+        state:"",
+        title:"",
+        writer:"",
+        img:"",
+        totalpage:"",
+        readpage:"",
+        summary:"",
+        endyear:"",
     },
+    ingBook: {
+        ISBN:"",
+        state:"",
+        title:"",
+        writer:"",
+        img:"",
+        totalpage:"",
+        readpage:"",
+        summary:"",
+        endyear:"",
+    },
+    endBook: {
+        ISBN:"",
+        state:"",
+        title:"",
+        writer:"",
+        img:"",
+        totalpage:"",
+        readpage:"",
+        summary:"",
+        endyear:"",
+    },
+
 }
+
+
 
 // 내다 여기저기서 쓸 함수 - 액션객체 리턴해준다. (회원가입(로그인) 후 받아온 response를 리덕스에 저장)
 export const loginUserInfo = (id, img)=>{
