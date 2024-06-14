@@ -8,19 +8,25 @@ import CircleBook from "../components/CircleBook";
 import CircleBook2 from "../components/CircleBook2";
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate()
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
 
-  function bnvRoute(route){
-    alert(route)
-}
+  useEffect(()=>{
+    window.bnvRoute= function(route){
+      navigate(route);
+    }
+  },[navigate])
+
+  
 
 
-  function aaa(message){
-    console.log(message)
-  }
+  // function aaa(message){
+  //   console.log(message)
+  // }
 
 
 
@@ -74,7 +80,7 @@ const Home = () => {
       </div>
 
       <BookCardStyledSlider {...homeBookItemSettings}>
-        <HomeBookItem onClick={() => aaa} />
+        <HomeBookItem  />
         <HomeBookItem />
         <HomeBookItem />
         <HomeBookItem />

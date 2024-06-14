@@ -184,6 +184,10 @@ const NotePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [notes, setNotes] = useState(initialNotes);
 
+  function bnvRoute(route){
+    alert(route)
+  }
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
