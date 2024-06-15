@@ -63,10 +63,10 @@ export default WriteAi
 
 const Title= styled.p`
     color: #6F4E37;
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: bold;
     text-align: center;
-    text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
+    text-shadow: 1px 0 white, -1px 0 white , 0 1px white , 0 -1px white;
 `
 
 const Container= styled.div`

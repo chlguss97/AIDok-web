@@ -30,7 +30,15 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative;
 `;
 
 const FloatingButton = styled.button`
@@ -97,8 +105,8 @@ const BackButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: 10px;
-  padding: 0; /* 버튼의 기본 패딩을 제거 */
+  position: absolute;
+  left: 0;
   img {
     width: 20px;
     height: 20px;
@@ -149,9 +157,22 @@ const NotePage = () => {
     setFilteredNotes(filtered);
   };
 
+  const Title= styled.p`
+  color: #6F4E37;
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 1px 0 white, -1px 0 white , 0 1px white , 0 -1px white;
+`
+
   return (
     <Container>
-      <BackBtn></BackBtn>
+      <TitleContainer>
+        <BackButton>
+          <img src={backIcon} alt="Back" />
+        </BackButton>
+        <Title>노트</Title>
+      </TitleContainer>
       <SearchBarWrapper>
         <SearchBar
           placeholder="노트 검색"

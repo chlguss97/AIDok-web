@@ -6,6 +6,7 @@ import BookSlick from '../components/BookSlick';
 import SearchBar from '../components/SearchBar';
 import Toolbar from '../components/Toolbar';
 
+
 const items= [
     {no:1, date: "2024/5/1", text: "text1 ", q: "질문1", a: "질문1"},
     {no:2, date: "2024/5/8", text: "text2 ", q: "질문2", a: "질문2"},
@@ -27,7 +28,7 @@ const Ai= ()=>{
 
     return(
         <Container>
-            <Toolbar title={"AI 독서 학습"}></Toolbar>
+            <Title >AI 독서 학습</Title>
             <SearchBar ></SearchBar>
             <BookSlick></BookSlick>
 
@@ -64,6 +65,8 @@ const Container = styled.div`
 
 
 
+
+
 const FloatingButton = styled.button`
   position: fixed;
   bottom: 10%;
@@ -78,3 +81,11 @@ const FloatingButton = styled.button`
   cursor: pointer;
   z-index: 1000;
 `
+const Title= styled.p`
+    color: #6F4E37;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 0 white, -1px 0 white , 0 1px white , 0 -1px ;
+    margin-bottom: 20%;`
+    

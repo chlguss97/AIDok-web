@@ -156,8 +156,11 @@ const BoardComment = () => {
     navigate(-1);
   };
 
+  
+
   return (
     <Container>
+      
       <Header>
         <BackButton onClick={handleBackClick}>
           <FaArrowLeft />
