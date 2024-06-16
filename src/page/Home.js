@@ -13,9 +13,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import { setUserAccount } from "../redux/account";
 
 
-
-
-
 const Home = () => {
   const navigate = useNavigate()
   const sliderRef = useRef(null);
@@ -46,7 +43,6 @@ const Home = () => {
   //     imgRef.current.src = userInfo.img;
   //   }
   // }, [userInfo]);
-
 
 
   // useEffect(() => {
