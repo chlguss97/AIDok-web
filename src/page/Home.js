@@ -1,4 +1,4 @@
-import userImg from "../assets/user.png";
+import userBasicImg from "../assets/user.png";
 import styled from "styled-components";
 import HomeBookItem from "../components/HomeBookItem";
 import "slick-carousel/slick/slick.css";
@@ -6,35 +6,45 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import CircleBook from "../components/CircleBook";
 import CircleBook2 from "../components/CircleBook2";
-import React, { useRef } from "react";
-import { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import {useNavigate} from 'react-router-dom';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import { getUserAccount } from "../redux/account";
+
 
 
 
 
 const Home = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
-
-  const imgRef = useRef()
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
-  
-  // user정보 보여주기
-  // const userInfo = useSelector(
-  //   (state) => state.userInformationReducer.userInformation
+  // const userAccount = useSelector(
+  //   (state) => state.userAccountReducer.userAccount
   // );
 
+  const [userId, setUserId] = useState("유정아이디")
+  const [userProfileImg, setUserProfileImg] = useState(userBasicImg)
+
+  // const dispatch = useDispatch()
+  // dispatch(getUserAccount(userId, userProfileImg))
+  
+
+
   useEffect(()=>{
+    // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
     window.sendToWeb = function(route, userId, userProfileImg){
-      navigate(route);
-      alert(userId);
+      setUserId(userId)
+      setUserProfileImg(userProfileImg)
+      navigate(route)
+      // if(route!="/"){
+      //   navigate(route);
+      // }
     }
-   
   },[navigate])
+
+
 
   // useEffect(() => {
   //   if (userInfo.img && imgRef.current) {
@@ -85,10 +95,17 @@ const Home = () => {
     afterChange: handleAfterChange,
   };
 
+  const handelImageClick= ()=>{
+      // window 객체에 AndroidInterface가 존재하고, 그 안에 openDrawer라는 함수가 있는지 확인.
+    if (window.AndroidInterface && typeof window.AndroidInterface.openDrawer === 'function') {
+      window.AndroidInterface.openDrawer();
+    }
+  }
+
   return (
     <Container>
       <div className="headers">
-        <img ref={imgRef}  src={userImg} alt="user" className="user"></img>
+        <img src= {userProfileImg} alt="user" className="userImg" onClick={handelImageClick}></img>
         <SearchBar placeholder={"책 검색"} ></SearchBar>
       </div>
       
@@ -103,7 +120,7 @@ const Home = () => {
       </BookCardStyledSlider>
 
       <div className="wantbook">
-        <p id="wantbook">일꼬싶은책</p>
+        <p id="wantbook">{userId}</p>
         <CircleBookStyledSlider ref={sliderRef} {...circleBookItemSettings}>
           <CircleBook onClick={() => alert("써클북")} />
           <CircleBook />
@@ -134,10 +151,11 @@ const Container = styled.div`
     justify-content: flex-start;
     margin-bottom: 10%;
 
-    .user {
-      width: 12%;
-      height: 12%;
-      
+    .userImg{
+      border: 3px solid #5E7E71;
+      border-radius: 100%;
+      width: 60px;
+      height: 60px;
     }
     
   }
