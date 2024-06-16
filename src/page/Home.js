@@ -10,7 +10,7 @@ import React, { useRef, useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
-import { getUserAccount } from "../redux/account";
+import { setUserAccount } from "../redux/account";
 
 
 
@@ -20,29 +20,24 @@ const Home = () => {
   const navigate = useNavigate()
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
-  // const userAccount = useSelector(
-  //   (state) => state.userAccountReducer.userAccount
-  // );
+  const userAccount = useSelector((state) => state.userAccount);
+  const dispatch = useDispatch()
 
-  const [userId, setUserId] = useState("유정아이디")
-  const [userProfileImg, setUserProfileImg] = useState(userBasicImg)
-
-  // const dispatch = useDispatch()
-  // dispatch(getUserAccount(userId, userProfileImg))
-  
+  // const [userId, setUserId] = useState("유정아이디")
+  // const [userProfileImg, setUserProfileImg] = useState(userBasicImg)
 
 
   useEffect(()=>{
     // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
     window.sendToWeb = function(route, userId, userProfileImg){
-      setUserId(userId)
-      setUserProfileImg(userProfileImg)
-      navigate(route)
-      // if(route!="/"){
-      //   navigate(route);
-      // }
+      if(route!="/"){
+        navigate(route);
+      }
+      dispatch(setUserAccount(userId, userProfileImg))
+      // setUserId(userId)
+      // setUserProfileImg(userProfileImg)
     }
-  },[navigate])
+  },[navigate, dispatch])
 
 
 
@@ -105,7 +100,7 @@ const Home = () => {
   return (
     <Container>
       <div className="headers">
-        <img src= {userProfileImg} alt="user" className="userImg" onClick={handelImageClick}></img>
+        <img src= {userAccount.userImg || userBasicImg} alt="user" className="userImg" onClick={handelImageClick}></img>
         <SearchBar placeholder={"책 검색"} ></SearchBar>
       </div>
       
@@ -120,7 +115,7 @@ const Home = () => {
       </BookCardStyledSlider>
 
       <div className="wantbook">
-        <p id="wantbook">{userId}</p>
+        <p id="wantbook">{userAccount.userId}</p>
         <CircleBookStyledSlider ref={sliderRef} {...circleBookItemSettings}>
           <CircleBook onClick={() => alert("써클북")} />
           <CircleBook />

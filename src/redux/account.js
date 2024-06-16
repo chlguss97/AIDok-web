@@ -5,10 +5,13 @@ const initState= { //처음에 한번만 초기화..
     },
 }
 
-// 내다 여기저기서 쓸 함수 - 액션객체 리턴해준다. (회원가입(로그인) 후 받아온 response를 리덕스에 저장)
-export const getUserAccount = (id, img)=>{
+//액션 타입 정의
+const LOGIN = 'LOGIN';
+
+// 액션생성함수: 내가 여기저기서 쓸 함수 - 액션객체 리턴해준다. (회원가입(로그인) 후 받아온 response를 리덕스에 저장)
+export const setUserAccount = (id, img)=>{
     return {
-        type: 'login', 
+        type: LOGIN, 
         loginUser:{id, img}  //이게 리턴해주는 액션객체
     }
 }
@@ -17,14 +20,14 @@ export const getUserAccount = (id, img)=>{
 export default function userAccountReducer(state = initState, action){
 
     switch(action.type) {
-        case 'login':
+        case LOGIN:
             return{
                 ...state,
                 userAccount: {
-                    userId: action.loginUser.id,   //저 위에있는 loginUserInfo함수에서 반환된 액션객체 loginUser에있는 id를  userInformation에 다시 세팅한다. 
+                    userId: action.loginUser.id,  
                     userImg: action.loginUser.img,
-                }
-            }
+                },
+            };
         // case 'logout':
         //     return{
         //         ...state,
