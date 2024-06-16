@@ -15,7 +15,7 @@ import WriteAi from './page/WriteAi'
 import WriteNote from './page/WriteNote'
 import {combineReducers, legacy_createStore as createStore} from 'redux'
 import {Provider} from 'react-redux'
-import userInformationReducer from './redux/account';
+import userAccountReducer from './redux/account';
 
 
 
@@ -34,7 +34,7 @@ root.render(
   
 
     <Provider store={createStore(
-      combineReducers( {userInformationReducer})
+      combineReducers( {userAccountReducer})
     )}>
     <App></App>
   </Provider>
