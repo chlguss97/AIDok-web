@@ -66,7 +66,6 @@ const Title= styled.p`
     font-size: 1.6rem;
     font-weight: bold;
     text-align: center;
-    text-shadow: 1px 0 white, -1px 0 white , 0 1px white , 0 -1px white;
 `
 
 const Container= styled.div`

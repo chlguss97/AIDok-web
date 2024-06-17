@@ -41,6 +41,7 @@ const Title = styled.div`
   font-size: 24px;
   font-weight: bold;
   color: #6F4E37;
+  
 `;
 
 const ContentWrapper = styled.div`

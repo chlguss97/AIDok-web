@@ -17,9 +17,10 @@ const Container = styled.div`
 
 const Title = styled.h2`
   color: #6F4E37;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: bold;
   text-align: center;
+  
   
 `;
 
