@@ -102,12 +102,12 @@ const Home = () => {
 
     <div>
       <TitleContainer>
-        <img src={userImg} alt="user" className="user" />
+        <img src={userBasicImg} alt="user" className="user" />
         <Title>홈 화면</Title>
       </TitleContainer>
       <Container>
         <BookCardStyledSlider {...homeBookItemSettings}>
-          <HomeBookItem onClick={() => aaa} />
+          <HomeBookItem  />
           <HomeBookItem />
           <HomeBookItem />
           <HomeBookItem />
