@@ -102,11 +102,15 @@ const Home = () => {
 
     <div>
       <TitleContainer>
+
         <img  alt="user" className="user" />
+
+
         <Title>홈 화면</Title>
       </TitleContainer>
       <Container>
         <BookCardStyledSlider {...homeBookItemSettings}>
+
           <HomeBookItem />
           <HomeBookItem />
           <HomeBookItem />
