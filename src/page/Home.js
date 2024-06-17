@@ -1,4 +1,4 @@
-import userImg from "../assets/user.png";
+import userBasicImg from "../assets/user.png";
 import styled from "styled-components";
 import HomeBookItem from "../components/HomeBookItem";
 import "slick-carousel/slick/slick.css";
@@ -6,17 +6,63 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import CircleBook from "../components/CircleBook";
 import CircleBook2 from "../components/CircleBook2";
-import React, { useRef } from "react";
-import { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
+import {useNavigate} from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
+import { setUserAccount } from "../redux/account";
+
 
 const Home = () => {
+  const navigate = useNavigate()
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch()
+  const [userId, setUserId] = useState("유정아이디")
+  const [userProfileImg, setUserProfileImg] = useState(userBasicImg)
 
-  function aaa(message) {
-    console.log(message);
-  }
+
+  useEffect(()=>{
+    alert(user)
+    console.log("유즈이펙트시작")
+    // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
+    window.sendToWeb = function(route, userId, userProfileImg){
+      
+      
+      // console.log("유즈셀렉터.."+userAccount.userId)
+      setUserId(userId)
+      setUserProfileImg(userProfileImg)
+      
+      if(route!=="/"){
+        
+        navigate(route);
+      }
+    }
+  },[])
+
+
+
+  // useEffect(() => {
+  //   if (userInfo.img && imgRef.current) {
+  //     imgRef.current.src = userInfo.img;
+  //   }
+  // }, [userInfo]);
+
+
+  // useEffect(() => {
+  //   // const query = '사랑'
+  //   const url =
+  //     "./backend/naver_search.php?query=" +
+  //     information.query +
+  //     "&display=" +
+  //     100;
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((json) => setImages(json.items))
+  //     .catch((e) => alert(e.message));
+  // }, [information]);
+  
 
   const handleAfterChange = (currentSlide) => {
     if (sliderRef.current) {
@@ -45,7 +91,15 @@ const Home = () => {
     afterChange: handleAfterChange,
   };
 
+  const handelImageClick= ()=>{
+      // window 객체에 AndroidInterface가 존재하고, 그 안에 openDrawer라는 함수가 있는지 확인.
+    if (window.AndroidInterface && typeof window.AndroidInterface.openDrawer === 'function') {
+      window.AndroidInterface.openDrawer();
+    }
+  }
+
   return (
+
     <div>
       <TitleContainer>
         <img src={userImg} alt="user" className="user" />
@@ -80,6 +134,7 @@ const Home = () => {
         </div>
       </Container>
     </div>
+
   );
 };
 
@@ -97,6 +152,7 @@ const Container = styled.div`
     .user {
       width: 10%;
       height: 10%;
+
     }
   }
 

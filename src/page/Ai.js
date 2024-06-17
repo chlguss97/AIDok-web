@@ -4,6 +4,8 @@ import { LuSearch } from "react-icons/lu";
 import AiList from '../components/AiList';
 import BookSlick from '../components/BookSlick';
 import SearchBar from '../components/SearchBar';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Toolbar from '../components/Toolbar';
 
 
@@ -15,30 +17,30 @@ const items= [
 
 const Ai= ()=>{
 
+    const [searchTerm, setSearchTerm]= useState('') 
+
     const search= ()=>{
-        alert("검색합니다")
+        alert(searchTerm + "을/를 검색합니다")
     }
+
+    const navigate= useNavigate()
 
     const addQnA= ()=>{
         alert("QnA를 추가합니다")
+        navigate("../WriteAi")
     }
-
-
-
 
     return(
         <Container>
             <Title >AI 독서 학습</Title>
-            <SearchBar ></SearchBar>
+             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요"></SearchBar>
             <BookSlick></BookSlick>
-
 
             {/* <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
                 <Search type="search" placeholder='AI 검색'></Search><LuSearch style={{position:'absolute', top:10, right:10, color:'white', fontSize:'1.5rem'}}/>
             </form> */}
-            
             <div style={{textAlign:'center'}}>
-                
+                <BookSlick></BookSlick>
                 {/* <img alt='seleted book' style={{display:'inline-block'}}></img> */}
             </div>
             <>
@@ -53,17 +55,31 @@ const Ai= ()=>{
 
 export default Ai
 
-const Container = styled.div`
+const Container= styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+
     padding-top: 8%;
     padding-bottom: 35%;
     padding-left: 8%;
     padding-right: 8%;
 `
 
+const Search= styled.input`
+    text-align: center;
+    border: none;
+    background-color: #6F4E37;
+    border-radius: 15px;
+    height: 3rem;
+    color: white;
+    width: 100%;
 
+    &::placeholder{
+        color: white;
+        font-size: 1.2rem;
+    }
+`
 
 
 

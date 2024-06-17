@@ -26,7 +26,9 @@
    $response["rowNum"] = $rowNum;
 
    
-   $response["account"] = "계정없쩡";
+   $response["account"]["id"] = "0";
+   $response["account"]["password"] = "1";
+   $response["account"]["img"] = "2";
 
    if($rowNum>0){
     $row= mysqli_fetch_array($result, MYSQLI_ASSOC);
