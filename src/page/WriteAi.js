@@ -1,20 +1,97 @@
 import { FaPlus } from "react-icons/fa"
 import styled from "styled-components"
 import SaveBtn from "../components/SaveBtn"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
+import Modal from 'react-modal'
+import camera from "../assets/camera.png"
+import gallery from "../assets/gallery.png"
+
+Modal.setAppElement('#root');
+
+const modalStyle = {
+    content: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: 'auto',
+        margin: 'auto',
+        backgroundColor: '#fff',
+        padding: '20px',
+        border: 'none',
+        borderTopLeftRadius: '10px',
+        borderTopRightRadius: '10px',
+        boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.2)',
+    },
+    overlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 1000,
+    },
+};
+
+const BottomSheetModal = ({ isOpen, onRequestClose }) => {
+  const videoRef = useRef(null);
+
+  const handleOpenCamera = () => {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        videoRef.current.srcObject = stream;
+      })
+      .catch(error => {
+        console.error('Error accessing webcam: ', error);
+      });
+  };
+
+  const handleOpenFileInput = () => {
+    document.getElementById('fileInput').click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      console.log(`Selected file: ${file.name}`);
+    }
+  };
+
+  return (
+    <Modal 
+        isOpen={isOpen} 
+        onRequestClose={onRequestClose}
+        style={modalStyle}
+        shouldCloseOnOverlayClick={true}
+        shouldCloseOnEsc={true}
+    >
+      <h4 style={{ marginTop: 0, marginBottom: '20px' }}>사진 업로드 방법을 선택해주세요</h4>
+      <div style={{
+        display:'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly'
+        }}>
+        <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleOpenCamera}><img width={"40px"} height={"40px"} src={camera}></img>카메라</div>
+        <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleOpenFileInput}><img width={"40px"} height={"40px"} src={gallery}></img>갤러리</div>
+      </div>
+
+      <video ref={videoRef} width="320" height="240" autoPlay style={{ display: 'none' }}></video>
+      <input type="file" id="fileInput" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
+    </Modal>
+  );
+};
 
 const WriteAi= ()=>{
 
-    // 변수
-    const [image, setImage]= useState()
-    const [question, setQuestion]= useState('')
-    const [file, setFile]= useState()
+    // 모달
+    const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
+    const openBottomSheet = () => {
+        setIsBottomSheetOpen(true)
+    }
     
-    const changeFile= (event)=>{
-        const files= event.target.files
-        setFile(files[0])
+    const closeBottomSheet = () => {
+        setIsBottomSheetOpen(false)
     }
 
+    // 변수
+    const [question, setQuestion]= useState('')
 
     // 함수
     const changeQuestion= (event)=>{
@@ -28,35 +105,17 @@ const WriteAi= ()=>{
     const save= ()=>{
         alert("저장합니다")
     }
-    
-    const addImg= ()=>{
-        alert("이미지를 추가합니다")
-    }
-
-    const submitFile= (event)=>{
-        event.preventDefault()
-
-        alert(file.name + "\n" + file.type + "\n" + file.size)
-
-        // const data= new FormData()
-        // data.append('img', file)    // 식별자 'img', File 객체
-
-        // fetch('./backend/ccc.php', {
-        //     method:'POST',
-        //     body: data
-        // })
-        // .then(res=>res.text()).then(text=>alert(text)).catch(e=>alert(e.message))
-    }
 
     return(
         <div>
             <Title>AI Q&A</Title>
             <Container>
-                {/* <form onSubmit={submitFile}>
-                    <input type="file" onChange={changeFile}></input>
-                    <input type="submit"></input>
-                </form> */}
-                <AddImg onClick={addImg} style={{cursor:"pointer"}}>
+                <BottomSheetModal
+                    isOpen={isBottomSheetOpen}
+                    onRequestClose={closeBottomSheet}
+                />
+
+                <AddImg onClick={openBottomSheet} style={{cursor:"pointer"}}>
                     <FaPlus style={{
                         color:'#5E7E71',
                         width: '3rem',
@@ -97,7 +156,6 @@ const Title= styled.p`
 const Container= styled.div`
     display: flex;
     flex-direction: column;
-    padding-top: 8%;
     padding-bottom: 35%;
     padding-left: 8%;
     padding-right: 8%;

@@ -34,14 +34,11 @@ const Ai= ()=>{
         <Container>
             <Title >AI 독서 학습</Title>
              <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요"></SearchBar>
-            <BookSlick></BookSlick>
+            {/* <BookSlick></BookSlick> */}
 
-            {/* <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
-                <Search type="search" placeholder='AI 검색'></Search><LuSearch style={{position:'absolute', top:10, right:10, color:'white', fontSize:'1.5rem'}}/>
-            </form> */}
             <div style={{textAlign:'center'}}>
                 <BookSlick></BookSlick>
-                {/* <img alt='seleted book' style={{display:'inline-block'}}></img> */}
+                <img alt='seleted book' style={{display:'inline-block'}}></img>
             </div>
             <>
             {items.slice().reverse().map((props)=>{
