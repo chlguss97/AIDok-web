@@ -22,24 +22,16 @@ export const setUserAccount = (id, img)=>{
 export default function userAccountReducer(state = initState, action){
 
     switch(action.type) {
-        // case LOGIN:
-        //     return{
-        //         ...state,
-        //         userAccount: {
-        //             ...state.userAccount,
-        //             userId: action.loginUser.id,
-        //             userImg: action.loginUser.img, 
-        //         },
-        //     };
-        // case 'logout':
-        //     return{
-        //         ...state,
-        //         userInformation: {
-        //             id: action.logoutUser.id,
-        //             pw: action.logoutUser.pw,
-        //             imgs: action.logoutUser.img,
-        //         }
-        //     }
+        case LOGIN:
+            return{
+                ...state,
+                userAccount: {
+                    ...state.userAccount,
+                    userId: action.loginUser.id,
+                    userImg: action.loginUser.img, 
+                },
+            };
+    
         default:
             return state
     }
