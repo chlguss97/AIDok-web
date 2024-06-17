@@ -1,73 +1,75 @@
-const initState= {
-    wantBook: {
-        ISBN:"",
-        state:"",
-        title:"",
-        writer:"",
-        img:"",
-        totalpage:"",
-        readpage:"",
-        summary:"",
-        endyear:"",
-    },
-    ingBook: {
-        ISBN:"",
-        state:"",
-        title:"",
-        writer:"",
-        img:"",
-        totalpage:"",
-        readpage:"",
-        summary:"",
-        endyear:"",
-    },
-    endBook: {
-        ISBN:"",
-        state:"",
-        title:"",
-        writer:"",
-        img:"",
-        totalpage:"",
-        readpage:"",
-        summary:"",
-        endyear:"",
-    },
-
-}
-
-
-
-// 내다 여기저기서 쓸 함수 - 액션객체 리턴해준다. (회원가입(로그인) 후 받아온 response를 리덕스에 저장)
-export const loginUserInfo = (id, img)=>{
+const initState = {
+    userBooks: [], // 초기 상태에서는 빈 배열로 시작
+  };
+  
+  // 액션 타입 정의
+  const SET_USER_BOOKS = "SET_USER_BOOKS";
+  const ADD_USER_BOOK = "ADD_USER_BOOK";
+  const REMOVE_USER_BOOK = "REMOVE_USER_BOOK";
+  const UPDATE_USER_BOOK = "UPDATE_USER_BOOK";
+  
+  // 액션 생성 함수
+  export const setUserBooks = (books) => {
     return {
-        type: 'login', 
-        loginUser:{id, img}  //이게 리턴해주는 액션객체
+      type: SET_USER_BOOKS,
+      books,
+    };
+  };
+  
+  export const addUserBook = (book) => {
+    return {
+      type: ADD_USER_BOOK,
+      book,
+    };
+  };
+  
+  export const removeUserBook = (isbn) => {
+    return {
+      type: REMOVE_USER_BOOK,
+      isbn,
+    };
+  };
+  
+  export const updateUserBook = (isbn, updatedFields) => {
+    return {
+      type: UPDATE_USER_BOOK,
+      isbn,
+      updatedFields,
+    };
+  };
+  
+  // 리듀서
+  const userBookReducer = (state = initState, action) => {
+    switch (action.type) {
+      case SET_USER_BOOKS:
+        return {
+          ...state,
+          userBooks: action.books,
+        };
+  
+      case ADD_USER_BOOK:
+        return {
+          ...state,
+          userBooks: [...state.userBooks, action.book],
+        };
+  
+      case REMOVE_USER_BOOK:
+        return {
+          ...state,
+          userBooks: state.userBooks.filter(book => book.isbn !== action.isbn),
+        };
+  
+      case UPDATE_USER_BOOK:
+        return {
+          ...state,
+          userBooks: state.userBooks.map(book =>
+            book.isbn === action.isbn ? { ...book, ...action.updatedFields } : book
+          ),
+        };
+  
+      default:
+        return state;
     }
-}
-
-
-export default function userInformationReducer(state = initState, action){
-
-    switch(action.type) {
-        case 'login':
-            return{
-                ...state,
-                userInformation: {
-                    userId: action.loginUser.id,   //저 위에있는 loginUserInfo함수에서 반환된 액션객체 loginUser에있는 id를  userInformation에 다시 세팅한다. 
-                    userImg: action.loginUser.img,
-                }
-            }
-        // case 'logout':
-        //     return{
-        //         ...state,
-        //         userInformation: {
-        //             id: action.logoutUser.id,
-        //             pw: action.logoutUser.pw,
-        //             imgs: action.logoutUser.img,
-        //         }
-        //     }
-        default:
-            return state
-    }
-
-}
+  };
+  
+  export default userBookReducer;

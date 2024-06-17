@@ -1,7 +1,7 @@
 const initState= { //처음에 한번만 초기화..
     userAccount: {
-        userId : "아아이딩",
-        userImg : "이이미지",
+        userId : "iiiii",
+        userImg : "fffff",
     },
 }
 
@@ -13,7 +13,9 @@ export const setUserAccount = (id, img)=>{
     console.log('setUserAccount action:', { id, img }); // 디버깅용 로그 추가
     return {
         type: LOGIN, 
-        loginUser:{id, img}  //이게 리턴해주는 액션객체
+        loginUser:{
+            id:id,
+            img:img}  //이게 리턴해주는 액션객체
     }
 }
 
@@ -26,19 +28,12 @@ export default function userAccountReducer(state = initState, action){
             return{
                 ...state,
                 userAccount: {
-                    userId: action.loginUser.id,  
-                    userImg: action.loginUser.img,
+                    ...state.userAccount,
+                    userId: action.loginUser.id,
+                    userImg: action.loginUser.img, 
                 },
             };
-        // case 'logout':
-        //     return{
-        //         ...state,
-        //         userInformation: {
-        //             id: action.logoutUser.id,
-        //             pw: action.logoutUser.pw,
-        //             imgs: action.logoutUser.img,
-        //         }
-        //     }
+    
         default:
             return state
     }

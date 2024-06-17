@@ -8,6 +8,13 @@ const WriteAi= ()=>{
     // 변수
     const [image, setImage]= useState()
     const [question, setQuestion]= useState('')
+    const [file, setFile]= useState()
+    
+    const changeFile= (event)=>{
+        const files= event.target.files
+        setFile(files[0])
+    }
+
 
     // 함수
     const changeQuestion= (event)=>{
@@ -26,11 +33,30 @@ const WriteAi= ()=>{
         alert("이미지를 추가합니다")
     }
 
+    const submitFile= (event)=>{
+        event.preventDefault()
+
+        alert(file.name + "\n" + file.type + "\n" + file.size)
+
+        // const data= new FormData()
+        // data.append('img', file)    // 식별자 'img', File 객체
+
+        // fetch('./backend/ccc.php', {
+        //     method:'POST',
+        //     body: data
+        // })
+        // .then(res=>res.text()).then(text=>alert(text)).catch(e=>alert(e.message))
+    }
+
     return(
         <div>
             <Title>AI Q&A</Title>
             <Container>
-                <AddImg onClick={save} style={{cursor:"pointer"}}>
+                {/* <form onSubmit={submitFile}>
+                    <input type="file" onChange={changeFile}></input>
+                    <input type="submit"></input>
+                </form> */}
+                <AddImg onClick={addImg} style={{cursor:"pointer"}}>
                     <FaPlus style={{
                         color:'#5E7E71',
                         width: '3rem',
@@ -63,16 +89,18 @@ export default WriteAi
 
 const Title= styled.p`
     color: #6F4E37;
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: bold;
     text-align: center;
-    text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
 `
 
 const Container= styled.div`
     display: flex;
     flex-direction: column;
-    padding: 8%;
+    padding-top: 8%;
+    padding-bottom: 35%;
+    padding-left: 8%;
+    padding-right: 8%;
 `
 
 const AddImg= styled.div`
