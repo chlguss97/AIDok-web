@@ -11,7 +11,6 @@ const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
   position: relative;
-  
 `;
 
 const Header = styled.div`
@@ -29,11 +28,7 @@ const BackButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  display: none;
-
-  @media (max-width: 768px) {
-    display: block;
-  }
+  display: block;
 
   img {
     width: 20px;
@@ -46,11 +41,10 @@ const Title = styled.h2`
   font-size: 1.7rem;
   font-weight: bold;
   text-align: center;
-  
 `;
 
 const CommentList = styled.div`
-  //margin-top: 10px;
+  margin-top: 10px;
 `;
 
 const CommentContainer = styled.div`
@@ -100,9 +94,9 @@ const CommentInputContainer = styled.div`
   border-top: 1px solid #ccc;
   position: fixed;
   bottom: 10px;
-  width: calc(100% - 40px);
+  width: calc(100% - 16%);
   background-color: white;
-  max-width: 560px;
+  max-width: 600px;
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 5px;
@@ -116,11 +110,6 @@ const CommentInput = styled.input`
   margin-right: 10px;
   box-sizing: border-box;
   min-width: 0;
-
-  @media (max-width: 768px) {
-    padding: 8px;
-    margin-right: 5px;
-  }
 `;
 
 const SendButton = styled.button`
@@ -130,10 +119,6 @@ const SendButton = styled.button`
   cursor: pointer;
   display: flex;
   align-items: center;
-
-  @media (max-width: 768px) {
-    font-size: 1.2rem;
-  }
 `;
 
 const BoardComment = () => {
@@ -152,7 +137,6 @@ const BoardComment = () => {
       date: '2024년 6월 16일 10시 20분',
       text: '나와',
     },
-    
   ]);
 
   const navigate = useNavigate();
@@ -161,11 +145,8 @@ const BoardComment = () => {
     navigate(-1);
   };
 
-  
-
   return (
     <Container>
-      
       <Header>
         <BackButton onClick={handleBackClick}>
           <img src={backIcon} alt="Back" />

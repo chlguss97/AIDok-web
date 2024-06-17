@@ -2,14 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaHeart, FaRegHeart, FaCommentDots, FaEllipsisH, FaPen } from 'react-icons/fa';
+
 const BoardContainer = styled.div`
-  padding-top:8%;
+  padding-top: 8%;
   padding-bottom: 35%;
   padding-left: 8%;
   padding-right: 8%;
   max-width: 600px;
   margin: 0 auto;
 `;
+
 const PostContainer = styled.div`
   border: 2px solid #6F4E37;
   margin: 20px 0;
@@ -17,108 +19,97 @@ const PostContainer = styled.div`
   background-color: #FFFAED;
   padding: 5px;
   overflow: hidden;
-  @media (max-width: 768px) {
-    margin: 10px 0;
-  }
 `;
+
 const PostHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px;
   position: relative;
-  @media (max-width: 768px) {
-    padding: 5px;
-  }
 `;
+
 const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
 `;
+
 const Avatar = styled.div`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1.5px solid #6F4E37;
   background-color: #ccc;
-  margin: 0.5rem 10px;
+  margin-right: 10px;
   background-size: cover;
   background-position: center;
   background-image: url(${props => props.src});
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-    margin-right: 5px;
-  }
 `;
+
 const Username = styled.span`
   font-weight: bold;
-  margin-left: 0.6rem;
-  font-size: 1.4rem;
-  @media (max-width: 768px) {
-    font-size: 1.0em;
-  }
+  font-size: 1.0em;
 `;
+
+const BookTitle = styled.span`
+  font-size: 0.9em;
+  color: #6F4E37;
+`;
+
+const PostText = styled.div`
+  font-size: 0.9em;
+  
+`;
+
 const PostImage = styled.img`
-  width: 90%;
+  width: 95%;
   height: auto;
   display: block;
   margin: 0 auto;
-  @media (max-width: 768px) {
-    width: 95%;
-  }
 `;
+
 const PostContent = styled.div`
-  padding: 10px;
+  padding: 5px;
   margin: 0 0.5rem;
-  font-size: 1.2rem;
-  @media (max-width: 768px) {
-    padding: 5px;
-    font-size: 0.9em;
-  }
+  font-size: 0.9em;
 `;
+
 const PostFooter = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
   margin-left: 0.5rem;
-  padding: 10px;
-  font-size: 1.5rem;
+  padding: 5px;
+  font-size: 1.1rem;
   color: #555;
-  @media (max-width: 768px) {
-    padding: 5px;
-    font-size: 1.1rem;
-  }
 `;
+
 const PostFooterIcons = styled.div`
   display: flex;
   align-items: center;
 `;
+
 const IconText = styled.span`
-  margin: 0 0.4rem 0.5rem;
+  margin: 0 0.3rem 0.3rem;
   user-select: none;
   cursor: default;
-  @media (max-width: 768px){
-    margin: 0 0.3rem 0.3rem;
-  }
 `;
+
 const OptionsIcon = styled(FaEllipsisH)`
   cursor: pointer;
-  font-size: 1.4rem;
-  margin-top: 0.8rem;
-  margin-right:1.2rem;
-  @media (max-width: 768px){
-    font-size: 1rem;
-    margin-top: 3px;
-    margin-right: 0.6rem;
-  }
+  font-size: 1rem;
+  margin-top: 3px;
+  margin-right: 0.6rem;
 `;
+
 const CommentIconWrapper = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
 `;
+
 const FloatingButton = styled.button`
   position: fixed;
   bottom: 20px;
@@ -128,24 +119,12 @@ const FloatingButton = styled.button`
   border-radius: 50%;
   background-color: #5E7E71;
   color: white;
-  font-size: 24px;
+  font-size: 20px;
   border: none;
   cursor: pointer;
   z-index: 1000;
-  @media (max-width: 768px) {
-    width: 50px;
-    height: 50px;
-    bottom: 40px;
-    right: 20px;
-    font-size: 20px;
-  }
-  @media (min-width: 768px) {
-    width: 70px;
-    height: 70px;
-    right: 100px;
-    font-size: 30px;
-  }
 `;
+
 const DropdownMenu = styled.div`
   position: absolute;
   top: 30px;
@@ -158,6 +137,7 @@ const DropdownMenu = styled.div`
   display: ${props => (props.show ? 'block' : 'none')};
   min-width: 100px;
 `;
+
 const DropdownItem = styled.div`
   padding: 8px;
   cursor: pointer;
@@ -168,6 +148,7 @@ const DropdownItem = styled.div`
     background: #F0F0F0;
   }
 `;
+
 const Board = () => {
   const [posts, setPosts] = useState([
     {
@@ -179,6 +160,7 @@ const Board = () => {
       likes: 0,
       comments: 2,
       liked: false,
+      bookTitle: '트렌드 코리아 2023',
     },
     {
       id: 2,
@@ -189,8 +171,10 @@ const Board = () => {
       likes: 0,
       comments: 2,
       liked: false,
+      bookTitle: '무슨 책 제목',
     }
   ]);
+
   const [showDropdown, setShowDropdown] = useState({});
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -210,7 +194,6 @@ const Board = () => {
     navigate('/write');
   };
   const handleDelete = () => {
-    // Add your delete logic here
     console.log('Delete post');
   };
   const handleLikeToggle = (postId) => {
@@ -225,12 +208,13 @@ const Board = () => {
       setShowDropdown({});
     }
   };
-  const Title= styled.p`
+  const Title = styled.p`
     color: #6F4E37;
     font-size: 1.6rem;
     font-weight: bold;
     text-align: center;
-    margin-bottom:20%`
+    margin-bottom: 20%;
+  `;
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -244,8 +228,11 @@ const Board = () => {
         <PostContainer key={post.id}>
           <PostHeader>
             <HeaderLeft>
-              <Avatar style={{ backgroundImage: `url(${post.profileImage})` }} />
-              <Username>{post.username}</Username>
+              <Avatar src={post.profileImage} />
+              <div>
+                <Username>{post.username}</Username>
+                <PostText> <BookTitle>{post.bookTitle}</BookTitle> 을(를) 공유했습니다.</PostText>
+              </div>
             </HeaderLeft>
             <div style={{ position: 'relative' }}>
               <OptionsIcon className="options-icon" onClick={() => toggleDropdown(post.id)} />
@@ -281,4 +268,5 @@ const Board = () => {
     </BoardContainer>
   );
 };
+
 export default Board;

@@ -40,11 +40,6 @@ const BackButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  display: none;
-
-  @media (max-width: 768px) {
-    display: block;
-  }
 
   img {
     width: 20px;
