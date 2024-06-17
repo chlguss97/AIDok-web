@@ -101,6 +101,7 @@ const Home = () => {
         <Title>홈 화면 {user.userId}</Title>
       </TitleContainer>
       <Container>
+        <SearchBarWrapper><SearchBar placeholder="책 검색"></SearchBar></SearchBarWrapper>
         <BookCardStyledSlider {...homeBookItemSettings}>
           <HomeBookItem  />
           <HomeBookItem />
@@ -241,4 +242,10 @@ const Title = styled.p`
   font-weight: bold;
   text-align: center;
   
+`;
+const SearchBarWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10%;
 `;
