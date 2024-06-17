@@ -12,9 +12,12 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8%;
+  padding-top: 8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
   background-color: white;
-  height: 100vh;
+  height: 100%;
   font-family: Arial, sans-serif;
   position: relative; /* 자식 요소의 절대 위치를 설정하기 위해 필요 */
 `;
@@ -28,7 +31,7 @@ const Header = styled.div`
 `;
 
 const Content = styled.div`
-  width: 80%;
+  width: 85%;
   max-width: 400px;
   border: 2px solid #6F4E37;
   border-radius: 10px;
@@ -36,7 +39,7 @@ const Content = styled.div`
   background-color: #FFFAED;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  height: calc(100vh - 500px); /* Header와 여백을 고려하여 높이 조정 */
+  height: calc(100vh - 350px); /* Header와 여백을 고려하여 높이 조정 */
   margin-bottom: 20px;
 `;
 

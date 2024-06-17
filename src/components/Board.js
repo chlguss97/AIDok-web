@@ -2,20 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaHeart, FaRegHeart, FaCommentDots, FaEllipsisH, FaPen } from 'react-icons/fa';
-
 const BoardContainer = styled.div`
-  padding: 20px;
+  padding-top:8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
   max-width: 600px;
   margin: 0 auto;
-  
-  @media (max-width: 768px) {
-    padding-top: 8%;
-    padding-left: 8%;
-    padding-right: 8%;
-    padding-bottom: 35%;
-  }
 `;
-
 const PostContainer = styled.div`
   border: 2px solid #6F4E37;
   margin: 20px 0;
@@ -23,29 +17,24 @@ const PostContainer = styled.div`
   background-color: #FFFAED;
   padding: 5px;
   overflow: hidden;
-
   @media (max-width: 768px) {
     margin: 10px 0;
   }
 `;
-
 const PostHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px;
   position: relative;
-
   @media (max-width: 768px) {
     padding: 5px;
   }
 `;
-
 const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
 `;
-
 const Avatar = styled.div`
   width: 50px;
   height: 50px;
@@ -57,46 +46,38 @@ const Avatar = styled.div`
   background-position: center;
   background-image: url(${props => props.src});
   object-fit: cover;
-
   @media (max-width: 768px) {
     width: 40px;
     height: 40px;
     margin-right: 5px;
   }
 `;
-
 const Username = styled.span`
   font-weight: bold;
   margin-left: 0.6rem;
   font-size: 1.4rem;
-
   @media (max-width: 768px) {
     font-size: 1.0em;
   }
 `;
-
 const PostImage = styled.img`
   width: 90%;
   height: auto;
   display: block;
   margin: 0 auto;
-
   @media (max-width: 768px) {
     width: 95%;
   }
 `;
-
 const PostContent = styled.div`
   padding: 10px;
   margin: 0 0.5rem;
   font-size: 1.2rem;
-
   @media (max-width: 768px) {
     padding: 5px;
     font-size: 0.9em;
   }
 `;
-
 const PostFooter = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -105,47 +86,39 @@ const PostFooter = styled.div`
   padding: 10px;
   font-size: 1.5rem;
   color: #555;
-
   @media (max-width: 768px) {
     padding: 5px;
     font-size: 1.1rem;
   }
 `;
-
 const PostFooterIcons = styled.div`
   display: flex;
   align-items: center;
 `;
-
 const IconText = styled.span`
   margin: 0 0.4rem 0.5rem;
-  user-select: none; 
-  cursor: default;   
-
+  user-select: none;
+  cursor: default;
   @media (max-width: 768px){
     margin: 0 0.3rem 0.3rem;
   }
 `;
-
 const OptionsIcon = styled(FaEllipsisH)`
   cursor: pointer;
   font-size: 1.4rem;
   margin-top: 0.8rem;
   margin-right:1.2rem;
-
   @media (max-width: 768px){
     font-size: 1rem;
     margin-top: 3px;
     margin-right: 0.6rem;
   }
 `;
-
 const CommentIconWrapper = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
 `;
-
 const FloatingButton = styled.button`
   position: fixed;
   bottom: 20px;
@@ -159,7 +132,6 @@ const FloatingButton = styled.button`
   border: none;
   cursor: pointer;
   z-index: 1000;
-
   @media (max-width: 768px) {
     width: 50px;
     height: 50px;
@@ -167,7 +139,6 @@ const FloatingButton = styled.button`
     right: 20px;
     font-size: 20px;
   }
-
   @media (min-width: 768px) {
     width: 70px;
     height: 70px;
@@ -175,7 +146,6 @@ const FloatingButton = styled.button`
     font-size: 30px;
   }
 `;
-
 const DropdownMenu = styled.div`
   position: absolute;
   top: 30px;
@@ -186,9 +156,8 @@ const DropdownMenu = styled.div`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1;
   display: ${props => (props.show ? 'block' : 'none')};
-  min-width: 100px; 
+  min-width: 100px;
 `;
-
 const DropdownItem = styled.div`
   padding: 8px;
   cursor: pointer;
@@ -196,10 +165,9 @@ const DropdownItem = styled.div`
   justify-content: center;
   align-items: center;
   &:hover {
-    background: #f0f0f0;
+    background: #F0F0F0;
   }
 `;
-
 const Board = () => {
   const [posts, setPosts] = useState([
     {
@@ -223,36 +191,28 @@ const Board = () => {
       liked: false,
     }
   ]);
-
   const [showDropdown, setShowDropdown] = useState({});
   const dropdownRef = useRef(null);
-
   const navigate = useNavigate();
-
   const handleCreatePost = () => {
     navigate('/write');
   };
-
   const handleViewComments = () => {
     navigate('/comments');
   };
-
   const toggleDropdown = (postId) => {
     setShowDropdown(prevShowDropdown => ({
       ...prevShowDropdown,
       [postId]: !prevShowDropdown[postId]
     }));
   };
-
   const handleEdit = () => {
     navigate('/write');
   };
-
   const handleDelete = () => {
     // Add your delete logic here
     console.log('Delete post');
   };
-
   const handleLikeToggle = (postId) => {
     setPosts(prevPosts =>
       prevPosts.map(post =>
@@ -260,22 +220,26 @@ const Board = () => {
       )
     );
   };
-
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.options-icon')) {
       setShowDropdown({});
     }
   };
-
+  const Title= styled.p`
+    color: #6F4E37;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom:20%`
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
   return (
     <BoardContainer>
+      <Title>커뮤니티</Title>
       {posts.map(post => (
         <PostContainer key={post.id}>
           <PostHeader>
@@ -317,5 +281,4 @@ const Board = () => {
     </BoardContainer>
   );
 };
-
 export default Board;

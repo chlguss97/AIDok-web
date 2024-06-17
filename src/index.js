@@ -8,13 +8,15 @@ import { Provider } from "react-redux";
 import userAccountReducer from "./redux/account";
 import aReducer from "./redux/a";
 
+
 const rootReducer = combineReducers({
-  userAccount: userAccountReducer,
+  userA: userAccountReducer,
   a: aReducer,
 });
 const store = createStore(rootReducer);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <Provider store={store}>
     <App></App>
