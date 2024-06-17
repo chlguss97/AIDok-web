@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaArrowLeft } from 'react-icons/fa';
+import backIcon from '../assets/backicon.png';
 import { PiArrowElbowRightUpBold } from 'react-icons/pi';
 
 const Container = styled.div`
@@ -24,15 +24,20 @@ const Header = styled.div`
 
 const BackButton = styled.button`
   position: absolute;
-  left: 0;
+  top: 20px;
+  left: 0px;
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
   display: none;
 
   @media (max-width: 768px) {
     display: block;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
   }
 `;
 
@@ -163,7 +168,7 @@ const BoardComment = () => {
       
       <Header>
         <BackButton onClick={handleBackClick}>
-          <FaArrowLeft />
+          <img src={backIcon} alt="Back" />
         </BackButton>
         <Title>comments</Title>
       </Header>

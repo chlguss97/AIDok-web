@@ -1,15 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaPlus, FaArrowLeft } from 'react-icons/fa';
 import SaveBtn from './SaveBtn';
+import { FaPlus } from 'react-icons/fa';
+import backIcon from '../assets/backicon.png';
 
 const Container = styled.div`
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
-  padding-top:8%;
+  padding-top: 8%;
   padding-bottom: 35%;
   padding-left: 8%;
   padding-right: 8%;
@@ -20,8 +21,6 @@ const Title = styled.h2`
   font-size: 1.6rem;
   font-weight: bold;
   text-align: center;
-  
-  
 `;
 
 const Form = styled.form`
@@ -40,12 +39,16 @@ const BackButton = styled.button`
   left: 20px;
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
   display: none;
-  
+
   @media (max-width: 768px) {
     display: block;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
   }
 `;
 
@@ -166,7 +169,7 @@ const WriteBoard = () => {
   return (
     <Container>
       <BackButton onClick={handleBackClick}>
-        <FaArrowLeft />
+        <img src={backIcon} alt="Back" />
       </BackButton>
       <Title>글 작성</Title>
       <Form onSubmit={handleSubmit}>
