@@ -154,10 +154,8 @@ const List = () => {
         "http://ddok.dothome.co.kr/backend/aladin_search.php?query=" + query;
       fetch(url)
         .then((res) => res.text())
-        .then((xmlString) => {
-          // XML을 JSON으로 변환
-          alert("ddfsf")
-        })
+        .then(str => new DOMParser().parseFromString(str, 'text/xml'))
+        .then(json=> setBooks(json.item))
         .catch((e) => {
           console.error("에러:", e.message);
           alert("데이터를 불러오는 중 오류가 발생했습니다.");
@@ -165,6 +163,8 @@ const List = () => {
         });
     }
   }, [location.search]);
+
+
 
   const inputImgClick = () => {
     alert(searchTerm);
@@ -210,3 +210,50 @@ const List = () => {
 };
 
 export default List;
+
+
+
+export function xmlToJson(xml) {
+  // Create the return object
+  var obj = {};
+  if (xml.nodeType == 1) {
+    // element
+    // do attributes
+    if (xml.attributes.length > 0) {
+      obj["@attributes"] = {};
+      for (var j = 0; j < xml.attributes.length; j++) {
+        var attribute = xml.attributes.item(j);
+        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+  } else if (xml.nodeType == 3) {
+    // text
+    obj = xml.nodeValue;
+  }
+  // do children
+  // If all text nodes inside, get concatenated text from them.
+  var textNodes = [].slice.call(xml.childNodes).filter(function(node) {
+    return node.nodeType === 3;
+  });
+  if (xml.hasChildNodes() && xml.childNodes.length === textNodes.length) {
+    obj = [].slice.call(xml.childNodes).reduce(function(text, node) {
+      return text + node.nodeValue;
+    }, "");
+  } else if (xml.hasChildNodes()) {
+    for (var i = 0; i < xml.childNodes.length; i++) {
+      var item = xml.childNodes.item(i);
+      var nodeName = item.nodeName;
+      if (typeof obj[nodeName] == "undefined") {
+        obj[nodeName] = xmlToJson(item);
+      } else {
+        if (typeof obj[nodeName].push == "undefined") {
+          var old = obj[nodeName];
+          obj[nodeName] = [];
+          obj[nodeName].push(old);
+        }
+        obj[nodeName].push(xmlToJson(item));
+      }
+    }
+  }
+  return obj;
+}
