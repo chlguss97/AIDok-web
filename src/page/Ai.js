@@ -6,6 +6,8 @@ import BookSlick from '../components/BookSlick';
 import SearchBar from '../components/SearchBar';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Toolbar from '../components/Toolbar';
+
 
 const items= [
     {no:1, date: "2024/5/1", text: "text1 ", q: "질문1", a: "질문1"},
@@ -30,7 +32,10 @@ const Ai= ()=>{
 
     return(
         <Container>
-            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요"></SearchBar>
+            <Title >AI 독서 학습</Title>
+             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요"></SearchBar>
+            <BookSlick></BookSlick>
+
             {/* <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
                 <Search type="search" placeholder='AI 검색'></Search><LuSearch style={{position:'absolute', top:10, right:10, color:'white', fontSize:'1.5rem'}}/>
             </form> */}
@@ -54,6 +59,11 @@ const Container= styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    padding-top: 8%;
+    padding-bottom: 35%;
+    padding-left: 8%;
+    padding-right: 8%;
 `
 
 const Search= styled.input`
@@ -71,12 +81,14 @@ const Search= styled.input`
     }
 `
 
+
+
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
+  bottom: 10%;
+  right: 6%;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: #5E7E71;
   color: white;
@@ -85,3 +97,11 @@ const FloatingButton = styled.button`
   cursor: pointer;
   z-index: 1000;
 `
+const Title= styled.p`
+    color: #6F4E37;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    
+    margin-bottom: 20%;`
+    

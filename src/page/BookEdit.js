@@ -5,6 +5,7 @@ import { FaRegCalendarAlt } from "react-icons/fa"
 import BackBtn from "../components/BackBtn"
 import { useState } from "react"
 
+
 const BookEdit= ()=>{
 
     const setStartDate= ()=>{
@@ -25,6 +26,7 @@ const BookEdit= ()=>{
 
     const [clickedIndex, setClickedIndex] = useState(3)
 
+
     const handleStatusClick = (index) => {
         if (index === clickedIndex) {
           // 이미 클릭된 상태인 경우 다시 초기화
@@ -38,7 +40,6 @@ const BookEdit= ()=>{
     const save= ()=>{
         alert("저장합니다")
     }
-
     return(
         <div style={{textAlign:"center", padding:"5%"}}>
             <BackBtn></BackBtn>
@@ -109,12 +110,9 @@ const BookEdit= ()=>{
         </div>
     )
 }
-
 export default BookEdit
-
 const BookInfo= styled.div`
     display: flex;
-    
     .info{
         display: flex;
         flex-direction: row;
@@ -122,28 +120,23 @@ const BookInfo= styled.div`
         margin: 0 auto;
         height: 200px;
     }
-
     .bookImg{
         height: 150px;
         margin: 16px;
         border: 1px solid #6F4E37;
         border-radius: 5px;
     }
-
     .titleAuthor{
         height: 150px;
         margin-right: auto;
         text-align: start;
-
         >p{
             margin: 10px 0;
             color: #6F4E37;
             font-size: 14px;
         }
-    
     }
 `
-
 const StatusContainer= styled.div`
     height: 100px;
     width: 360px;
@@ -152,12 +145,10 @@ const StatusContainer= styled.div`
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-
     >div{
         margin: 5px 10px;
     }
 `
-
 const BookStatus= styled.div`
     display: inline-block;
     width: 120px;
@@ -172,42 +163,33 @@ const BookStatus= styled.div`
     font-weight: bold;
     vertical-align: center;
     cursor: pointer;
-
     >p{
         padding: 0;
         margin: 0;
     }
 `
-
 const Period= styled.div`
-    
     .startToEnd{
         display: flex;
         justify-content: space-between;
         width: 300px;
         color: #6F4E37;
         margin: 0 auto;
-
         >span{
             font-size: 12px;
         }
     }
-
-    
 `
-
-const Target= styled.div`   
+const Target= styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
     .graph{
         position: relative;
         width: 100%;
         text-align: end;
     }
-
     .numbers{
         height: auto;
         position: relative;
@@ -216,24 +198,20 @@ const Target= styled.div`
         margin: 0;
         margin-bottom: 20px;
     }
-
     .note{
         font-size: 12px;
         color: #5F5C5C;
         margin: 20px;
-        
         .nickname{
             color: #5E7E71;
             font-weight: bold;
         }
-
         .point{
             color: #5E7E71;
             font-weight: bold;
         }
     }
 `
-
 const Number= styled.span`
     font-size: 10px;
     position: absolute;
@@ -241,7 +219,6 @@ const Number= styled.span`
     transform: translate(-50%);
     width: 35px;
 `
-
 const Bar= styled.div`
     /* font-size: 11px; */
     position: absolute;
@@ -252,19 +229,16 @@ const Bar= styled.div`
     height: 20px;
     background-color: #5E7E71;
 `
-
 const Progress= styled.div`
     width: ${(props)=>props.width};
     height: 20px;
     background-color: #6F4E37;
 `
-
 const Date= styled.span`
     font-size: 12px;
     font-weight: bold;
     color: #5F5C5C;
 `
-
 const HeadText= styled.p`
     color: #6F4E37;
     font-size: 14px;
@@ -272,7 +246,6 @@ const HeadText= styled.p`
     margin-top: 20px;
     text-align: center;
 `
-
 const EditBtn= styled.button`
     background-color: #6F4E37;
     border: none;
@@ -281,5 +254,4 @@ const EditBtn= styled.button`
     width: 50px;
     height: 1.5rem;
     font-size: 10px;
-    cursor: pointer;
-`
+    cursor: pointer;`

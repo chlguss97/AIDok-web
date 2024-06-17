@@ -11,7 +11,9 @@ const Container = styled.div`
   height: 100vh;
   font-family: Arial, sans-serif;
   overflow: hidden; /* Prevents body scroll */
-  padding: 5%;
+  padding-top: 8%;
+  padding-left: 8%;
+  padding-right: 8%;
 `;
 
 const Header = styled.div`
@@ -19,8 +21,30 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
   position: relative; /* Allows positioning of the back button */
+  margin-bottom: 20px;
+  
+`;
+
+const BackButtonWrapper = styled.div`
+  position: absolute;
+  left: 10px;
+`;
+
+const Title = styled.p`
+  color: #6F4E37;
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0; /* Removes default margin */
+`;
+
+const SearchBarWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 10%;
 `;
 
 const Content = styled.div`
@@ -30,11 +54,12 @@ const Content = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   justify-items: center;
-  padding: 4%;
+  padding-bottom: 35%;
+  padding-left: 5%;
+  padding-right: 5%;
   overflow-y: auto;
   height: calc(100vh - 120px); /* Adjust height based on header size */
   box-sizing: border-box; /* Include padding in height calculation */
-  
 `;
 
 const BookCard = styled.div`
@@ -63,18 +88,18 @@ const BookTitle = styled.div`
   color: #5F5C5C;
 `;
 
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
 const List = () => {
   return (
     <Container>
-      <BackBtn></BackBtn>
       <Header>
-        <SearchBar placeholder={'책 검색'}></SearchBar>
+        <BackButtonWrapper>
+          <BackBtn />
+        </BackButtonWrapper>
+        <Title>책 검색</Title>
       </Header>
+      <SearchBarWrapper>
+        <SearchBar placeholder={'책 검색'} />
+      </SearchBarWrapper>
       <Content>
         {Array.from({ length: 20 }, (_, index) => (
           <BookCard key={index}>
