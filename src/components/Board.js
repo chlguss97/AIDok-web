@@ -11,8 +11,7 @@ const BoardContainer = styled.div`
   max-width: 600px;
   margin: 0 auto;
   
-  
-`;
+
 
 const PostContainer = styled.div`
   border: 2px solid #6F4E37;

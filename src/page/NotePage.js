@@ -145,6 +145,10 @@ const NotePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredNotes, setFilteredNotes] = useState(initialNotes);
 
+  function bnvRoute(route){
+    alert(route)
+  }
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
