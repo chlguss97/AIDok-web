@@ -4,20 +4,29 @@ import SaveBtn from "../components/SaveBtn"
 import { FaRegCalendarAlt } from "react-icons/fa"
 import BackBtn from "../components/BackBtn"
 import { useState } from "react"
+
+
 const BookEdit= ()=>{
+
     const setStartDate= ()=>{
         alert("시작일 달력")
     }
+
     const setEndDate= ()=>{
         alert("종료일 달력")
     }
+
     const pageEdit= ()=>{
         alert("페이지 수정")
     }
+
     const timeEdit= ()=>{
         alert("시간 수정")
     }
+
     const [clickedIndex, setClickedIndex] = useState(3)
+
+
     const handleStatusClick = (index) => {
         if (index === clickedIndex) {
           // 이미 클릭된 상태인 경우 다시 초기화
@@ -27,6 +36,7 @@ const BookEdit= ()=>{
           setClickedIndex(index)
         }
       }
+
     const save= ()=>{
         alert("저장합니다")
     }
