@@ -40,7 +40,7 @@ const Title = styled.div`
   text-align: center;
   font-size: 24px;
   font-weight: bold;
-  color: #5F5C5C;
+  color: #6F4E37;
 `;
 
 const ContentWrapper = styled.div`
@@ -142,12 +142,17 @@ const GridBookTitle = styled.div`
   font-weight: bold;
 `;
 
+
+const BackButtonWrapper = styled.div`
+  position: absolute;
+  left: 10%;
+`;
 const BookDetail = () => {
   return (
   
     <Container>
-      <BackBtn></BackBtn>
       <Header>
+      <BackButtonWrapper><BackBtn ></BackBtn></BackButtonWrapper>
         <Title>트렌드 코리아 2023</Title>
       </Header>
       <ContentWrapper>

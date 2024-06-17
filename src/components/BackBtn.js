@@ -5,8 +5,8 @@ const BackBtn= ()=>{
 
 
     const BackIcon= styled.img`
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         display: flex;
         `
 
@@ -14,7 +14,9 @@ const BackBtn= ()=>{
         width: 100%;
         display: flex;
         justify-content: start;
-        margin-left: 24px;
+        
+        
+
         
         
     `
