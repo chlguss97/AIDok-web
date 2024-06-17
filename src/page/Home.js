@@ -17,29 +17,24 @@ const Home = () => {
   const navigate = useNavigate()
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.userA.userAccount);
   const dispatch = useDispatch()
-  const [userId, setUserId] = useState("유정아이디")
-  const [userProfileImg, setUserProfileImg] = useState(userBasicImg)
-
-
+ 
   useEffect(()=>{
-    alert(user)
-    console.log("유즈이펙트시작")
     // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
     window.sendToWeb = function(route, userId, userProfileImg){
-      
-      
       // console.log("유즈셀렉터.."+userAccount.userId)
-      setUserId(userId)
-      setUserProfileImg(userProfileImg)
-      
+      dispatch(setUserAccount(userId, userProfileImg))
+
       if(route!=="/"){
-        
         navigate(route);
       }
     }
-  },[])
+  },[dispatch, navigate])
+
+  useEffect(()=>{
+    console.log("updated user:  ", user)
+  }, [user])
 
 
 
@@ -102,10 +97,11 @@ const Home = () => {
 
     <div>
       <TitleContainer>
-        <img src={userBasicImg} alt="user" className="user" />
-        <Title>홈 화면</Title>
+        <img src={user.userImg || userBasicImg} alt="user" className="user" onClick={handelImageClick} />
+        <Title>홈 화면 {user.userId}</Title>
       </TitleContainer>
       <Container>
+        <SearchBarWrapper><SearchBar placeholder="책 검색"></SearchBar></SearchBarWrapper>
         <BookCardStyledSlider {...homeBookItemSettings}>
           <HomeBookItem  />
           <HomeBookItem />
@@ -230,6 +226,8 @@ const TitleContainer = styled.div`
   margin-bottom: 20px;
 
   .user {
+    border: 3px solid #6F4E37;
+    border-radius: 100%;
     position: absolute;
     left: 10px;
     width: 38px;
@@ -244,4 +242,10 @@ const Title = styled.p`
   font-weight: bold;
   text-align: center;
   
+`;
+const SearchBarWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10%;
 `;
