@@ -17,24 +17,30 @@ const Home = () => {
   const navigate = useNavigate()
   const sliderRef = useRef(null);
   const centerSlideIndexRef = useRef(null);
-  const userAccount = useSelector((state) => state.userAccount);
+  const user = useSelector((state) => state.user);
   const dispatch = useDispatch()
 
-  // const [userId, setUserId] = useState("유정아이디")
-  // const [userProfileImg, setUserProfileImg] = useState(userBasicImg)
+  const [userId, setUserId] = useState("유정아이디")
+  const [userProfileImg, setUserProfileImg] = useState(userBasicImg)
 
 
   useEffect(()=>{
+    alert(user)
+    console.log("유즈이펙트시작")
     // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
     window.sendToWeb = function(route, userId, userProfileImg){
-      if(route!="/"){
+      
+      
+      // console.log("유즈셀렉터.."+userAccount.userId)
+      setUserId(userId)
+      setUserProfileImg(userProfileImg)
+      
+      if(route!=="/"){
+        
         navigate(route);
       }
-      dispatch(setUserAccount(userId, userProfileImg))
-      // setUserId(userId)
-      // setUserProfileImg(userProfileImg)
     }
-  },[navigate, dispatch])
+  },[])
 
 
 
@@ -96,7 +102,7 @@ const Home = () => {
   return (
     <Container>
       <div className="headers">
-        <img src= {userAccount.userImg || userBasicImg} alt="user" className="userImg" onClick={handelImageClick}></img>
+        <img src={ userBasicImg} alt="user" className="userImg" onClick={handelImageClick}></img>
         <SearchBar placeholder={"책 검색"} ></SearchBar>
       </div>
       
@@ -111,7 +117,7 @@ const Home = () => {
       </BookCardStyledSlider>
 
       <div className="wantbook">
-        <p id="wantbook">{userAccount.userId}</p>
+        <p id="wantbook"></p>
         <CircleBookStyledSlider ref={sliderRef} {...circleBookItemSettings}>
           <CircleBook onClick={() => alert("써클북")} />
           <CircleBook />
