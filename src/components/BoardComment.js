@@ -5,10 +5,13 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { PiArrowElbowRightUpBold } from 'react-icons/pi';
 
 const Container = styled.div`
-  padding: 20px;
+  padding-top: 8%;
+  padding-left: 8%;
+  padding-right: 8%;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
+  
 `;
 
 const Header = styled.div`
@@ -38,7 +41,7 @@ const Title = styled.h2`
   font-size: 1.7rem;
   font-weight: bold;
   text-align: center;
-  text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
+  
 `;
 
 const CommentList = styled.div`
@@ -153,8 +156,11 @@ const BoardComment = () => {
     navigate(-1);
   };
 
+  
+
   return (
     <Container>
+      
       <Header>
         <BackButton onClick={handleBackClick}>
           <FaArrowLeft />

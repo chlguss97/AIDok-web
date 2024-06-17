@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Navigation = () => {
   return (
-    <nav>
+    <nav style={{padding:"8%"}}>
       <ul>
         <li>
           <Link to="/Ai">Ai</Link>
@@ -15,7 +15,7 @@ const Navigation = () => {
           <Link to="/BookEdit">BookEdit</Link>
         </li>
         <li>
-          <Link to="/Home">Home</Link>
+          <Link to="/">Home</Link>
         </li>
         <li>
           <Link to="/List">List</Link>

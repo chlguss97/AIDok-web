@@ -5,17 +5,26 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const books = [
-  { id: 1, title: 'Learning React', image: 'https://image.aladin.co.kr/product/23972/99/cover/8963717569_1.jpg' },
-  { id: 2, title: 'Learning React', image: 'https://image.aladin.co.kr/product/23736/85/cover/k692639764_1.jpg' },
-  { id: 3, title: 'Learning React', image: 'https://image.aladin.co.kr/product/27541/91/cover/8954681174_1.jpg' },
-  { id: 4, title: 'Learning React', image: 'https://image.aladin.co.kr/product/24605/89/cover/k532631174_1.jpg' },
-  { id: 5, title: 'Learning React', image: 'https://via.placeholder.com/150' },
+  { id: 1, title: '당신을 기다리고 있어', image: 'https://image.aladin.co.kr/product/23972/99/cover/8963717569_1.jpg' },
+  { id: 2, title: '칵테일, 러브, 좀비', image: 'https://image.aladin.co.kr/product/23736/85/cover/k692639764_1.jpg' },
+  { id: 3, title: '밝은 밤', image: 'https://image.aladin.co.kr/product/27541/91/cover/8954681174_1.jpg' },
+  { id: 4, title: '어떤 물질의 사랑', image: 'https://image.aladin.co.kr/product/24605/89/cover/k532631174_1.jpg' },
+  { id: 5, title: 'Learning React', image: 'https://via.placeholder.com/100x150' },
 ];
 
 const BookCarouselContainer = styled.div`
+  padding: 0 5%;
+
+  margin: 10% auto;
+  max-width: 300px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+
   .slick-slider {
+    width: 400px;
     margin: 0 auto;
-    max-width: 800px;
+
   }
 
   .slick-list {
@@ -29,11 +38,11 @@ const BookCarouselContainer = styled.div`
 `;
 
 const BookItem = styled.div`
-  padding: 20px;
+  padding: 0px;
   text-align: center;
 
   img {
-    width: 150px;
+    width: 100px;
     height: 150px;
   }
 `;
@@ -41,7 +50,7 @@ const BookItem = styled.div`
 const BookSlick = () => {
   const settings = {
     centerMode: true,
-    centerPadding: '40px',
+    centerPadding: '10px',
     slidesToShow: 3,
     focusOnSelect: true,
     infinite: true,
@@ -50,7 +59,7 @@ const BookSlick = () => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 3,
           centerPadding: '20px',
         },
       },

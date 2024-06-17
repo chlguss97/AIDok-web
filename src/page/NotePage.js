@@ -4,6 +4,8 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import searchIcon from '../assets/searchicon.png'; // 검색 아이콘 이미지를 가져옵니다.
 import backIcon from '../assets/backicon.png'; // 뒤로가기 아이콘 이미지를 가져옵니다.
+import SearchBar from '../components/SearchBar'; // 새로 만든 SearchBar 컴포넌트를 가져옵니다.
+import BackBtn from '../components/BackBtn'
 
 const books = [
   { id: 1, title: 'qwer', image: 'https://via.placeholder.com/150' },
@@ -21,18 +23,30 @@ const initialNotes = [
 ];
 
 const Container = styled.div`
-  padding: 20px;
+  padding-top: 8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
+const TitleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative;
+`;
+
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
+  bottom: 12%;
+  right: 6%;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: #5E7E71;
   color: white;
@@ -91,48 +105,12 @@ const BackButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: 10px;
-  padding: 0; /* 버튼의 기본 패딩을 제거 */
+  position: absolute;
+  left: 0;
   img {
     width: 20px;
     height: 20px;
   }
-`;
-
-const SearchBar = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid #5E7E71;
-  border-radius: 20px;
-  padding: 10px 10px;
-  background-color: #6F4E37;
-  flex: 1; /* 너비를 늘려서 남은 공간을 채웁니다. */
-
-  &:focus-within {
-    background-color: #5E7E71; /* 초록색으로 변경 */
-  }
-`;
-
-const SearchInput = styled.input`
-  border: none;
-  font-size: 16px;
-  outline: none;
-  flex: 1;
-  background: none;
-  color: white;
-`;
-
-const SearchButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #8B4513;
-`;
-
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
 `;
 
 const Note = ({ title, content, date, image }) => (
@@ -163,39 +141,45 @@ const NoteList = ({ notes }) => (
   </div>
 );
 
-const SearchBarComponent = ({ searchTerm, setSearchTerm }) => (
-  <SearchBarWrapper>
-    <BackButton>
-      <img src={backIcon} alt="Back" />
-    </BackButton>
-    <SearchBar>
-      <SearchInput
-        type="text"
-        placeholder="노트 검색"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <SearchButton><Icon src={searchIcon} alt="search" /></SearchButton>
-    </SearchBar>
-  </SearchBarWrapper>
-);
-
 const NotePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [notes, setNotes] = useState(initialNotes);
+  const [filteredNotes, setFilteredNotes] = useState(initialNotes);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredNotes = notes.filter(note =>
-    note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    note.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearchClick = () => {
+    const filtered = initialNotes.filter(note =>
+      note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      note.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredNotes(filtered);
+  };
+
+  const Title= styled.p`
+  color: #6F4E37;
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+`
 
   return (
     <Container>
-      <SearchBarComponent searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <TitleContainer>
+        <BackButton>
+          <img src={backIcon} alt="Back" />
+        </BackButton>
+        <Title>노트</Title>
+      </TitleContainer>
+      <SearchBarWrapper>
+        <SearchBar
+          placeholder="노트 검색"
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          onClick={handleSearchClick}
+        />
+      </SearchBarWrapper>
       <div className="note-details">
         <NoteList notes={filteredNotes} />
       </div>

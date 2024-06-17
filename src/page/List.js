@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import searchicon from '../assets/searchicon.png';
+import BackBtn from '../components/BackBtn';
+import SearchBar from '../components/SearchBar';
 
 const Container = styled.div`
   display: flex;
@@ -10,6 +11,9 @@ const Container = styled.div`
   height: 100vh;
   font-family: Arial, sans-serif;
   overflow: hidden; /* Prevents body scroll */
+  padding-top: 8%;
+  padding-left: 8%;
+  padding-right: 8%;
 `;
 
 const Header = styled.div`
@@ -17,48 +21,30 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
   position: relative; /* Allows positioning of the back button */
+  margin-bottom: 20px;
+  
 `;
 
-const BackButton = styled.button`
+const BackButtonWrapper = styled.div`
   position: absolute;
-  left: 20px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  margin-left: 16px;
+  left: 10px;
 `;
 
-const SearchBar = styled.div`
+const Title = styled.p`
+  color: #6F4E37;
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0; /* Removes default margin */
+`;
+
+const SearchBarWrapper = styled.div`
+  width: 100%;
   display: flex;
-  align-items: center;
-  border: 1px solid #5E7E71;
-  border-radius: 20px;
-  padding: 10px 10px;
-  background-color: #6F4E37;
-  width: 60%;
-
-  &:focus-within {
-    background-color: #5E7E71; /* 초록색으로 변경 */}
-`;
-
-const SearchInput = styled.input`
-  border: none;
-  font-size: 16px;
-  outline: none;
-  flex: 1;
-  background: none;
-  color: white;
-`;
-
-const SearchButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #8B4513;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 10%;
 `;
 
 const Content = styled.div`
@@ -68,7 +54,9 @@ const Content = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   justify-items: center;
-  padding: 20px;
+  padding-bottom: 35%;
+  padding-left: 5%;
+  padding-right: 5%;
   overflow-y: auto;
   height: calc(100vh - 120px); /* Adjust height based on header size */
   box-sizing: border-box; /* Include padding in height calculation */
@@ -79,7 +67,7 @@ const BookCard = styled.div`
   max-width: 150px;
   border: 1px solid #8B4513;
   border-radius: 10px;
-  padding: 10px;
+  padding: 7px;
   background-color: #FFFAED;
   display: flex;
   flex-direction: column;
@@ -100,21 +88,18 @@ const BookTitle = styled.div`
   color: #5F5C5C;
 `;
 
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
 const List = () => {
   return (
     <Container>
       <Header>
-        <BackButton>←</BackButton>
-        <SearchBar>
-          <SearchInput type="text" placeholder="  책 검색" />
-          <SearchButton><Icon src={searchicon} /></SearchButton>
-        </SearchBar>
+        <BackButtonWrapper>
+          <BackBtn />
+        </BackButtonWrapper>
+        <Title>책 검색</Title>
       </Header>
+      <SearchBarWrapper>
+        <SearchBar placeholder={'책 검색'} />
+      </SearchBarWrapper>
       <Content>
         {Array.from({ length: 20 }, (_, index) => (
           <BookCard key={index}>
