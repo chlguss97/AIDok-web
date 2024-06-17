@@ -23,19 +23,30 @@ const initialNotes = [
 ];
 
 const Container = styled.div`
-  padding: 20px;
+  padding-top: 8%;
+  padding-bottom: 35%;
+  padding-left: 8%;
+  padding-right: 8%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8%;
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative;
 `;
 
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
+  bottom: 12%;
+  right: 6%;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: #5E7E71;
   color: white;
@@ -94,8 +105,8 @@ const BackButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: 10px;
-  padding: 0; /* 버튼의 기본 패딩을 제거 */
+  position: absolute;
+  left: 0;
   img {
     width: 20px;
     height: 20px;
@@ -150,9 +161,21 @@ const NotePage = () => {
     setFilteredNotes(filtered);
   };
 
+  const Title= styled.p`
+  color: #6F4E37;
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+`
+
   return (
     <Container>
-      <BackBtn></BackBtn>
+      <TitleContainer>
+        <BackButton>
+          <img src={backIcon} alt="Back" />
+        </BackButton>
+        <Title>노트</Title>
+      </TitleContainer>
       <SearchBarWrapper>
         <SearchBar
           placeholder="노트 검색"

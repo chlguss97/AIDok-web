@@ -63,16 +63,18 @@ export default WriteAi
 
 const Title= styled.p`
     color: #6F4E37;
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: bold;
     text-align: center;
-    text-shadow: 1px 0 #5E7E71, -1px 0 #5E7E71, 0 1px #5E7E71, 0 -1px #5E7E71;
 `
 
 const Container= styled.div`
     display: flex;
     flex-direction: column;
-    padding: 8%;
+    padding-top: 8%;
+    padding-bottom: 35%;
+    padding-left: 8%;
+    padding-right: 8%;
 `
 
 const AddImg= styled.div`
