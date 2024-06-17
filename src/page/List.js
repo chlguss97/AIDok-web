@@ -155,7 +155,10 @@ const List = () => {
       fetch(url)
         .then((res) => res.text())
         .then(str => new DOMParser().parseFromString(str, 'text/xml'))
-        .then(json=> setBooks(json.item))
+        .then(json=> {
+          setBooks(json.item)
+          console.log(books)
+    })
         .catch((e) => {
           console.error("에러:", e.message);
           alert("데이터를 불러오는 중 오류가 발생했습니다.");
