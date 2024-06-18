@@ -5,7 +5,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import searchIcon from '../assets/searchicon.png'; // 검색 아이콘 이미지를 가져옵니다.
 import backIcon from '../assets/backicon.png'; // 뒤로가기 아이콘 이미지를 가져옵니다.
 import SearchBar from '../components/SearchBar'; // 새로 만든 SearchBar 컴포넌트를 가져옵니다.
-import BackBtn from '../components/BackBtn'
+import BackBtn from '../components/BackBtn';
+import { useNavigate } from 'react-router-dom';
 
 const books = [
   { id: 1, title: 'qwer', image: 'https://via.placeholder.com/150' },
@@ -144,10 +145,7 @@ const NoteList = ({ notes }) => (
 const NotePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredNotes, setFilteredNotes] = useState(initialNotes);
-
-  function bnvRoute(route){
-    alert(route)
-  }
+  const navigate = useNavigate(); // useNavigate 훅을 컴포넌트 내부에서 호출
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -161,19 +159,23 @@ const NotePage = () => {
     setFilteredNotes(filtered);
   };
 
-  const Title= styled.p`
-  color: #6F4E37;
-  font-size: 1.6rem;
-  font-weight: bold;
-  text-align: center;
-`
+  const handleCreatePost = () => {
+    navigate('/WriteNote'); // navigate 함수를 사용하여 라우트 이동
+  };
+
+  const Title = styled.p`
+    color: #6F4E37;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+  `;
 
   return (
     <Container>
       <TitleContainer>
-        <BackButton>
+        {/* <BackButton>
           <img src={backIcon} alt="Back" />
-        </BackButton>
+        </BackButton> */}
         <Title>노트</Title>
       </TitleContainer>
       <SearchBarWrapper>
@@ -187,7 +189,7 @@ const NotePage = () => {
       <div className="note-details">
         <NoteList notes={filteredNotes} />
       </div>
-      <FloatingButton>+</FloatingButton>
+      <FloatingButton onClick={handleCreatePost}>+</FloatingButton>
     </Container>
   );
 };

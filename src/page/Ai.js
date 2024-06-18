@@ -33,15 +33,13 @@ const Ai= ()=>{
     return(
         <Container>
             <Title >AI 독서 학습</Title>
-             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요"></SearchBar>
-            {/* <BookSlick></BookSlick> */}
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요"></SearchBar>
 
             <div style={{textAlign:'center'}}>
                 <BookSlick></BookSlick>
-                <img alt='seleted book' style={{display:'inline-block'}}></img>
             </div>
             <>
-            {items.slice().reverse().map((props)=>{
+                {items.slice().reverse().map((props)=>{
                     return <AiList key={props.no} date={props.date} text={props.text} q={props.q} a={props.a}></AiList>
                 })}
             </>
@@ -81,18 +79,18 @@ const Search= styled.input`
 
 
 const FloatingButton = styled.button`
-  position: fixed;
-  bottom: 10%;
-  right: 6%;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #5E7E71;
-  color: white;
-  font-size: 24px;
-  border: none;
-  cursor: pointer;
-  z-index: 1000;
+    position: fixed;
+    bottom: 10%;
+    right: 6%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #5E7E71;
+    color: white;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
 `
 const Title= styled.p`
     color: #6F4E37;
