@@ -97,13 +97,15 @@ const Home = () => {
 
     <div>
       <TitleContainer>
+
         <img src={user.userImg || userBasicImg} alt="user" className="user" onClick={handelImageClick} />
         <Title>홈 화면 {user.userId}</Title>
       </TitleContainer>
       <Container>
         <SearchBarWrapper><SearchBar placeholder="책 검색"></SearchBar></SearchBarWrapper>
         <BookCardStyledSlider {...homeBookItemSettings}>
-          <HomeBookItem  />
+
+          <HomeBookItem />
           <HomeBookItem />
           <HomeBookItem />
           <HomeBookItem />
@@ -243,9 +245,11 @@ const Title = styled.p`
   text-align: center;
   
 `;
+
 const SearchBarWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
   margin-bottom: 10%;
+
 `;

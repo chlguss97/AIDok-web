@@ -1,27 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import book from '../assets/book.png';
 import icon1 from '../assets/icon1.png';
 import icon2 from '../assets/icon2.png';
 import SaveBtn from '../components/SaveBtn';
 import BackBtn from '../components/BackBtn';
-
-
+import BookModal from '../components/BookModal';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 8%;
-  padding-bottom: 35%;
-  padding-left: 8%;
-  padding-right: 8%;
+  padding: 8%;
   background-color: white;
-  height: 100%;
+  height: 100vh;
   font-family: Arial, sans-serif;
-  position: relative; /* 자식 요소의 절대 위치를 설정하기 위해 필요 */
 `;
-
 
 const Header = styled.div`
   width: 100%;
@@ -39,7 +34,7 @@ const Content = styled.div`
   background-color: #FFFAED;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  height: calc(100vh - 350px); /* Header와 여백을 고려하여 높이 조정 */
+  height: calc(100vh - 350px);
   margin-bottom: 20px;
 `;
 
@@ -49,6 +44,7 @@ const BookInfo = styled.div`
   align-items: center;
   margin-bottom: 20px;
   color: #5F5C5C;
+  cursor: pointer;
 `;
 
 const BookImage = styled.img`
@@ -107,19 +103,42 @@ const Icon = styled.img`
   align-items: start;
 `;
 
-
-
-
-
 const WriteNote = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState({
+    title: '책 추가',
+    authors: '',
+    cover: book
+  });
+
+  const bookData = Array.from({ length: 20 }, (_, index) => ({
+    title: `트렌드 코리아 ${2024 - index}`,
+    authors: `저자 ${index + 1}`,
+    cover: "https://via.placeholder.com/150"
+  }));
+
+  const handleBookInfoClick = () => {
+    setModalIsOpen(true);
+  };
+
+  const handleBookSelect = (book) => {
+    setSelectedBook(book);
+    setModalIsOpen(false);
+  };
+
+  const navigate = useNavigate();
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   return (
     <Container>
-      <BackBtn></BackBtn>
+      <BackBtn onClick={handleBackClick} />
       <Header>
-        <BookInfo>
-          <BookImage src={book} alt="Book Cover" />
-          <BookTitle>트렌드 코리아 2023</BookTitle>
-          <BookAuthors>김난도, 전지현, 박혜수, 최지혜</BookAuthors>
+        <BookInfo onClick={handleBookInfoClick}>
+          <BookImage src={selectedBook.cover} alt="Book Cover" />
+          <BookTitle>{selectedBook.title}</BookTitle>
+          <BookAuthors>{selectedBook.authors}</BookAuthors>
         </BookInfo>
       </Header>
       <Content>
@@ -134,6 +153,13 @@ const WriteNote = () => {
         <NoteInput placeholder="노트에 저장할 내용을 작성하세요" />
       </Content>
       <SaveBtn name={"저장하기"} />
+
+      <BookModal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        books={bookData}
+        onBookSelect={handleBookSelect}
+      />
     </Container>
   );
 };
