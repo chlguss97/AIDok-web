@@ -166,7 +166,7 @@ const BoardComment = () => {
         ))}
       </CommentList>
       <CommentInputContainer>
-        <Avatar src="https://images.ddengle.com/files/attach/images/11334861/189/465/015/4b9097d5699b7fa4b153b1dd8d97814c.jpeg" />
+        <Avatar src="https://images.ddengle.com/files/attach/images/11334861/189/465/015/4b9097d5699b7fa4b153b1dd8d97814c.jpeg" alt="user" />
         <CommentInput placeholder="댓글 추가..." />
         <SendButton>
           <PiArrowElbowRightUpBold />

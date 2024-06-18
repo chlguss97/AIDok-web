@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import SaveBtn from './SaveBtn';
 import { FaPlus } from 'react-icons/fa';
 import backIcon from '../assets/backicon.png';
+import BookModal from '../components/BookModal';
+import book from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
 
 const Container = styled.div`
   padding: 20px;
@@ -122,30 +124,50 @@ const Textarea = styled.textarea`
   resize: none;
 `;
 
+const BookInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #5F5C5C;
+  cursor: pointer;
+`;
+
+const BookImage = styled.img`
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+`;
+
+const BookTitle = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: black;
+`;
+
+const BookAuthors = styled.div`
+  font-size: 14px;
+`;
+
 const WriteBoard = () => {
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
   const [content, setContent] = useState('');
-  const fileInputRef1 = useRef(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState({
+    title: '책 추가',
+    authors: '',
+    cover: book
+  });
   const fileInputRef2 = useRef(null);
   const navigate = useNavigate();
-
-  const handleImageChange1 = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage1(URL.createObjectURL(file));
-    }
-  };
 
   const handleImageChange2 = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage2(URL.createObjectURL(file));
     }
-  };
-
-  const handleImageUploadClick1 = () => {
-    fileInputRef1.current.click();
   };
 
   const handleImageUploadClick2 = () => {
@@ -161,6 +183,16 @@ const WriteBoard = () => {
     // Save the post logic here
   };
 
+  const handleBookInfoClick = () => {
+    setModalIsOpen(true);
+  };
+
+  const handleBookSelect = (book) => {
+    setSelectedBook(book);
+    setImage1(book.cover);  // 책 선택 시 이미지 업데이트
+    setModalIsOpen(false);
+  };
+
   return (
     <Container>
       <BackButton onClick={handleBackClick}>
@@ -169,25 +201,12 @@ const WriteBoard = () => {
       <Title>글 작성</Title>
       <Form onSubmit={handleSubmit}>
         <InfoContainer>
-          <ImageUploadWrapper hasImage={!!image1} onClick={handleImageUploadClick1}>
-            {image1 ? <ImagePreview src={image1} alt="이미지 미리보기" /> : (
-              <>
-                <PlusIcon />
-                <AddPhotoText>책 검색</AddPhotoText>
-              </>
-            )}
-          </ImageUploadWrapper>
-          <InfoText>
-            <p><BoldSpan>제목</BoldSpan> : 트렌드 코리아 2023</p>
-            <p><BoldSpan>저자</BoldSpan> : 김난도, 전지현, 박혜수, 최지혜</p>
-          </InfoText>
+          <BookInfo onClick={handleBookInfoClick}>
+            <BookImage src={selectedBook.cover} alt="Book Cover" />
+            <BookTitle> {selectedBook.title}</BookTitle>
+            <BookAuthors> {selectedBook.authors}</BookAuthors>
+          </BookInfo>
         </InfoContainer>
-        <HiddenInput
-          type="file"
-          ref={fileInputRef1}
-          accept="image/*"
-          onChange={handleImageChange1}
-        />
         <FullWidthImageUploadWrapper hasImage={!!image2} onClick={handleImageUploadClick2}>
           {image2 ? <ImagePreview src={image2} alt="이미지 미리보기" /> : (
             <>
@@ -211,6 +230,15 @@ const WriteBoard = () => {
         />
         <SaveBtn name="저장하기" />
       </Form>
+      <BookModal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        books={[
+          { title: '트렌드 코리아 2023', authors: '김난도, 전지현, 박혜수, 최지혜', cover: 'https://via.placeholder.com/150' },
+          { title: '트렌드 코리아 2024', authors: '김난도, 전지현, 박혜수, 최지혜', cover: 'https://via.placeholder.com/150' }
+        ]}
+        onBookSelect={handleBookSelect}
+      />
     </Container>
   );
 };

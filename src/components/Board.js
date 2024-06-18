@@ -121,7 +121,7 @@ const CommentIconWrapper = styled.div`
 
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 20px;
+  bottom: 50px;
   right: 20px;
   width: 50px;
   height: 50px;
