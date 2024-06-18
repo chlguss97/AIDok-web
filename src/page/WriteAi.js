@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import SaveBtn from '../components/SaveBtn';
 import BookModal from '../components/BookModal';
 import bookImage from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
+import BottomSheetModal from '../components/BottomSheetModal'
 
 const WriteAi = () => {
   const [image, setImage] = useState();
@@ -16,6 +17,15 @@ const WriteAi = () => {
     cover: bookImage
   });
 
+  // 모달 상태 관리
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const openBottomSheet = () => {
+      setIsBottomSheetOpen(true)
+  }
+  const closeBottomSheet = () => {
+      setIsBottomSheetOpen(false)
+  }
+ 
   const bookData = Array.from({ length: 20 }, (_, index) => ({
     title: `트렌드 코리아 ${2024 - index}`,
     authors: `저자 ${index + 1}`,
@@ -68,7 +78,11 @@ const WriteAi = () => {
         <BookTitle>{selectedBook.title}</BookTitle>
         <BookAuthors>{selectedBook.authors}</BookAuthors>
       </BookInfo>
-      <AddImg onClick={addImg} style={{ cursor: "pointer" }}>
+      <BottomSheetModal
+        isOpen={isBottomSheetOpen}
+        onRequestClose={closeBottomSheet}
+      />
+        <AddImg onClick={openBottomSheet} style={{cursor:"pointer"}}>
         <FaPlus style={{
           color: '#5E7E71',
           width: '3rem',
