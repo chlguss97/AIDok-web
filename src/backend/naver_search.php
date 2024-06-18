@@ -12,7 +12,7 @@ $encQuery = urlencode($query);
 
 
 
-$url = "https://openapi.naver.com/v1/search/book.json&query=".$encQuery;
+$url = "https://openapi.naver.com/v1/search/book.json?query=".$encQuery;
 
 //1.curl 작업 시작 - 초기화
 $ch = curl_init();
@@ -32,17 +32,17 @@ $headers = array(
 );
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+// curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 
 //3.curl 작업 시작
 $response = curl_exec($ch);
 
 // curl 에러 체크
-if(curl_errno($ch)) {
-    echo 'Curl error: ' . curl_error($ch);
-    die();
-}
-
+// if(curl_errno($ch)) {
+//     echo 'Curl error: ' . curl_error($ch);
+//     die();
+// }
+echo $response;
 
 //4.curl작업 닫기
 curl_close($ch);

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import BackBtn from "../components/BackBtn";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import searchIcon from "../assets/searchicon.png";
-
 
 const Container = styled.div`
   display: flex;
@@ -140,42 +139,40 @@ const Icon = styled.img`
 //https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=%EA%B0%90%EC%9E%90
 // (네이버) clientId: q0Llra2n2oQB3OC27M5l , clientSecret: XOzSKgv1ip
 
-
 const List = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const q = queryParams.get("query");
   const [query, setQuery] = useState(null); //받아온 쿼리
-  const [searchTerm, setSearchTerm] = useState("")
-
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [books, setBooks] = useState([]);
+  const navigate = useNavigate()
+  const [bookItem, setBookItem] = useState(null)
+  
 
   useEffect(() => {
-    setQuery(q)
-   
-    if (query) {
-      
+    if (location.state) {
+      setQuery(location.state.query);
       const url = `./backend/naver_search.php?query=${query}`;
       fetch(url)
-        .then((res) => res.text())
-        .then(str => new DOMParser().parseFromString(str, 'text/xml'))
-        .then(json=> {
-          setBooks(json.item)
-          console.log(books)
-    })
-        .catch((e) => {
-          console.error("에러:", e.message);
-          alert("데이터를 불러오는 중 오류가 발생했습니다.");
-        });
+        .then((res) => res.json())
+        .then((jsonData) => setBooks(jsonData.items))
+        .catch((e) => alert(e.message));
     }
   }, [query]);
 
-  
-
-
   const inputImgClick = () => {
-    alert(searchTerm);
+    if (searchTerm) {
+      const url = `./backend/naver_search.php?query=${searchTerm}`;
+      fetch(url)
+        .then((res) => res.json())
+        .then((jsonData) => setBooks(jsonData.items))
+        .catch((e) => alert(e.message));
+    }
   };
+
+  const bookCardClick=(book) =>{
+    setBookItem(book)
+    navigate('/BookDetail', {state: {book}} )
+  }
 
   return (
     <Container>
@@ -198,10 +195,18 @@ const List = () => {
         </SearchInputWrapper>
       </SearchBarContainer>
 
-      {/* <SearchBarWrapper>
-        <SearchBar placeholder={`검색: ${searchTerm}`} />
-      </SearchBarWrapper> */}
       <Content>
+        {books?.map((book, index, array) => {
+          return (
+            <BookCard key={index} onClick={()=>bookCardClick(book)}>
+              <BookImage src={book.image} alt="책" />
+              <BookTitle>{book.title}</BookTitle>
+            </BookCard>
+          );
+        })}
+      </Content>
+
+      {/* <Content>
         {Array.from({ length: 20 }, (_, index) => (
           <BookCard key={index}>
             <BookImage
@@ -211,14 +216,12 @@ const List = () => {
             <BookTitle>트렌드 코리아 {2024 - index}</BookTitle>
           </BookCard>
         ))}
-      </Content>
+      </Content> */}
     </Container>
   );
 };
 
 export default List;
-
-
 
 export function xmlToJson(xml) {
   // Create the return object
@@ -239,11 +242,11 @@ export function xmlToJson(xml) {
   }
   // do children
   // If all text nodes inside, get concatenated text from them.
-  var textNodes = [].slice.call(xml.childNodes).filter(function(node) {
+  var textNodes = [].slice.call(xml.childNodes).filter(function (node) {
     return node.nodeType === 3;
   });
   if (xml.hasChildNodes() && xml.childNodes.length === textNodes.length) {
-    obj = [].slice.call(xml.childNodes).reduce(function(text, node) {
+    obj = [].slice.call(xml.childNodes).reduce(function (text, node) {
       return text + node.nodeValue;
     }, "");
   } else if (xml.hasChildNodes()) {

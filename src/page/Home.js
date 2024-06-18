@@ -85,11 +85,13 @@ const Home = () => {
 
   const inputImgClick = () => {
     if(searchTerm.trim() !== "") {
-      navigate(`/List?query=${searchTerm}`)
+      navigate('/List', {state:{query:searchTerm}})
+   
     }
     alert(searchTerm);
 
   };
+
 
   return (
     <div>
