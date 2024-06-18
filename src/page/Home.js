@@ -119,6 +119,7 @@ const Home = () => {
         </SearchBarContainer>
 
         <BookCardStyledSlider {...homeBookItemSettings}>
+
           <HomeBookItem />
           <HomeBookItem />
           <HomeBookItem />
@@ -264,10 +265,14 @@ const Title = styled.p`
 `;
 
 
-const SearchBarContainer = styled.div`
+const SearchBarWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 10%;
+
+
   border: 1px solid #5e7e71;
   border-radius: 20px;
   padding: 10px 10px;
@@ -308,4 +313,5 @@ const SearchButton = styled.button`
 const Icon = styled.img`
   width: 22px;
   height: 22px;
+
 `;
