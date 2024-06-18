@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import BackBtn from "../components/BackBtn";
-import SearchBar from "../components/SearchBar";
 import { useLocation } from "react-router-dom";
 import searchIcon from "../assets/searchicon.png";
 
@@ -139,19 +138,24 @@ const Icon = styled.img`
 // 알라딘 ttb api 키: ttbbaechu100402002
 //정보나루 서비스키: c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
 //https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=%EA%B0%90%EC%9E%90
+// (네이버) clientId: q0Llra2n2oQB3OC27M5l , clientSecret: XOzSKgv1ip
+
 
 const List = () => {
   const location = useLocation();
-  const [query, setQuery] = useState(""); //받아온 쿼리
-  const [searchTerm, setSearchTerm] = useState(""); //여기서 입력한 쿼리
-  const [books, setBooks] = useState([]);
+  const queryParams = new URLSearchParams(location.search);
+  const q = queryParams.get("query");
+  const [query, setQuery] = useState(null); //받아온 쿼리
+  const [searchTerm, setSearchTerm] = useState("")
+
+
 
   useEffect(() => {
-    const query = new URLSearchParams(location.search).get("query");
+    setQuery(q)
+   
     if (query) {
-      setQuery(query);
-      const url =
-        "http://ddok.dothome.co.kr/backend/aladin_search.php?query=" + query;
+      
+      const url = `./backend/naver_search.php?query=${query}`;
       fetch(url)
         .then((res) => res.text())
         .then(str => new DOMParser().parseFromString(str, 'text/xml'))
@@ -162,11 +166,11 @@ const List = () => {
         .catch((e) => {
           console.error("에러:", e.message);
           alert("데이터를 불러오는 중 오류가 발생했습니다.");
-          setBooks([]);
         });
     }
-  }, [location.search]);
+  }, [query]);
 
+  
 
 
   const inputImgClick = () => {
