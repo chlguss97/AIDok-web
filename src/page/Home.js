@@ -159,6 +159,7 @@ export default Home;
 const Container = styled.div`
   padding-top: 8%;
   padding-bottom: 20%;
+  
 
   .headers {
     display: flex;
@@ -314,4 +315,22 @@ const Icon = styled.img`
   width: 22px;
   height: 22px;
 
+`;
+
+
+const SearchBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #5e7e71;
+  border-radius: 20px;
+  padding: 10px 10px;
+  background-color: #6f4e37;
+  width: 100%;
+  max-width: 240px; /* 최대 너비를 240px로 제한 */
+  margin: 0 auto 70px auto;
+
+  &:focus-within {
+    background-color: #5e7e71; /* 초록색으로 변경 */
+  }
 `;
