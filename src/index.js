@@ -10,7 +10,7 @@ import aReducer from "./redux/a";
 
 
 const rootReducer = combineReducers({
-  userAccount: userAccountReducer,
+  userA: userAccountReducer,
   a: aReducer,
 });
 const store = createStore(rootReducer);
