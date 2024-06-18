@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa';
 import SaveBtn from '../components/SaveBtn';
 import BookModal from '../components/BookModal';
 import bookImage from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
+import BottomSheetModal from '../components/BottomSheetModal'
 
 const WriteAi = () => {
   const [image, setImage] = useState();
