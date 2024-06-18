@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import BackBtn from '../components/BackBtn';
 import Toolbar from '../components/Toolbar';
+import {useLocation} from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
@@ -148,7 +149,22 @@ const BackButtonWrapper = styled.div`
   position: absolute;
   left: 10%;
 `;
+
+
+
+
+
 const BookDetail = () => {
+  const location = useLocation()
+  const book = location.state
+
+  useEffect(()=>{
+    alert(book.title)
+
+  },[])
+
+
+
   return (
   
     <Container>
@@ -159,15 +175,15 @@ const BookDetail = () => {
       <ContentWrapper>
         <Content>
           <BookInfo>
-            <BookImage src="https://via.placeholder.com/150" alt="트렌드 코리아 2023" />
+            <BookImage src={book.imgage} alt="트렌드 코리아 2023" />
             <BookDetails>
-              <BookTitle>트렌드 코리아 2023</BookTitle>
-              <BookAuthors>저자: 김난도, 전지현, 최지혜, 이수진</BookAuthors>
+              <BookTitle>{book.title}</BookTitle>
+              <BookAuthors>{book.author}</BookAuthors>
               <Button>읽고 싶은 책</Button>
             </BookDetails>
           </BookInfo>
           <BookDescription>
-            세계적인 종합, 판독과 분석, 그리고 전망. 수십 년간 이어져 온 평화와 풍요의 시대는 막을 내리고, 엄청난 위기감 속에서 사람들은 다가올 ...
+            {book.description}
           </BookDescription>
           <Button>상세 추가/편집</Button>
           <SectionTitle>함께 대출된 도서</SectionTitle>
