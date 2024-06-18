@@ -100,7 +100,7 @@ const AddPhotoText = styled.span`
 const InfoContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const InfoText = styled.div`
@@ -117,6 +117,7 @@ const BoldSpan = styled.span`
 const Textarea = styled.textarea`
   width: 100%;
   padding: 10px;
+  margin-top: 10px;
   margin-bottom: 15px;
   border: 1px solid #5E7E71;
   border-radius: 5px;
@@ -136,6 +137,7 @@ const BookInfo = styled.div`
 const BookImage = styled.img`
   width: 100px;
   height: auto;
+  margin-top: 15px;
   margin-bottom: 10px;
 `;
 
