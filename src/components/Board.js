@@ -23,15 +23,14 @@ const PostContainer = styled.div`
 
 const PostHeader = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
   padding: 10px;
   position: relative;
 `;
 
 const HeaderLeft = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 `;
 
 const Avatar = styled.div`
@@ -41,11 +40,13 @@ const Avatar = styled.div`
   border: 1.5px solid #6F4E37;
   background-color: #ccc;
   margin-right: 10px;
+  margin-top: 10px;
   background-size: cover;
   background-position: center;
   background-image: url(${props => props.src});
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  overflow: hidden; /* Ensure the image doesn't overflow the container */
 `;
 
 const Username = styled.span`
@@ -58,9 +59,17 @@ const BookTitle = styled.span`
   color: #6F4E37;
 `;
 
-const PostText = styled.div`
+const PostText = styled.span`
   font-size: 0.9em;
-  
+`;
+
+const BookImage = styled.img`
+  width: 30px;
+  height: 40px;
+  margin-top: 8px;
+  margin-right: 10px;
+  object-fit: cover;
+  border: 1px solid #ccc;
 `;
 
 const PostImage = styled.img`
@@ -149,6 +158,14 @@ const DropdownItem = styled.div`
   }
 `;
 
+const Title = styled.p`
+  color: #6F4E37;
+  font-size: 1.6rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20%;
+`;
+
 const Board = () => {
   const [posts, setPosts] = useState([
     {
@@ -161,6 +178,7 @@ const Board = () => {
       comments: 2,
       liked: false,
       bookTitle: '트렌드 코리아 2023',
+      bookImage: 'https://image.yes24.com/goods/113416767/XL'
     },
     {
       id: 2,
@@ -171,7 +189,8 @@ const Board = () => {
       likes: 0,
       comments: 2,
       liked: false,
-      bookTitle: '무슨 책 제목',
+      bookTitle: '트렌드 코리아 2024',
+      bookImage: 'https://image.yes24.com/goods/122790776/XL'
     }
   ]);
 
@@ -190,11 +209,13 @@ const Board = () => {
       [postId]: !prevShowDropdown[postId]
     }));
   };
-  const handleEdit = () => {
-    navigate('/write');
+  const handleEdit = (postId) => {
+    console.log('Edit post', postId);
+    // Add your edit logic here
   };
-  const handleDelete = () => {
-    console.log('Delete post');
+  const handleDelete = (postId) => {
+    console.log('Delete post', postId);
+    // Add your delete logic here
   };
   const handleLikeToggle = (postId) => {
     setPosts(prevPosts =>
@@ -208,19 +229,14 @@ const Board = () => {
       setShowDropdown({});
     }
   };
-  const Title = styled.p`
-    color: #6F4E37;
-    font-size: 1.6rem;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20%;
-  `;
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
   return (
     <BoardContainer>
       <Title>커뮤니티</Title>
@@ -231,14 +247,19 @@ const Board = () => {
               <Avatar src={post.profileImage} />
               <div>
                 <Username>{post.username}</Username>
-                <PostText> <BookTitle>{post.bookTitle}</BookTitle> 을(를) 공유했습니다.</PostText>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <BookImage src={post.bookImage} />
+                  <div>
+                    <BookTitle>{post.bookTitle}</BookTitle> <PostText>을(를) 공유했습니다.</PostText>
+                  </div>
+                </div>
               </div>
             </HeaderLeft>
             <div style={{ position: 'relative' }}>
               <OptionsIcon className="options-icon" onClick={() => toggleDropdown(post.id)} />
               <DropdownMenu ref={dropdownRef} show={showDropdown[post.id]}>
-                <DropdownItem onClick={handleEdit}><span>수정</span></DropdownItem>
-                <DropdownItem onClick={handleDelete}><span>삭제</span></DropdownItem>
+                <DropdownItem onClick={() => handleEdit(post.id)}><span>수정</span></DropdownItem>
+                <DropdownItem onClick={() => handleDelete(post.id)}><span>삭제</span></DropdownItem>
               </DropdownMenu>
             </div>
           </PostHeader>
