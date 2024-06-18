@@ -162,27 +162,29 @@ const BookDetail = () => {
   const jbNaruServiceKey =
     "c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334";
   const location = useLocation();
-  const [bookItem, setBookItem] = useState({});
+  const [bookItem, setBookItem] = useState({}); //useLoacation으로 받아온 book객체
   const navigate = useNavigate();
-  const [coLoanBooks, setCoLoanBooks] = useState([])
-  const [maniaRecBooks, setManiaRecBooks] = useState([])
-  const [readerRecBooks, setReaderRecBooks] = useState([])
-  
-
+  const [coLoanBooks, setCoLoanBooks] = useState([]);
+  const [maniaRecBooks, setManiaRecBooks] = useState([]);
+  const [readerRecBooks, setReaderRecBooks] = useState([]);
+  const [coImgUrls, setCoImgUrls] = useState([]);
+  const [maniaImgUrls, setManiaImgUrls] = useState([]);
+  const [readerImgUrls, setReaderImgUrls] = useState([]);
 
   useEffect(() => {
     if (location.state.book) {
       setBookItem(location.state.book);
       const url = `https://data4library.kr/api/usageAnalysisList?authKey=${jbNaruServiceKey}&isbn13=${location.state.book.isbn}`;
       fetch(url)
-        .then((res) => res.text())
-        .then((data) => {
+        .then((res) => res.text()) //정보나루api는 xml줘용
+        .then((xmlText) => {
           const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(data, "text/xml");
+          const xmlDoc = parser.parseFromString(xmlText, "text/xml");
           if (!xmlDoc) {
             console.error("Failed to parse XML data");
             return;
           }
+          //===================함께 대출된 도서
           const coLoanBooks = xmlDoc.getElementsByTagName("coLoanBooks")[0];
           if (!coLoanBooks) {
             console.error("coLoanBooks element not found in XML");
@@ -190,6 +192,7 @@ const BookDetail = () => {
           }
           const coBooks = coLoanBooks.getElementsByTagName("book");
           const coBooksData = [];
+          const imgPromises = [];
           for (let book of coBooks) {
             const bookNameElement = book.getElementsByTagName("bookname")[0];
             const isbnElement = book.getElementsByTagName("isbn13")[0];
@@ -205,19 +208,47 @@ const BookDetail = () => {
               coBooksData.push({ bookName, isbn13 });
 
               //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+              const imgPromises2 = [];
+              const imgPromise = fetch(
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
+              )
+                .then((res) => res.text())
+                .then((xmlText) => {
+                  const parser = new DOMParser();
+                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                  if (!xmlDoc) {
+                    console.error("Failed to parse XML data");
+                    return null;
+                  }
+                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                  const imgUrlElement =bookElement.getElementsByTagName("bookImageURL")[0];
+                  if (imgUrlElement) {
+                    const urlText = imgUrlElement.textContent
+                      .trim()
+                      .replace("<![CDATA[", "")
+                      .replace("]]>", "");
+                    return urlText
+                  }
+                  return null;
+                });
+                imgPromises2.push(imgPromise)
             }
           }
-          console.log("coBooks Data:", coBooksData);
-          setCoLoanBooks(coBooksData);
-          //=======================================
+          Promise.all(imgPromises).then((urls)=>{
+            setManiaImgUrls(urls.filter((url)=> url !==null))
+          })
+
+          setCoLoanBooks(coBooksData)
+
+          //===========================마니아를위한 추천도서
           const maniaRecBooks = xmlDoc.getElementsByTagName("maniaRecBooks")[0];
-          if(!maniaRecBooks) {
+          if (!maniaRecBooks) {
             console.error("maniaRecBooks element 엑스엠엘에서찾을수없어요");
             return;
           }
           const maBooks = maniaRecBooks.getElementsByTagName("book");
-          const maBooksData= [];
-          for (let book of maBooks){
+          const maBooksData = [];
+          for (let book of maBooks) {
             const bookNameElement = book.getElementsByTagName("bookname")[0];
             const isbnElement = book.getElementsByTagName("isbn13")[0];
             if (bookNameElement && isbnElement) {
@@ -230,21 +261,54 @@ const BookDetail = () => {
                 .replace("<![CDATA[", "")
                 .replace("]]>", "");
               maBooksData.push({ bookName, isbn13 });
+
+
               //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+              const imgPromise = fetch(
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
+              )
+                .then((res) => res.text())
+                .then((xmlText) => {
+                  const parser = new DOMParser();
+                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                  if (!xmlDoc) {
+                    console.error("Failed to parse XML data");
+                    return null;
+                  }
+                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                  const imgUrlElement =bookElement.getElementsByTagName("bookImageURL")[0];
+                  if (imgUrlElement) {
+                    const urlText = imgUrlElement.textContent
+                      .trim()
+                      .replace("<![CDATA[", "")
+                      .replace("]]>", "");
+                    return urlText
+                  }
+                  return null;
+                });
+                imgPromises.push(imgPromise)
             }
           }
-          console.log("maBooks Data:", maBooksData);
+          Promise.all(imgPromises).then((urls)=>{
+            setCoImgUrls(urls.filter((url)=> url !==null))
+          })
+
+      
+
+
+
           setManiaRecBooks(maBooksData);
 
-          //============================================
-          const readerRecBooks = xmlDoc.getElementsByTagName("readerRecBooks")[0];
-          if(!readerRecBooks) {
+          //==========================다독자를 위한 추천도서
+          const readerRecBooks =
+            xmlDoc.getElementsByTagName("readerRecBooks")[0];
+          if (!readerRecBooks) {
             console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
             return;
           }
           const reBooks = readerRecBooks.getElementsByTagName("book");
-          const reBooksData= [];
-          for (let book of reBooks){
+          const reBooksData = [];
+          for (let book of reBooks) {
             const bookNameElement = book.getElementsByTagName("bookname")[0];
             const isbnElement = book.getElementsByTagName("isbn13")[0];
             if (bookNameElement && isbnElement) {
@@ -262,15 +326,10 @@ const BookDetail = () => {
           }
           console.log("reBooks Data:", reBooksData);
           setReaderRecBooks(reBooksData);
-
-          
-          
-          
         })
         .catch((e) => alert(`에러: ${e.message}`));
     }
-  }, [location.state.book]);
-
+  }, [location.state.book, coLoanBooks, maniaRecBooks, readerRecBooks, coImgUrls]);
 
   const clickBackButton = () => {
     navigate("/List");
@@ -300,52 +359,48 @@ const BookDetail = () => {
           </BookInfo>
           <BookDescription>책 요약 : {bookItem.description}</BookDescription>
           <Button>상세 추가/편집</Button>
+
+
           <SectionTitle>함께 대출된 도서</SectionTitle>
           <BookGrid>
-            {coLoanBooks.map((book, index)=>(
-              
+            {coLoanBooks.map((book, index) => (
               <GridBookCard key={index}>
-              <GridBookImage
-                src="https://via.placeholder.com/150"
-                alt="Book 1"
-              />
-              <GridBookTitle>{book.bookName}</GridBookTitle>
-            </GridBookCard>
-
+                <GridBookImage
+                  src={coImgUrls[index]}
+                  alt="Book 1"
+                />
+                <GridBookTitle>{book.bookName}</GridBookTitle>
+              </GridBookCard>
             ))}
-
           </BookGrid>
+
+
+
           <SectionTitle>마니아를 위한 추천 도서</SectionTitle>
           <BookGrid>
-           
-          {maniaRecBooks.map((book, index)=>(
-              
+            {maniaRecBooks.map((book, index) => (
               <GridBookCard key={index}>
-              <GridBookImage
-                src="https://via.placeholder.com/150"
-                alt="Book 1"
-              />
-              <GridBookTitle>{book.bookName}</GridBookTitle>
-            </GridBookCard>
-
+                <GridBookImage
+                  src={maniaImgUrls[index]}
+                  alt="Book 1"
+                />
+                <GridBookTitle>{book.bookName}</GridBookTitle>
+              </GridBookCard>
             ))}
-
-
           </BookGrid>
+
+
           <SectionTitle>다독자를 위한 추천 도서</SectionTitle>
           <BookGrid>
-            {readerRecBooks.map((book, index)=>(
-              
+            {readerRecBooks.map((book, index) => (
               <GridBookCard key={index}>
-              <GridBookImage
-                src="https://via.placeholder.com/150"
-                alt="Book 1"
-              />
-              <GridBookTitle>{book.bookName}</GridBookTitle>
-            </GridBookCard>
-
+                <GridBookImage
+                  src="https://via.placeholder.com/150"
+                  alt="Book 1"
+                />
+                <GridBookTitle>{book.bookName}</GridBookTitle>
+              </GridBookCard>
             ))}
-
           </BookGrid>
         </Content>
       </ContentWrapper>
@@ -354,20 +409,6 @@ const BookDetail = () => {
 };
 
 export default BookDetail;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // XML 데이터를 JSON으로 변환하는 함수
 export function xmlToJson2(xmlStr) {
@@ -379,7 +420,7 @@ export function xmlToJson2(xmlStr) {
     if (node && node.nodeType === Node.CDATA_SECTION_NODE) {
       return node.textContent.trim();
     }
-    return node && node.textContent || "";
+    return (node && node.textContent) || "";
   }
 
   // XML 노드를 JSON 객체로 변환하는 재귀적 함수
@@ -403,11 +444,6 @@ export function xmlToJson2(xmlStr) {
   const root = xmlDoc.documentElement;
   return nodeToJson(root);
 }
-
-
-
-
-
 
 export function xmlToJson(xml) {
   // Create the return object
