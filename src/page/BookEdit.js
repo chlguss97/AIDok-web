@@ -17,50 +17,57 @@ const BookEdit= ()=>{
     // const [bookImageUrl, setBookImageUrl] = useState()
     // const [authors, setAuthors] = useState()
     
-    const bookName = location.state.book.bookName
-    const authors = location.state.book.authors
-    const description = location.state.book.description
-    const bookImageUrl = location.state.book.bookImageUrl
-    const isbn13 = location.state.book.isbn13
+    // const bookName = location.state.book.bookName
+    // const authors = location.state.book.authors
+    // const description = location.state.book.description
+    // const bookImageUrl = location.state.book.bookImageUrl
+    // const isbn13 = location.state.book.isbn13
 
-    useEffect(()=>{
+    // useEffect(()=>{
 
-        // setBookName(location.state.book.bookName)
-        // setBookImageUrl(location.state.book.bookImageUrl)
-        // setAuthors(location.state.book.authors)
+    //     // setBookName(location.state.book.bookName)
+    //     // setBookImageUrl(location.state.book.bookImageUrl)
+    //     // setAuthors(location.state.book.authors)
 
-          // 요약된 디스크립션 생성
-          if (description.length > 100) {
-            setShortenedDescription(description.substring(0, 100) + "...");
-        } else {
-            setShortenedDescription(description);
-        }
+    //       // 요약된 디스크립션 생성
+    //       if (description.length > 100) {
+    //         setShortenedDescription(description.substring(0, 100) + "...");
+    //     } else {
+    //         setShortenedDescription(description);
+    //     }
        
-        alert(bookName+"\n"+bookImageUrl+"\n"+authors+"\n"+description)
-    },[description])
+    //     alert(bookName+"\n"+bookImageUrl+"\n"+authors+"\n"+description)
+    // },[description])
 
 
-    useEffect(()=>{
-        const url = `./backend/aladin_search.php?query=${query}`;
+    useEffect(() => {
+        const isbnTest = '9788996991342';
+        const url = `./backend/aladin_search.php?query=${isbnTest}`;
+    
         fetch(url)
-        .then(res => res.text())
-        .then(text => {
-            // <BR><B><p> 태그 제거
-            text = text.replace(/<BR>/ig, '').replace(/<B>/ig, '').replace(/<p>/ig, '')
-            .replace(/\//ig, '/');
-         
-            try {
-                const jsonData = JSON.parse(text);
-                console.log(jsonData); // 파싱된 JSON 객체 확인
-                const itemPage = jsonData.item[0].bookinfo.itemPage;
-                console.log("쪽수: "+ {itemPage}); // 파싱된 JSON 객체 확인
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-            }
-        });
-        
-    })
-   
+            .then(response => response.text())
+            .then(xmlText => {
+                // XML 파싱
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    
+                // 필요한 데이터 추출 예시
+                const title = xmlDoc.querySelector('title').textContent;
+                const author = xmlDoc.querySelector('author').textContent;
+                const description = xmlDoc.querySelector('description').textContent;
+                const itemPage = xmlDoc.querySelector('itemPage').textContent;
+
+              
+    
+                console.log("제목:", title);
+                console.log("작가:", author);
+                console.log("설명:", description);
+                console.log("설명:", itemPage);
+            })
+            .catch(error => {
+                console.error('Error fetching or parsing data:', error);
+            });
+    }, []);
 
 
 
@@ -102,14 +109,14 @@ const BookEdit= ()=>{
         <div style={{textAlign:"center", padding:"5%"}}>
             <BackBtn onClick={()=>navigate('/BookDetail', {state: {book:location.state.book}})}></BackBtn>
             <BookInfo>
-                <div className="info">
+                {/* <div className="info">
                     <img className="bookImg" src={bookImageUrl? bookImageUrl : blackBook} alt={bookName}></img>
                     <div className="titleAuthor">
-                        <p>제목: {bookName}</p>
-                        <p>저자: {authors}</p>
-                        <p>요약: {shortenedDescription}</p>
+                        <p>제목: {bookName? bookName : "책제목"}</p>
+                        <p>저자: {authors? authors : "작가이름"}</p>
+                        <p>요약: {shortenedDescription? shortenedDescription : "요오오옹약"}</p>
                     </div>
-                </div>
+                </div> */}
             </BookInfo>
             <StatusContainer>
                 <BookStatus color={clickedIndex === 0 ? "#6F4E37" : 'white'} $backcolor={clickedIndex === 0 ? '#FAECDC' : '#C3C3C3'} $bordercolor={clickedIndex === 0 ? "#6F4E37" : "#7B7B7B"} onClick={() => handleStatusClick(0)}>읽고 싶은 책</BookStatus>
