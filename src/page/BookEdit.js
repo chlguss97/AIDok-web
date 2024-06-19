@@ -133,7 +133,7 @@ const BookInfo= styled.div`
 `
 const StatusContainer= styled.div`
     height: 100px;
-    width: 360px;
+    width: 320px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
