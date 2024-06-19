@@ -3,6 +3,7 @@ import styled from "styled-components";
 import BackBtn from "../components/BackBtn";
 import { useNavigate, useLocation } from "react-router-dom";
 import searchIcon from "../assets/searchicon.png";
+import backicon from "../assets/backicon.png";
 
 const Container = styled.div`
   display: flex;
@@ -21,9 +22,16 @@ const Header = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative; /* Allows positioning of the back button */
+  /* position: relative; Allows positioning of the back button */
+  padding: 20px;
   margin-bottom: 20px;
+
+  .backImg{
+    width: 20px;
+    height: 20px;
+    margin-left: 20px;
+    cursor: pointer;
+  }
 `;
 
 const BackButtonWrapper = styled.div`
@@ -35,8 +43,10 @@ const Title = styled.p`
   color: #6f4e37;
   font-size: 1.6rem;
   font-weight: bold;
+  justify-content: center;
   text-align: center;
-  margin: 0; /* Removes default margin */
+  display: inline-block;
+  flex: 1,
 `;
 
 const SearchBarWrapper = styled.div`
@@ -135,17 +145,17 @@ const Icon = styled.img`
 `;
 
 // 알라딘 ttb api 키: ttbbaechu100402002
-//정보나루 서비스키: c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
+//정보나루 서비스키: a6e0e7411107bcf35da8623fb02f13a7b559dd455855d5a44baae620c142d4b8
 //https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=%EA%B0%90%EC%9E%90
 // (네이버) clientId: q0Llra2n2oQB3OC27M5l , clientSecret: XOzSKgv1ip
 
 const List = () => {
   const location = useLocation();
-  const [query, setQuery] = useState(null); //받아온 쿼리
+  const [query, setQuery] = useState("리액트"); //받아온 쿼리
   const [searchTerm, setSearchTerm] = useState("");
   const [books, setBooks] = useState([]);
   const navigate = useNavigate()
-  const [bookItem, setBookItem] = useState(null)
+
   
 
   useEffect(() => {
@@ -157,7 +167,7 @@ const List = () => {
         .then((jsonData) => setBooks(jsonData.items))
         .catch((e) => alert(e.message));
     }
-  }, [query]);
+  }, [query, location.state]);
 
   const inputImgClick = () => {
     if (searchTerm) {
@@ -170,16 +180,22 @@ const List = () => {
   };
 
   const bookCardClick=(book) =>{
-    setBookItem(book)
-    navigate('/BookDetail', {state: {book}} )
+    navigate('/BookDetail', {state: {book:book}} )
+  
+    console.log(`보내는 북: ${book.title}`)
+  }
+
+  const backButtonClick= ()=>{
+    navigate('/')
   }
 
   return (
     <Container>
       <Header>
-        <BackButtonWrapper>
+        {/* <BackButtonWrapper>
           <BackBtn />
-        </BackButtonWrapper>
+        </BackButtonWrapper> */}
+        <img src={backicon} alt="뒤로가기버튼" className="backImg" onClick={backButtonClick}></img>
         <Title>책 검색</Title>
       </Header>
       <SearchBarContainer>

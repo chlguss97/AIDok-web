@@ -30,7 +30,7 @@ $now = date('Y-m-d   H:i:s');
 $password = addslashes($password);
 
 //MySQL DB에 저장하기[테이블 : SignUp]
-$db = mysqli_connect("localhost", "ddok", "q1w2e3r4!", "ddok");//마지막은 db 파일명이다
+$db= mysqli_connect("localhost", "hyun", "123456", "mydatabase");
 mysqli_query($db, "set names utf8"); //한글있어도 깨지지마렁..
 //삽입 no id password age imgFile	
 $sql = "INSERT INTO account(id, pw, img) VALUES('$id','$password','$dstName')";

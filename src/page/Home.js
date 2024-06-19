@@ -38,12 +38,6 @@ const Home = () => {
     console.log("updated user:  ", user);
   }, [user]);
 
-  // useEffect(() => {
-  //   if (userInfo.img && imgRef.current) {
-  //     imgRef.current.src = userInfo.img;
-  //   }
-  // }, [userInfo]);
-
   
 
   const handleAfterChange = (currentSlide) => {
