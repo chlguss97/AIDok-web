@@ -30,7 +30,7 @@
     //사용자아이디 받아서 서버에 일치하는아디이있을때 업데이트
 
     //이제 서버접속해서 업데이트 쿼리하자.
-    $db = mysqli_connect("localhost", "ddok", "q1w2e3r4!", "ddok");
+    $db= mysqli_connect("localhost", "hyun", "123456", "mydatabase");
     mysqli_query($db, "set names utf8");
     
     //이미지 변경 시

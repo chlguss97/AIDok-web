@@ -3,10 +3,23 @@ import styled from "styled-components"
 import SaveBtn from "../components/SaveBtn"
 import { FaRegCalendarAlt } from "react-icons/fa"
 import BackBtn from "../components/BackBtn"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 
 
 const BookEdit= ()=>{
+
+    const location = useLocation()
+    const navigate = useNavigate()
+    const bookName = location.state.bookItem.bookName
+    const bookImageUrl = location.state.bookItem.bookImageUrl
+    const authors = location.state.bookItem.authors
+    const description = location.state.bookItem.description
+
+    useEffect(()=>{
+       
+        alert(bookName+"\n"+bookImageUrl+"\n"+authors+"\n"+description)
+    },[])
 
     const setStartDate= ()=>{
         alert("시작일 달력")
@@ -42,14 +55,14 @@ const BookEdit= ()=>{
     }
     return(
         <div style={{textAlign:"center", padding:"5%"}}>
-            <BackBtn></BackBtn>
+            <BackBtn onClick={()=>navigate('/BookDetail', {state: {book:location.state.bookItem}})}></BackBtn>
             <BookInfo>
                 <div className="info">
-                    <img className="bookImg" src="https://image.aladin.co.kr/product/23972/99/cover/8963717569_1.jpg" alt="book cover"></img>
+                    <img className="bookImg" src={bookImageUrl} alt={bookName}></img>
                     <div className="titleAuthor">
-                        <p>제목: 당신을 기다리고 있어</p>
-                        <p>저자: 김보영</p>
-                        <p>출판사: 새파란상상 (파란미디어)</p>
+                        <p>제목: {bookName}</p>
+                        <p>저자: {authors}</p>
+                        <p>요약: {description}</p>
                     </div>
                 </div>
             </BookInfo>

@@ -145,7 +145,7 @@ const Icon = styled.img`
 `;
 
 // 알라딘 ttb api 키: ttbbaechu100402002
-//정보나루 서비스키: c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
+//정보나루 서비스키: a6e0e7411107bcf35da8623fb02f13a7b559dd455855d5a44baae620c142d4b8
 //https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=%EA%B0%90%EC%9E%90
 // (네이버) clientId: q0Llra2n2oQB3OC27M5l , clientSecret: XOzSKgv1ip
 
@@ -181,6 +181,7 @@ const List = () => {
 
   const bookCardClick=(book) =>{
     navigate('/BookDetail', {state: {book:book}} )
+  
     console.log(`보내는 북: ${book.title}`)
   }
 

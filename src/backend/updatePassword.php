@@ -9,7 +9,7 @@
 
 
     // 서버 접속
-    $db = mysqli_connect("localhost", "ddok", "q1w2e3r4!", "ddok");
+    $db= mysqli_connect("localhost", "hyun", "123456", "mydatabase");
     mysqli_query($db, "set names utf8");
 
     //비밀번호 변경 시

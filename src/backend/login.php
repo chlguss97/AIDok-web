@@ -10,7 +10,7 @@
 
 
     //서버에 접속하자
-    $db= mysqli_connect("localhost", "ddok", "q1w2e3r4!", "ddok");
+    $db= mysqli_connect("localhost", "hyun", "123456", "mydatabase");
     mysqli_query($db, "set names utf8");
 
     //쿼리수행하기
