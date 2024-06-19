@@ -158,9 +158,9 @@ const BackButtonWrapper = styled.div`
 `;
 
 const BookDetail = () => {
-  //정보나루 서비스키: c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
-  //정보나루 아이디:ddokddok  비번:actbae88^^
-  const YULYjbNaruServiceKey =
+
+  
+  const YULYjbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
     "a6e0e7411107bcf35da8623fb02f13a7b559dd455855d5a44baae620c142d4b8";
   const DEAHANjbNaruServiceKey = " ";
   const HYUNWOLjbNaruServiceKey = " ";
@@ -168,15 +168,13 @@ const BookDetail = () => {
   const location = useLocation();
   const [bookItem, setBookItem] = useState({}); //useLoacation으로 받아온 book객체
   const navigate = useNavigate();
-  const [coLoanBooks, setCoLoanBooks] = useState([]);
-  const [maniaRecBooks, setManiaRecBooks] = useState([]);
-  const [readerRecBooks, setReaderRecBooks] = useState([]);
+  // const [coLoanBooks, setCoLoanBooks] = useState([]);
+  // const [maniaRecBooks, setManiaRecBooks] = useState([]);
+  // const [readerRecBooks, setReaderRecBooks] = useState([]);
   const [coDetailBooks, setCoDetailBooks] = useState([]);
   const [maniaDetailBooks, setManiaDetailBooks] = useState([]);
   const [readerDetailBooks, setReaderDetailBooks] = useState([]);
   const [shortenedDescription, setShortenedDescription] = useState(""); //책 요약 글자 수 너무많을까봐 줄이깅.. 100글자까지만 나오도록...
-
-
 
 
 
@@ -261,7 +259,7 @@ const BookDetail = () => {
             setCoDetailBooks(books.filter((book) => book !== null));
           });
 
-          setCoLoanBooks(coBooksData);
+          // setCoLoanBooks(coBooksData);
 
           //===========================마니아를위한 추천도서
           const maniaRecBooks = xmlDoc.getElementsByTagName("maniaRecBooks")[0];
@@ -271,7 +269,7 @@ const BookDetail = () => {
           }
           const maBooks = maniaRecBooks.getElementsByTagName("book");
           const maniaPromises = [];
-          const maBooksData = [];
+          // const maBooksData = [];
           for (let book of maBooks) {
             const bookNameElement = book.getElementsByTagName("bookname")[0];
             const isbnElement = book.getElementsByTagName("isbn13")[0];
@@ -284,7 +282,7 @@ const BookDetail = () => {
                 .trim()
                 .replace("<![CDATA[", "")
                 .replace("]]>", "");
-              maBooksData.push({ bookName, isbn13 });
+              // maBooksData.push({ bookName, isbn13 });
 
               //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
               const maniaPromise = fetch(
@@ -325,7 +323,7 @@ const BookDetail = () => {
             setManiaDetailBooks(books.filter((book) => book !== null));
           });
 
-          setManiaRecBooks(maBooksData);
+          // setManiaRecBooks(maBooksData);
 
           //==========================다독자를 위한 추천도서
           const readerRecBooks =
@@ -335,7 +333,7 @@ const BookDetail = () => {
             return;
           }
           const reBooks = readerRecBooks.getElementsByTagName("book");
-          const reBooksData = [];
+          // const reBooksData = [];
           const readerPromises = [];
           for (let book of reBooks) {
             const bookNameElement = book.getElementsByTagName("bookname")[0];
@@ -349,7 +347,7 @@ const BookDetail = () => {
                 .trim()
                 .replace("<![CDATA[", "")
                 .replace("]]>", "");
-              reBooksData.push({ bookName, isbn13 });
+              // reBooksData.push({ bookName, isbn13 });
 
               //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
               const readerPromise = fetch(
@@ -390,7 +388,7 @@ const BookDetail = () => {
             setReaderDetailBooks(books.filter((book) => book !== null));
           });
 
-          setReaderRecBooks(reBooksData);
+          // setReaderRecBooks(reBooksData);
         })
         .catch((e) => alert(`에러: ${e.message}`));
     }
@@ -440,7 +438,7 @@ const BookDetail = () => {
           return;
         }
         const coBooks = coLoanBooks.getElementsByTagName("book");
-        const coBooksData = [];
+        // const coBooksData = [];
         const coPromises = [];
 
         for (let book of coBooks) {
@@ -455,7 +453,7 @@ const BookDetail = () => {
               .trim()
               .replace("<![CDATA[", "")
               .replace("]]>", "");
-            coBooksData.push({ bookName, isbn13 });
+            // coBooksData.push({ bookName, isbn13 });
 
             // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const coPromise = fetch(
@@ -496,7 +494,7 @@ const BookDetail = () => {
           setCoDetailBooks(books.filter((book) => book !== null));
         });
 
-        setCoLoanBooks(coBooksData);
+        // setCoLoanBooks(coBooksData);
 
         //===========================마니아를위한 추천도서
         const maniaRecBooks = xmlDoc.getElementsByTagName("maniaRecBooks")[0];
@@ -506,7 +504,7 @@ const BookDetail = () => {
         }
         const maBooks = maniaRecBooks.getElementsByTagName("book");
         const maniaPromises = [];
-        const maBooksData = [];
+        // const maBooksData = [];
         for (let book of maBooks) {
           const bookNameElement = book.getElementsByTagName("bookname")[0];
           const isbnElement = book.getElementsByTagName("isbn13")[0];
@@ -519,7 +517,7 @@ const BookDetail = () => {
               .trim()
               .replace("<![CDATA[", "")
               .replace("]]>", "");
-            maBooksData.push({ bookName, isbn13 });
+            // maBooksData.push({ bookName, isbn13 });
 
             //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const maniaPromise = fetch(
@@ -560,7 +558,7 @@ const BookDetail = () => {
           setManiaDetailBooks(books.filter((book) => book !== null));
         });
 
-        setManiaRecBooks(maBooksData);
+        // setManiaRecBooks(maBooksData);
 
         //==========================다독자를 위한 추천도서
         const readerRecBooks =
@@ -570,7 +568,7 @@ const BookDetail = () => {
           return;
         }
         const reBooks = readerRecBooks.getElementsByTagName("book");
-        const reBooksData = [];
+        // const reBooksData = [];
         const readerPromises = [];
         for (let book of reBooks) {
           const bookNameElement = book.getElementsByTagName("bookname")[0];
@@ -584,7 +582,7 @@ const BookDetail = () => {
               .trim()
               .replace("<![CDATA[", "")
               .replace("]]>", "");
-            reBooksData.push({ bookName, isbn13 });
+            // reBooksData.push({ bookName, isbn13 });
 
             //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const readerPromise = fetch(
@@ -625,7 +623,7 @@ const BookDetail = () => {
           setReaderDetailBooks(books.filter((book) => book !== null));
         });
 
-        setReaderRecBooks(reBooksData);
+        // setReaderRecBooks(reBooksData);
       })
       .catch((e) => alert(`에러: ${e.message}`));
 
@@ -645,20 +643,23 @@ const BookDetail = () => {
           onClick={clickBackButton}
         ></img>
         <Title>
-          {bookItem.bookName? bookItem.bookName : bookItem.title}
+          {/* {bookItem.bookName? bookItem.bookName : bookItem.title} */}
+          {bookItem.bookName}
         </Title>
       </Header>
       <ContentWrapper>
         <Content>
           <BookInfo>
-            <BookImage src={bookItem.bookImageUrl? bookItem.bookImageUrl : bookItem.image}
+            <BookImage src={bookItem.bookImageUrl}
               alt="트렌드 코리아 2023" />
             <BookDetails>
               <BookTitle>
-              {bookItem.bookName? bookItem.bookName : bookItem.title}
+              {/* {bookItem.bookName? bookItem.bookName : bookItem.title} */}
+              {bookItem.bookName}
                 </BookTitle>
               <BookAuthors>
-              {bookItem.authors? bookItem.authors : bookItem.author}
+              {/* {bookItem.authors? bookItem.authors : bookItem.author} */}
+              {bookItem.authors}
                 </BookAuthors>
               <Button>읽고 싶은 책</Button>
             </BookDetails>
@@ -666,7 +667,7 @@ const BookDetail = () => {
           <BookDescription>책 요약 : 
             {shortenedDescription}
             </BookDescription>
-          <Button onClick={ ()=>   navigate('/BookEdit', {state: {bookItem:bookItem}} )}>상태 추가/편집</Button>
+          <Button onClick={ ()=>   navigate('/BookEdit', {state: {book:bookItem}} )}>상태 추가/편집</Button>
 
           <SectionTitle>함께 대출된 도서</SectionTitle>
           <BookGrid>
