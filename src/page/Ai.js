@@ -4,9 +4,30 @@ import { LuSearch } from "react-icons/lu";
 import AiList from '../components/AiList';
 import BookSlick from '../components/BookSlick';
 import SearchBar from '../components/SearchBar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Toolbar from '../components/Toolbar';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from "firebase/firestore"; 
+import { getAnalytics } from "firebase/analytics";
+
+// firebase 설정값
+const firebaseConfig = {
+    apiKey: "AIzaSyBGAzQiUPzTMbbgCmg0OWaqxD3r-bC26nA",
+    authDomain: "ddokdok-33eef.firebaseapp.com",
+    projectId: "ddokdok-33eef",
+    storageBucket: "ddokdok-33eef.appspot.com",
+    messagingSenderId: "15289053114",
+    appId: "1:15289053114:web:93087956a86eb6ad6d7783",
+    measurementId: "G-2N7RKZHZR4"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const analytics = getAnalytics(app);
+
+
 
 
 const items= [
@@ -29,6 +50,59 @@ const Ai= ()=>{
         alert("QnA를 추가합니다")
         navigate("../WriteAi")
     }
+
+
+
+    // Firestore에서 데이터 불러오기 함수
+const fetchBertData = async () => {
+    try {
+      // bert 컬렉션의 모든 문서를 가져옵니다.
+      const bertCollection = collection(db, 'bert');
+      const bertSnapshot = await getDocs(bertCollection);
+      
+      bertSnapshot.forEach(async (doc) => {
+        const bertData = doc.data();
+        console.log(`Data for bert ID ${doc.id}:`, bertData);
+        
+        // id 컬렉션의 모든 문서를 가져옵니다.
+        const idCollection = collection(db, `bert/${doc.id}/id`);
+        const idSnapshot = await getDocs(idCollection);
+        
+        idSnapshot.forEach(async (idDoc) => {
+          const idData = idDoc.data();
+          console.log(`Data for id ${idDoc.id}:`, idData);
+          
+          // ISBN 컬렉션의 모든 문서를 가져옵니다.
+          const isbnCollection = collection(db, `bert/${doc.id}/id/${idDoc.id}/ISBN`);
+          const isbnSnapshot = await getDocs(isbnCollection);
+          
+          isbnSnapshot.forEach(async (isbnDoc) => {
+            const isbnData = isbnDoc.data();
+            console.log(`Data for ISBN ${isbnDoc.id}:`, isbnData);
+            
+            // date 컬렉션의 모든 문서를 가져옵니다.
+            const dateCollection = collection(db, `bert/${doc.id}/id/${idDoc.id}/ISBN/${isbnDoc.id}/date`);
+            const dateSnapshot = await getDocs(dateCollection);
+            
+            dateSnapshot.forEach((dateDoc) => {
+              const dateData = dateDoc.data();
+              console.log(`Data for date ${dateDoc.id}:`, dateData);
+            });
+          });
+        });
+      });
+    } catch (error) {
+      console.error("Error fetching Firestore data: ", error);
+    }
+};
+
+
+
+
+    useEffect(()=>{
+        fetchBertData()
+    },[])
+    
 
     return(
         <Container>
