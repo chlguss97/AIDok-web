@@ -28,13 +28,7 @@ const BookEdit= ()=>{
 
 
     const handleStatusClick = (index) => {
-        if (index === clickedIndex) {
-          // 이미 클릭된 상태인 경우 다시 초기화
-          setClickedIndex(-1)
-        } else {
-          // 클릭된 상태의 인덱스 설정
-          setClickedIndex(index)
-        }
+        setClickedIndex(index)
       }
 
     const save= ()=>{

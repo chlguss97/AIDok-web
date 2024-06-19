@@ -11,7 +11,6 @@
     "@testing-library/user-event": "^13.2.1",
     "add": "^2.0.6",
     "axios": "^1.7.2",
-    "circular-json": "^0.5.9",
     "global": "^4.4.0",
     "install": "^0.13.0",
     "modal": "^1.2.0",
