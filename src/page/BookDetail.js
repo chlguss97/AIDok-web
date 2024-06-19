@@ -174,6 +174,11 @@ const BookDetail = () => {
   const [coDetailBooks, setCoDetailBooks] = useState([]);
   const [maniaDetailBooks, setManiaDetailBooks] = useState([]);
   const [readerDetailBooks, setReaderDetailBooks] = useState([]);
+  const [shortenedDescription, setShortenedDescription] = useState(""); //책 요약 글자 수 너무많을까봐 줄이깅.. 100글자까지만 나오도록...
+
+
+
+
 
   useEffect(() => {
     if (location.state.book) {
@@ -390,6 +395,17 @@ const BookDetail = () => {
         .catch((e) => alert(`에러: ${e.message}`));
     }
   }, [location.state.book]);
+
+
+  useEffect(()=>{
+    // 요약된 디스크립션 생성
+    if (bookItem?.description?.length > 1) {
+      bookItem?.description.replace(/&lt;/g, "<").replace(/gt;/g, ">")
+      setShortenedDescription(bookItem.description.substring(0, 180) + "...");
+  } else {
+      setShortenedDescription(bookItem.description);
+  }
+  },[bookItem.description])
 
   const clickBackButton = () => {
     navigate("/List");
@@ -630,7 +646,6 @@ const BookDetail = () => {
         ></img>
         <Title>
           {bookItem.bookName? bookItem.bookName : bookItem.title}
-          
         </Title>
       </Header>
       <ContentWrapper>
@@ -649,7 +664,7 @@ const BookDetail = () => {
             </BookDetails>
           </BookInfo>
           <BookDescription>책 요약 : 
-            {bookItem.description}
+            {shortenedDescription}
             </BookDescription>
           <Button onClick={ ()=>   navigate('/BookEdit', {state: {bookItem:bookItem}} )}>상태 추가/편집</Button>
 

@@ -162,6 +162,8 @@ const List = () => {
     if (location.state) {
       setQuery(location.state.query);
       const url = `./backend/naver_search.php?query=${query}`;
+      /* const url = `/var/www/html/backend/naver_search.php?query=${query}`; */
+    
       fetch(url)
         .then((res) => res.json())
         .then((jsonData) => setBooks(jsonData.items))

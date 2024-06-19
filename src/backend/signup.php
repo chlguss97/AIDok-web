@@ -1,39 +1,52 @@
 <?php
-
 header('Content-Type:application/json; charset=utf-8');
 
-//@PartMap으로 전달된 POST방식의 데이터를 받귀
-$id = $_POST['id'];
-$password = $_POST['password'];
+// 에러 리포팅 설정
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
+// POST 방식으로 전달된 데이터 받기
+$id = $_POST['id'] ?? '';
+$password = $_POST['password'] ?? '';
+
+if (empty($id) || empty($password)) {
+    echo json_encode(['error' => 'ID and password are required']);
+    http_response_code(400); // Bad Request
+    exit();
+}
 
 // 기본 이미지 경로 설정
 $dstName = null;
 
-// @Part로 날라온 이미지파일정보
+// @Part로 전달된 이미지 파일 정보
 if (isset($_FILES['img1'])) {
-    $file = $_FILES['img1']; // 식별자
-    $srcName = $file['name']; // 원본파일이름 -절대경로인가
-    $tmpName = $file['tmp_name']; // 임시저장소 위치
+    $file = $_FILES['img1'];
+    $srcName = $file['name'];
+    $tmpName = $file['tmp_name'];
 
-    // 이미지파일 : tmp 에서 영구저장소로 이동
-    $dstName = "./signupImg/IMG_" . date('YmdHis') . $srcName;
-    move_uploaded_file($tmpName, $dstName);
+    // 이미지 파일을 영구 저장소로 이동
+    $dstName = "./signupImg/IMG_" . date('YmdHis') . "_" . basename($srcName);
+    if (!move_uploaded_file($tmpName, $dstName)) {
+        echo json_encode(['error' => 'Failed to move uploaded file']);
+        exit();
+    }
 }
 
+// MySQL DB에 저장하기
+$db = mysqli_connect("localhost", "hyun", "123456", "mydatabase");
+if (mysqli_connect_errno()) {
+    echo json_encode(['error' => 'Failed to connect to MySQL: ' . mysqli_connect_error()]);
+    http_response_code(500); // Internal Server Error
+    exit();
+}
 
+mysqli_query($db, "set names utf8");
 
-
-//게시글 작성 시간
-$now = date('Y-m-d   H:i:s');
-
-//제목이나 메세지 문자열 중에 '특수문자'가 포함되어있을 수 있으니, 앞에/슬래시기호붙이기
+// 비밀번호 문자열 중 특수문자 앞에 슬래시 기호 붙이기
 $password = addslashes($password);
 
-//MySQL DB에 저장하기[테이블 : SignUp]
-$db= mysqli_connect("localhost", "hyun", "123456", "mydatabase");
-mysqli_query($db, "set names utf8"); //한글있어도 깨지지마렁..
-//삽입 no id password age imgFile	
-$sql = "INSERT INTO account(id, pw, img) VALUES('$id','$password','$dstName')";
+// 삽입 쿼리 실행
+$sql = "INSERT INTO account(id, pw, img) VALUES('$id', '$password', '$dstName')";
 $result = mysqli_query($db, $sql);
 
 $response = array();

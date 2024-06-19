@@ -13,6 +13,7 @@ import { setUserAccount } from "../redux/account";
 import searchIcon from "../assets/searchicon.png";
 // 알라딘 ttb api 키: ttbbaechu100402002
 //정보나루 서비스키: c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
+//우리팀 서버경로 : https://13.125.105.124/
 
 const Home = () => {
   const navigate = useNavigate();

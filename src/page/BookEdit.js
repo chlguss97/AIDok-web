@@ -5,21 +5,35 @@ import { FaRegCalendarAlt } from "react-icons/fa"
 import BackBtn from "../components/BackBtn"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+import blackBook from '../assets/blankBook.png'
 
 
 const BookEdit= ()=>{
 
     const location = useLocation()
     const navigate = useNavigate()
-    const bookName = location.state.bookItem.bookName
-    const bookImageUrl = location.state.bookItem.bookImageUrl
-    const authors = location.state.bookItem.authors
+    const [shortenedDescription, setShortenedDescription] = useState("");
+    const [bookName, setBookName] = useState()
+    const [bookImageUrl, setBookImageUrl] = useState()
+    const [authors, setAuthors] = useState()
+    
     const description = location.state.bookItem.description
 
     useEffect(()=>{
+
+        setBookName(location.state.bookItem.bookName)
+        setBookImageUrl(location.state.bookItem.bookImageUrl)
+        setAuthors(location.state.bookItem.authors)
+
+          // 요약된 디스크립션 생성
+          if (description.length > 100) {
+            setShortenedDescription(description.substring(0, 100) + "...");
+        } else {
+            setShortenedDescription(description);
+        }
        
         alert(bookName+"\n"+bookImageUrl+"\n"+authors+"\n"+description)
-    },[])
+    },[description, location.state.bookItem.bookName])
 
     const setStartDate= ()=>{
         alert("시작일 달력")
@@ -58,11 +72,11 @@ const BookEdit= ()=>{
             <BackBtn onClick={()=>navigate('/BookDetail', {state: {book:location.state.bookItem}})}></BackBtn>
             <BookInfo>
                 <div className="info">
-                    <img className="bookImg" src={bookImageUrl} alt={bookName}></img>
+                    <img className="bookImg" src={bookImageUrl? bookImageUrl : blackBook} alt={bookName}></img>
                     <div className="titleAuthor">
                         <p>제목: {bookName}</p>
                         <p>저자: {authors}</p>
-                        <p>요약: {description}</p>
+                        <p>요약: {shortenedDescription}</p>
                     </div>
                 </div>
             </BookInfo>
