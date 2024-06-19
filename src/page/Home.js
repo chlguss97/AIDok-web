@@ -13,6 +13,7 @@ import { setUserAccount } from "../redux/account";
 import searchIcon from "../assets/searchicon.png";
 // 알라딘 ttb api 키: ttbbaechu100402002
 //정보나루 서비스키: c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
+//우리팀 서버경로 : https://13.125.105.124/
 
 const Home = () => {
   const navigate = useNavigate();
@@ -43,12 +44,6 @@ const Home = () => {
   useEffect(() => {
     console.log("updated user:  ", user);
   }, [user]);
-
-  // useEffect(() => {
-  //   if (userInfo.img && imgRef.current) {
-  //     imgRef.current.src = userInfo.img;
-  //   }
-  // }, [userInfo]);
 
   
 
@@ -91,11 +86,13 @@ const Home = () => {
 
   const inputImgClick = () => {
     if(searchTerm.trim() !== "") {
-      navigate(`/List?query=${searchTerm}`)
+      navigate('/List', {state:{query:searchTerm}})
+   
     }
     alert(searchTerm);
 
   };
+
 
   return (
     <div>
@@ -123,6 +120,7 @@ const Home = () => {
         </SearchBarContainer>
 
         <BookCardStyledSlider {...homeBookItemSettings}>
+
           <HomeBookItem />
           <HomeBookItem />
           <HomeBookItem />
@@ -162,6 +160,7 @@ export default Home;
 const Container = styled.div`
   padding-top: 8%;
   padding-bottom: 20%;
+  
 
   .headers {
     display: flex;
@@ -268,10 +267,14 @@ const Title = styled.p`
 `;
 
 
-const SearchBarContainer = styled.div`
+const SearchBarWrapper = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 10%;
+
+
   border: 1px solid #5e7e71;
   border-radius: 20px;
   padding: 10px 10px;
@@ -312,4 +315,23 @@ const SearchButton = styled.button`
 const Icon = styled.img`
   width: 22px;
   height: 22px;
+
+`;
+
+
+const SearchBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #5e7e71;
+  border-radius: 20px;
+  padding: 10px 10px;
+  background-color: #6f4e37;
+  width: 100%;
+  max-width: 240px; /* 최대 너비를 240px로 제한 */
+  margin: 0 auto 70px auto;
+
+  &:focus-within {
+    background-color: #5e7e71; /* 초록색으로 변경 */
+  }
 `;

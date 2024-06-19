@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import BackBtn from "../components/BackBtn";
-import SearchBar from "../components/SearchBar";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import searchIcon from "../assets/searchicon.png";
-
+import backicon from "../assets/backicon.png";
 
 const Container = styled.div`
   display: flex;
@@ -23,9 +22,16 @@ const Header = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative; /* Allows positioning of the back button */
+  /* position: relative; Allows positioning of the back button */
+  padding: 20px;
   margin-bottom: 20px;
+
+  .backImg{
+    width: 20px;
+    height: 20px;
+    margin-left: 20px;
+    cursor: pointer;
+  }
 `;
 
 const BackButtonWrapper = styled.div`
@@ -37,8 +43,10 @@ const Title = styled.p`
   color: #6f4e37;
   font-size: 1.6rem;
   font-weight: bold;
+  justify-content: center;
   text-align: center;
-  margin: 0; /* Removes default margin */
+  display: inline-block;
+  flex: 1,
 `;
 
 const SearchBarWrapper = styled.div`
@@ -137,45 +145,67 @@ const Icon = styled.img`
 `;
 
 // 알라딘 ttb api 키: ttbbaechu100402002
-//정보나루 서비스키: c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
+//배유리 정보나루(학원 id:ddokddok pw:actbae88^^  집 id:ddokddok2 pw:actbae88^^)
+//정보나루 서비스키:(배유리학원) c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
 //https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=%EA%B0%90%EC%9E%90
+// (네이버) clientId: q0Llra2n2oQB3OC27M5l , clientSecret: XOzSKgv1ip
 
 const List = () => {
   const location = useLocation();
-  const [query, setQuery] = useState(""); //받아온 쿼리
-  const [searchTerm, setSearchTerm] = useState(""); //여기서 입력한 쿼리
+  const [query, setQuery] = useState("리액트"); //받아온 쿼리
+  const [searchTerm, setSearchTerm] = useState("");
   const [books, setBooks] = useState([]);
+  const navigate = useNavigate()
+
+  
 
   useEffect(() => {
-    const query = new URLSearchParams(location.search).get("query");
-    if (query) {
-      setQuery(query);
-      const url =
-        "http://ddok.dothome.co.kr/backend/aladin_search.php?query=" + query;
+    if (location.state) {
+      setQuery(location.state.query);
+      const url = `./backend/naver_search.php?query=${query}`;
       fetch(url)
-        .then((res) => res.text())
-        .then(str => new DOMParser().parseFromString(str, 'text/xml'))
-        .then(json=> setBooks(json.item))
-        .catch((e) => {
-          console.error("에러:", e.message);
-          alert("데이터를 불러오는 중 오류가 발생했습니다.");
-          setBooks([]);
-        });
+        .then((res) => res.json())
+        .then((jsonData) => 
+          setBooks(jsonData.items),
+          
+        )
+        .catch((e) => alert(e.message));
     }
-  }, [location.search]);
-
-
+  }, [query, location.state]);
 
   const inputImgClick = () => {
-    alert(searchTerm);
+    if (searchTerm) {
+      const url = `./backend/naver_search.php?query=${searchTerm}`;
+      fetch(url)
+        .then((res) => res.json())
+        .then((jsonData) => setBooks(jsonData.items))
+        .catch((e) => alert(e.message));
+    }
   };
+
+  const bookCardClick=(book) =>{
+    const book2 = {
+      bookName:book.title,
+      bookImageUrl:book.image,
+      authors:book.author,
+      isbn13:book.isbn,
+      description:book.description
+    }
+    navigate('/BookDetail', {state: {book:book2}} )
+    console.log(`보내는 북: ${book.title}`)
+  }
+
+  const backButtonClick= ()=>{
+    navigate('/')
+  }
 
   return (
     <Container>
       <Header>
-        <BackButtonWrapper>
+        {/* <BackButtonWrapper>
           <BackBtn />
-        </BackButtonWrapper>
+        </BackButtonWrapper> */}
+        <img src={backicon} alt="뒤로가기버튼" className="backImg" onClick={backButtonClick}></img>
         <Title>책 검색</Title>
       </Header>
       <SearchBarContainer>
@@ -191,10 +221,18 @@ const List = () => {
         </SearchInputWrapper>
       </SearchBarContainer>
 
-      {/* <SearchBarWrapper>
-        <SearchBar placeholder={`검색: ${searchTerm}`} />
-      </SearchBarWrapper> */}
       <Content>
+        {books?.map((book, index, array) => {
+          return (
+            <BookCard key={index} onClick={()=>bookCardClick(book)}>
+              <BookImage src={book.image} alt="책" />
+              <BookTitle>{book.title}</BookTitle>
+            </BookCard>
+          );
+        })}
+      </Content>
+
+      {/* <Content>
         {Array.from({ length: 20 }, (_, index) => (
           <BookCard key={index}>
             <BookImage
@@ -204,14 +242,12 @@ const List = () => {
             <BookTitle>트렌드 코리아 {2024 - index}</BookTitle>
           </BookCard>
         ))}
-      </Content>
+      </Content> */}
     </Container>
   );
 };
 
 export default List;
-
-
 
 export function xmlToJson(xml) {
   // Create the return object
@@ -232,11 +268,11 @@ export function xmlToJson(xml) {
   }
   // do children
   // If all text nodes inside, get concatenated text from them.
-  var textNodes = [].slice.call(xml.childNodes).filter(function(node) {
+  var textNodes = [].slice.call(xml.childNodes).filter(function (node) {
     return node.nodeType === 3;
   });
   if (xml.hasChildNodes() && xml.childNodes.length === textNodes.length) {
-    obj = [].slice.call(xml.childNodes).reduce(function(text, node) {
+    obj = [].slice.call(xml.childNodes).reduce(function (text, node) {
       return text + node.nodeValue;
     }, "");
   } else if (xml.hasChildNodes()) {

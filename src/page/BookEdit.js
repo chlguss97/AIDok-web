@@ -3,10 +3,68 @@ import styled from "styled-components"
 import SaveBtn from "../components/SaveBtn"
 import { FaRegCalendarAlt } from "react-icons/fa"
 import BackBtn from "../components/BackBtn"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import blackBook from '../assets/blankBook.png'
 
 
 const BookEdit= ()=>{
+
+    const location = useLocation()
+    const navigate = useNavigate()
+    const [shortenedDescription, setShortenedDescription] = useState("");
+    // const [bookName, setBookName] = useState()
+    // const [bookImageUrl, setBookImageUrl] = useState()
+    // const [authors, setAuthors] = useState()
+    
+    const bookName = location.state.book.bookName
+    const authors = location.state.book.authors
+    const description = location.state.book.description
+    const bookImageUrl = location.state.book.bookImageUrl
+    const isbn13 = location.state.book.isbn13
+
+    useEffect(()=>{
+
+        // setBookName(location.state.book.bookName)
+        // setBookImageUrl(location.state.book.bookImageUrl)
+        // setAuthors(location.state.book.authors)
+
+          // 요약된 디스크립션 생성
+          if (description.length > 100) {
+            setShortenedDescription(description.substring(0, 100) + "...");
+        } else {
+            setShortenedDescription(description);
+        }
+       
+        alert(bookName+"\n"+bookImageUrl+"\n"+authors+"\n"+description)
+    },[description])
+
+
+    useEffect(()=>{
+        const url = `./backend/aladin_search.php?query=${query}`;
+        fetch(url)
+        .then(res => res.text())
+        .then(text => {
+            // <BR><B><p> 태그 제거
+            text = text.replace(/<BR>/ig, '').replace(/<B>/ig, '').replace(/<p>/ig, '')
+            .replace(/\//ig, '/');
+         
+            try {
+                const jsonData = JSON.parse(text);
+                console.log(jsonData); // 파싱된 JSON 객체 확인
+                const itemPage = jsonData.item[0].bookinfo.itemPage;
+                console.log("쪽수: "+ {itemPage}); // 파싱된 JSON 객체 확인
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        });
+        
+    })
+   
+
+
+
+
 
     const setStartDate= ()=>{
         alert("시작일 달력")
@@ -42,14 +100,14 @@ const BookEdit= ()=>{
     }
     return(
         <div style={{textAlign:"center", padding:"5%"}}>
-            <BackBtn></BackBtn>
+            <BackBtn onClick={()=>navigate('/BookDetail', {state: {book:location.state.book}})}></BackBtn>
             <BookInfo>
                 <div className="info">
-                    <img className="bookImg" src="https://image.aladin.co.kr/product/23972/99/cover/8963717569_1.jpg" alt="book cover"></img>
+                    <img className="bookImg" src={bookImageUrl? bookImageUrl : blackBook} alt={bookName}></img>
                     <div className="titleAuthor">
-                        <p>제목: 당신을 기다리고 있어</p>
-                        <p>저자: 김보영</p>
-                        <p>출판사: 새파란상상 (파란미디어)</p>
+                        <p>제목: {bookName}</p>
+                        <p>저자: {authors}</p>
+                        <p>요약: {shortenedDescription}</p>
                     </div>
                 </div>
             </BookInfo>

@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import searchicon from '../assets/searchicon.png';
-
 const SearchBarContainer = styled.div`
   display: flex;
   align-items: center;
@@ -12,7 +11,6 @@ const SearchBarContainer = styled.div`
   width: 100%;
   max-width: 240px; /* 최대 너비를 240px로 제한 */
   margin: 0 auto; /* 중앙 정렬 */
-
   &:focus-within {
     background-color: #5E7E71; /* 초록색으로 변경 */
   }
@@ -31,7 +29,6 @@ const SearchInput = styled.input`
   background: none;
   color: white;
 `;
-
 const SearchButton = styled.button`
   background: none;
   border: none;
@@ -41,13 +38,10 @@ const SearchButton = styled.button`
   top: 50%;
   transform: translateY(-50%);
 `;
-
 const Icon = styled.img`
   width: 22px;
   height: 22px;
 `;
-
-
 const SearchBar = ({ searchTerm, setSearchTerm, onClick,placeholder }) => {
   return (
     <SearchBarContainer>
@@ -62,8 +56,7 @@ const SearchBar = ({ searchTerm, setSearchTerm, onClick,placeholder }) => {
       </SearchButton>
     </SearchInputWrapper>
   </SearchBarContainer>
-  
+
   )
 };
-
 export default SearchBar;
