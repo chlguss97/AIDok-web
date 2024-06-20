@@ -11,6 +11,7 @@ import axios from 'axios';
 const openApiURL = 'http://aiopen.etri.re.kr:8000/MRCServlet';
 const access_key = '9ea2f4ff-9521-4665-aa3f-e16d9178a957';
 
+
 const WriteAi = () => {
 
   // bert
@@ -53,11 +54,12 @@ const WriteAi = () => {
     cover: bookImage
   });
 
+
   // 바텀시트 modal
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  
+
   const openBottomSheet = () => {
       setIsBottomSheetOpen(true)
   }
@@ -68,6 +70,7 @@ const WriteAi = () => {
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   }
+
  
   const bookData = Array.from({ length: 20 }, (_, index) => ({
     title: `트렌드 코리아 ${2024 - index}`,

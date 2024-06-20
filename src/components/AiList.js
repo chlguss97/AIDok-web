@@ -2,7 +2,6 @@ import styled from "styled-components"
 import React, { useEffect, useState } from 'react';
 import { getDoc, doc } from "firebase/firestore";
 import { db } from './firebaseConfig';
-import AiItem from "./AiItem";
 
 const AiList= ({data})=>{
    

@@ -8,7 +8,7 @@ Modal.setAppElement('#root');
 const modalStyle = {
     content: {
         position: 'absolute',
-        bottom: '100px',
+        bottom: 80,
         left: 0,
         right: 0,
         top: 'auto',
@@ -27,6 +27,7 @@ const modalStyle = {
 };
 
 const BottomSheetModal = ({ isOpen, onRequestClose, onFileChange }) => {
+
     const videoRef = useRef(null);
 
     const handleOpenCamera = () => {
@@ -49,6 +50,7 @@ const BottomSheetModal = ({ isOpen, onRequestClose, onFileChange }) => {
             console.log(`Selected file: ${file.name}`);
             onFileChange(file);
             onRequestClose();
+
         }
     };
 
