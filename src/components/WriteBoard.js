@@ -138,11 +138,11 @@ const BookImage = styled.img`
   width: 100px;
   height: auto;
   margin-top: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 `;
 
 const BookTitle = styled.div`
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   margin-bottom: 5px;
   color: black;

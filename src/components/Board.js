@@ -72,6 +72,13 @@ const BookImage = styled.img`
   border: 1px solid #ccc;
 `;
 
+const PostDate = styled.div`
+  font-size: 0.8em;
+  color: #999;
+  margin-left: 1rem;
+  margin-bottom: 10px;
+`;
+
 const PostImage = styled.img`
   width: 95%;
   height: auto;
@@ -178,7 +185,8 @@ const Board = () => {
       comments: 2,
       liked: false,
       bookTitle: '트렌드 코리아 2023',
-      bookImage: 'https://image.yes24.com/goods/113416767/XL'
+      bookImage: 'https://image.yes24.com/goods/113416767/XL',
+      date: '2023년 06월 15일' // Add the date here
     },
     {
       id: 2,
@@ -190,7 +198,8 @@ const Board = () => {
       comments: 2,
       liked: false,
       bookTitle: '트렌드 코리아 2024',
-      bookImage: 'https://image.yes24.com/goods/122790776/XL'
+      bookImage: 'https://image.yes24.com/goods/122790776/XL',
+      date: '2023년 05월 11일' // Add the date here
     }
   ]);
 
@@ -267,7 +276,7 @@ const Board = () => {
           <PostContent>
             <p>{post.content}</p>
           </PostContent>
-          <PostFooter>
+          <PostFooter>          
             <PostFooterIcons>
               {post.liked ? (
                 <FaHeart color="red" onClick={() => handleLikeToggle(post.id)} />
@@ -281,6 +290,7 @@ const Board = () => {
               </CommentIconWrapper>
             </PostFooterIcons>
           </PostFooter>
+          <PostDate>{post.date}</PostDate>
         </PostContainer>
       ))}
       <FloatingButton onClick={handleCreatePost}>
