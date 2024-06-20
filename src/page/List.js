@@ -145,7 +145,8 @@ const Icon = styled.img`
 `;
 
 // 알라딘 ttb api 키: ttbbaechu100402002
-//정보나루 서비스키: a6e0e7411107bcf35da8623fb02f13a7b559dd455855d5a44baae620c142d4b8
+//배유리 정보나루(학원 id:ddokddok pw:actbae88^^  집 id:ddokddok2 pw:actbae88^^)
+//정보나루 서비스키:(배유리학원) c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
 //https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=%EA%B0%90%EC%9E%90
 // (네이버) clientId: q0Llra2n2oQB3OC27M5l , clientSecret: XOzSKgv1ip
 
@@ -164,7 +165,10 @@ const List = () => {
       const url = `./backend/naver_search.php?query=${query}`;
       fetch(url)
         .then((res) => res.json())
-        .then((jsonData) => setBooks(jsonData.items))
+        .then((jsonData) => 
+          setBooks(jsonData.items),
+          
+        )
         .catch((e) => alert(e.message));
     }
   }, [query, location.state]);
@@ -180,8 +184,14 @@ const List = () => {
   };
 
   const bookCardClick=(book) =>{
-    navigate('/BookDetail', {state: {book:book}} )
-  
+    const book2 = {
+      bookName:book.title,
+      bookImageUrl:book.image,
+      authors:book.author,
+      isbn13:book.isbn,
+      description:book.description
+    }
+    navigate('/BookDetail', {state: {book:book2}} )
     console.log(`보내는 북: ${book.title}`)
   }
 

@@ -1,18 +1,16 @@
 <?php
     header('Content-Type:application/json; charset=utf-8');
 
-    // GET방식으로 전달된 검색어 query
+    // GET방식으로 전달된 검색어 query->isbn
     $query = $_GET['query'];
 
     //php에서 다른 서버의 http request를 수행하는 기능이 있다. curl 라이브러리..
     //client  url 나는 서버지만 클라이언트처럼 요청하겠다. 터미널의명령어..
 
     // 영어는 걍 보내도되는데 한글은 무조건 이 작업 필요함. 
-    $encQuery = urlencode($query);
-
-    // $url= "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=".$encQuery."&Output=JS";
-    
-    $url= "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=".$encQuery;
+    // $encQuery = urlencode($query); 숫자밖에 없으니 이 작업 필요없음isbn..
+    //Output요청파라미터없으면 기본 response가본이 XML
+    $url= "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?TTBKey=ttbbaechu100402002&ItemId=".$query."&ItemIdType=ISBN13&Output=JS";
 
     //1.curl 작업 시작 - 초기화
     $ch = curl_init();
@@ -35,7 +33,7 @@
 
     //3.curl 작업 시작
     $response = curl_exec($ch);
-    echo $response;
+    echo json_encode($response);
 
 
     //4.curl작업 닫기
