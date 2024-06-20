@@ -1,5 +1,5 @@
 <?php
-    header('Content-Type:application/json; charset=utf-8');
+    header('Content-Type:application/xml; charset=utf-8');
 
     // GET방식으로 전달된 검색어 query->isbn
     $query = $_GET['query'];
@@ -10,7 +10,7 @@
     // 영어는 걍 보내도되는데 한글은 무조건 이 작업 필요함. 
     // $encQuery = urlencode($query); 숫자밖에 없으니 이 작업 필요없음isbn..
     //Output요청파라미터없으면 기본 response가본이 XML
-    $url= "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?TTBKey=ttbbaechu100402002&ItemId=".$query."&ItemIdType=ISBN13&Output=JS";
+    $url= "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?TTBKey=ttbbaechu100402002&ItemId=".$query."&ItemIdType=ISBN13";
 
     //1.curl 작업 시작 - 초기화
     $ch = curl_init();
