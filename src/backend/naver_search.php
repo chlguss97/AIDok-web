@@ -1,28 +1,32 @@
 <?php
-header('Content-Type:application/json; charset=utf-8');
+header('Content-Type: application/json; charset=utf-8');
 
-// GET방식으로 전달된 검색어 query
-$query = $_GET['query'];
+// 에러 보고 활성화
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-//php에서 다른 서버의 http request를 수행하는 기능이 있다. curl 라이브러리..
-//client  url 나는 서버지만 클라이언트처럼 요청하겠다. 터미널의명령어..
+// GET 방식으로 전달된 검색어 query
+$query = isset($_GET['query']) ? $_GET['query'] : '';
 
-// 영어는 걍 보내도되는데 한글은 무조건 이 작업 필요함. 
+if (empty($query)) {
+    echo json_encode(['error' => 'Query parameter is required']);
+    http_response_code(400);
+    exit();
+}
+
 $encQuery = urlencode($query);
-
-
-
 $url = "https://openapi.naver.com/v1/search/book.json?query=".$encQuery;
 
-//1.curl 작업 시작 - 초기화
+// 1. curl 작업 시작 - 초기화
 $ch = curl_init();
 
-//2. curl 옵션 설정
-curl_setopt($ch, CURLOPT_URL, $url);  //2.1 접속 url 지정
-curl_setopt($ch, CURLOPT_POST, false); //2.2포스트로 보낼거냐? 기본이 POST라서 GET으로 돌리기위해..
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); //2.3응답결과를 되돌려받을건지 여부
+// 2. curl 옵션 설정
+curl_setopt($ch, CURLOPT_URL, $url);  // 2.1 접속 url 지정
+curl_setopt($ch, CURLOPT_POST, false); // 2.2 POST 요청 여부 설정
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // 2.3 응답 결과를 반환 받음
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 2.4 SSL 검증 비활성화 (개발 중에만 사용)
 
-//2.4 헤더 정보  - naver search api에 접속할때 필요한 인증값
+// Naver API 클라이언트 ID 및 시크릿
 $client_id = "q0Llra2n2oQB3OC27M5l";
 $client_secret = "XOzSKgv1ip";
 
@@ -32,21 +36,31 @@ $headers = array(
 );
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-// curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-
-//3.curl 작업 시작
+// 3. curl 작업 실행
 $response = curl_exec($ch);
 
 // curl 에러 체크
-// if(curl_errno($ch)) {
-//     echo 'Curl error: ' . curl_error($ch);
-//     die();
-// }
-echo $response;
+if (curl_errno($ch)) {
+    echo json_encode(['error' => 'Curl error: ' . curl_error($ch)]);
+    curl_close($ch);
+    exit();
+}
 
-//4.curl작업 닫기
+// 응답 검증
+if ($response === false) {
+    echo json_encode(['error' => 'Failed to retrieve data']);
+    curl_close($ch);
+    exit();
+}
+
+// JSON 응답 반환
+$json_response = json_decode($response, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    echo json_encode(['error' => 'Invalid JSON response']);
+} else {
+    echo json_encode($json_response);
+}
+
+// 4. curl 작업 종료
 curl_close($ch);
-
-
-
 ?>

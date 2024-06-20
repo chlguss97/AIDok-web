@@ -32,6 +32,7 @@ const BookEdit = () => {
     console.log("링크를 줄까안줄까.:"+link)
 
 
+
     if(link!==undefined){
         if(link.match(/catalog\/(\d+)/)){
             const match = link.match(/catalog\/(\d+)/);
@@ -55,6 +56,7 @@ const BookEdit = () => {
                     });
                   });
               }
+
         }
 
         
