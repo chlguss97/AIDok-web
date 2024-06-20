@@ -6,66 +6,115 @@ import BackBtn from "../components/BackBtn";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import blackBook from "../assets/blankBook.png";
+import DatePicker from "react-datepicker";
 
 const BookEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const bookName = location.state.book.bookName;
+  const authors = location.state.book.authors;
+  const description = location.state.book.description;
   const [shortenedDescription, setShortenedDescription] = useState("");
-  // const [bookName, setBookName] = useState()
-  // const [bookImageUrl, setBookImageUrl] = useState()
-  // const [authors, setAuthors] = useState()
+  const bookImageUrl = location.state.book.bookImageUrl;
+  const isbn13 = location.state.book.isbn13;
+  const link = location.state.book.link;
+  const [page, setPage] = useState("페이지정보없음");
 
-  // const bookName = location.state.book.bookName
-  // const authors = location.state.book.authors
-  // const description = location.state.book.description
-  // const bookImageUrl = location.state.book.bookImageUrl
-  // const isbn13 = location.state.book.isbn13
+  const [clickedIndex, setClickedIndex] = useState(3); //기본이 "선택되지 않음"
+  const [startDate, setStartDate] = useState();
 
-  // useEffect(()=>{
 
-  //     // setBookName(location.state.book.bookName)
-  //     // setBookImageUrl(location.state.book.bookImageUrl)
-  //     // setAuthors(location.state.book.authors)
 
-  //       // 요약된 디스크립션 생성
-  //       if (description.length > 100) {
-  //         setShortenedDescription(description.substring(0, 100) + "...");
-  //     } else {
-  //         setShortenedDescription(description);
-  //     }
-
-  //     alert(bookName+"\n"+bookImageUrl+"\n"+authors+"\n"+description)
-  // },[description])
-
+  //<span class="bookBasicInfo_spec__yzTpy">420<!-- -->쪽</span>
   useEffect(() => {
-    // BookDetail에서넘어온 book객체의 변수 :
-    //bookName,title,bookImageUrl,image,authors,isbn13, description
 
-    const isbnTest = "9788996991342";
-    const url = `./backend/aladin_search.php?query=${location.state.book.isbn13}`;
+    console.log("링크를 줄까안줄까.:"+link)
 
-    fetch(url)
-      .then((response) => response.text())
-      .then(text => {
-        console.log("텍스트로받은거: " + text);
-        const trimmedText = text.trim() //공백문자제거하기 . 오류났거든용: SyntaxError: Unexpected non-whitespace character after JSON at position 2191 (line 1 column 2192)
-       
-      
-        try{
-            const data = JSON.parse(trimmedText); //수동으로 제이슨파싱
-            console.log("파싱된데이타 : "+data)
-        }catch(error){
-            console.log("에러 : ", error);
+
+
+    if(link!==undefined){
+        if(link.match(/catalog\/(\d+)/)){
+            const match = link.match(/catalog\/(\d+)/);
+            if (match) {
+                const query = match[1];
+                console.log(query);
+                fetch(`./backend/naver_link.php?query=${query}`)
+                  .then((res) => res.text())
+                  .then((text) => {
+                    const dom = new DOMParser();
+                    const doc = dom.parseFromString(text, "text/html"); //두번째 파라미터 : mimeType
+                    const es = doc.querySelectorAll(".bookBasicInfo_spec__yzTpy"); // bookBasicInfo_spec__yzTpy라는 클래스 선택자를 이용하여 요소찾기
+                    console.log("es는무엇인가  " + es);
+                    es.forEach((element) => {
+                      const textContent = element.textContent;
+                      if (textContent.includes("쪽")) {
+                        console.log("쪽이 포함된 텍스트:", textContent);
+                        const cleanedText = textContent.replace(/쪽/g, "")
+                        setPage(cleanedText)
+                      }
+                    });
+                  });
+              }
+
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching or parsing data:", error);
-      });
-  }, []);
 
-  const setStartDate = () => {
-    alert("시작일 달력");
-  };
+        
+    }
+   
+
+  });
+
+
+
+  //알라딘 빠이..... https로 인해 알라딘은 못씀..빠이..안녕..
+//   useEffect(() => {
+//     // 요약된 디스크립션 생성
+//     if (description?.length > 1) {
+//       setShortenedDescription(description.substring(0, 100) + "... ...");
+//     } else {
+//       setShortenedDescription(description);
+//     }
+
+//     console.log(bookName + authors + description + bookImageUrl + isbn13);
+//     const url = `./backend/aladin_search.php?query=${location.state.book.isbn13}`;
+
+//     fetch(url)
+//       .then((response) => response.text())
+//       .then((xmlText) => {
+//         const domParser = new DOMParser();
+//         const xmlDoc = domParser.parseFromString(xmlText, "text/xml");
+
+//         if (!xmlDoc) {
+//           console.error("XML 데이터 파싱 실패");
+//           return;
+//         }
+
+//         // 네임스페이스 URI를 변수로 정의
+//         const namespaceURI = "http://www.aladin.co.kr/ttb/apiguide.aspx";
+
+//         // 네임스페이스 URI를 사용하여 요소를 선택할 때는 getElementsByTagNameNS를 사용
+//         const itemPageElements = xmlDoc.getElementsByTagNameNS(
+//           namespaceURI,
+//           "itemPage"
+//         );
+
+//         if (itemPageElements.length > 0) {
+//           // 여기서는 첫 번째 itemPage 요소를 선택합니다.
+//           const itemPageElement = itemPageElements[0];
+//           const page = itemPageElement.textContent.trim();
+//           setPage(page);
+//           console.log("책의 총 페이지 수: " + page);
+//         } else {
+//           console.log("itemPage 요소를 찾을 수 없습니다.");
+//         }
+//       })
+//       .catch((e) => console.log("에러: " + e.message));
+//   }, []);
+
+  //   const setStartDate = () => {
+  //     <DatePicker selected={startDate} onChange={handleStartDateChange} />;
+  //   };
 
   const setEndDate = () => {
     alert("종료일 달력");
@@ -79,21 +128,28 @@ const BookEdit = () => {
     alert("시간 수정");
   };
 
-  const [clickedIndex, setClickedIndex] = useState(3);
-
   const handleStatusClick = (index) => {
-    if (index === clickedIndex) {
-      // 이미 클릭된 상태인 경우 다시 초기화
-      setClickedIndex(-1);
-    } else {
-      // 클릭된 상태의 인덱스 설정
+    if (index === 0) {
+      // 읽고싶은책
       setClickedIndex(index);
+      alert("읽고싶은책");
+    } else if (index === 1) {
+      // 읽고있는책 클릭했을때
+      setClickedIndex(index);
+      alert("읽고있는책");
+    } else if (index === 2) {
+      setClickedIndex(index);
+      alert("다읽은책");
+    } else if (index === 3) {
+      setClickedIndex(index);
+      alert("해당없음");
     }
   };
 
   const save = () => {
     alert("저장합니다");
   };
+
   return (
     <div style={{ textAlign: "center", padding: "5%" }}>
       <BackBtn
@@ -102,14 +158,21 @@ const BookEdit = () => {
         }
       ></BackBtn>
       <BookInfo>
-        {/* <div className="info">
-                    <img className="bookImg" src={bookImageUrl? bookImageUrl : blackBook} alt={bookName}></img>
-                    <div className="titleAuthor">
-                        <p>제목: {bookName? bookName : "책제목"}</p>
-                        <p>저자: {authors? authors : "작가이름"}</p>
-                        <p>요약: {shortenedDescription? shortenedDescription : "요오오옹약"}</p>
-                    </div>
-                </div> */}
+        <div className="info">
+          <img
+            className="bookImg"
+            src={bookImageUrl ? bookImageUrl : blackBook}
+            alt={bookName}
+          ></img>
+          <div className="titleAuthor">
+            <p>제목: {bookName ? bookName : "책제목 없음"}</p>
+            <p>저자: {authors ? authors : "작가이름 없음"}</p>
+            <p>
+              요약:{" "}
+              {shortenedDescription ? shortenedDescription : "요약내용 없음"}
+            </p>
+          </div>
+        </div>
       </BookInfo>
       <StatusContainer>
         <BookStatus
@@ -145,70 +208,76 @@ const BookEdit = () => {
           선택하지 않음
         </BookStatus>
       </StatusContainer>
-      <Period>
-        <HeadText>목표 기간</HeadText>
-        <div className="startToEnd">
-          <span>시작</span>
-          <Date>2024.6.1.</Date>
-          <FaRegCalendarAlt
-            style={{ cursor: "pointer" }}
-            onClick={setStartDate}
-          />
-          <span>~</span>
-          <span>끝</span>
-          <Date>2024.6.1.</Date>
-          <FaRegCalendarAlt
-            style={{ cursor: "pointer" }}
-            onClick={setEndDate}
-          />
-        </div>
-      </Period>
-      <Target>
-        <HeadText>페이지</HeadText>
-        <div className="graph">
-          <Bar>
-            <Progress width="50%" />
-            {/* <div className="progress" width="50%"></div> */}
-          </Bar>
-          <EditBtn onClick={pageEdit}>수정</EditBtn>
-        </div>
-        <div className="numbers">
-          <Number $left="0%">0p</Number>
-          <Number $left="50%">350p</Number>
-          <Number $left="100%">700p</Number>
-        </div>
-        <div>
-          <p className="note">
-            <span className="nickname">배추껍질</span>님의 하루 적정 독서
-            페이지는 <span className="point">100p</span>입니다.
-          </p>
-        </div>
-      </Target>
-      <Target style={{ marginBottom: "20px" }}>
-        <HeadText>시간</HeadText>
-        <div className="graph">
-          <Bar>
-            <Progress width="28.57%" />
-          </Bar>
-          <EditBtn onClick={timeEdit}>수정</EditBtn>
-        </div>
-        <div className="numbers">
-          <Number $left="0%">0분</Number>
-          <Number $left="28.57%">200분</Number>
-          <Number $left="100%">700분</Number>
-        </div>
-        <div>
-          <p className="note">
-            <span className="nickname">배추껍질</span>님의 하루 적정 독서 시간은{" "}
-            <span className="point">100분</span>입니다.
-          </p>
-        </div>
-      </Target>
+
+      {/* ======================================== 선택 옵션에 따라 보이고 안보이는 부분 ==================== */}
+      <div style={{ display: clickedIndex !== 1 ? "none" : "block" }}>
+        <Period>
+          <HeadText>목표 기간</HeadText>
+          <div className="startToEnd">
+            <span>시작</span>
+            <Date>2024.6.1.</Date>
+            <FaRegCalendarAlt
+              style={{ cursor: "pointer" }}
+              onClick={setStartDate}
+            />
+            <span>~</span>
+            <span>끝</span>
+            <Date>2024.6.1.</Date>
+            <FaRegCalendarAlt
+              style={{ cursor: "pointer" }}
+              onClick={setEndDate}
+            />
+          </div>
+        </Period>
+        <Target>
+          <HeadText>페이지 : {page}쪽</HeadText>
+          <div className="graph">
+            <Bar>
+              <Progress width="50%" />
+              {/* <div className="progress" width="50%"></div> */}
+            </Bar>
+            <EditBtn onClick={pageEdit}>수정</EditBtn>
+          </div>
+          <div className="numbers">
+            <Number $left="0%">0p</Number>
+            <Number $left="50%">350p</Number>
+            <Number $left="100%">{page}p</Number>
+          </div>
+          <div>
+            <p className="note">
+              <span className="nickname">배추껍질</span>님의 하루 적정 독서
+              페이지는 <span className="point">100p</span>입니다.
+            </p>
+          </div>
+        </Target>
+        <Target style={{ marginBottom: "20px" }}>
+          <HeadText>시간</HeadText>
+          <div className="graph">
+            <Bar>
+              <Progress width="28.57%" />
+            </Bar>
+            <EditBtn onClick={timeEdit}>수정</EditBtn>
+          </div>
+          <div className="numbers">
+            <Number $left="0%">0분</Number>
+            <Number $left="28.57%">200분</Number>
+            <Number $left="100%">700분</Number>
+          </div>
+          <div>
+            <p className="note">
+              <span className="nickname">배추껍질</span>님의 하루 적정 독서
+              시간은 <span className="point">100분</span>입니다.
+            </p>
+          </div>
+        </Target>
+      </div>
+
       <SaveBtn name="저장하기" onClick={save}></SaveBtn>
     </div>
   );
 };
 export default BookEdit;
+
 const BookInfo = styled.div`
   display: flex;
   .info {

@@ -160,6 +160,7 @@ const List = () => {
   
 
   useEffect(() => {
+
   if (location.state) {
     const searchQuery = location.state.query;
     setQuery(searchQuery);
@@ -174,6 +175,7 @@ const List = () => {
       .catch((e) => alert(e.message));
   }
 }, [location.state]);
+
 
   const inputImgClick = () => {
     if (searchTerm) {
@@ -191,7 +193,8 @@ const List = () => {
       bookImageUrl:book.image,
       authors:book.author,
       isbn13:book.isbn,
-      description:book.description
+      description:book.description,
+      link:book.link
     }
     navigate('/BookDetail', {state: {book:book2}} )
     console.log(`보내는 북: ${book.title}`)

@@ -178,13 +178,19 @@ const BookDetail = () => {
 
 
 
+
+
+
   useEffect(() => {
     // List에서넘어온 book객체의 변수 : 
-    //bookName,title,bookImageUrl,image,authors,isbn13, description
 
     if (location.state.book) {
       // setBookItem(location.state.book);
       setBookItem({ ...location.state.book });
+
+  
+
+      
 
       const url = `https://data4library.kr/api/usageAnalysisList?authKey=${YULYjbNaruServiceKey}&isbn13=${location.state.book.isbn13}`;
       fetch(url)
