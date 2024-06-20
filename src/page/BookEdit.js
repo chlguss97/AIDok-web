@@ -6,7 +6,12 @@ import BackBtn from "../components/BackBtn";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import blackBook from "../assets/blankBook.png";
-import DatePicker from "react-datepicker";
+// import DatePicker from "react-datepicker"; //없애기. j쿼리도받아야되고복잡;
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import moment from "moment";
+
+
 
 const BookEdit = () => {
   const location = useLocation();
@@ -16,15 +21,22 @@ const BookEdit = () => {
   const authors = location.state.book.authors;
   const description = location.state.book.description;
   const [shortenedDescription, setShortenedDescription] = useState("");
-  const bookImageUrl = location.state.book.bookImageUrl;
+  // const bookImageUrl = location.state.book.bookImageUrl;
+  const bookImageUrl = "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1i65pp.img?w=768&h=544&m=6&x=373&y=154&s=234&d=234"
   const isbn13 = location.state.book.isbn13;
   const link = location.state.book.link;
   const [page, setPage] = useState("페이지정보없음");
-  const [startYmd, setStartYmd] = useState("1988.04.12");
 
   const [clickedIndex, setClickedIndex] = useState(3); //기본이 "선택되지 않음"
-
   const inRef = useRef();
+  const [startDate, setStartDate] = useState()
+  const [endDate, setEndDate] = useState()
+  const [isStartOpen, setIsStartOpen] = useState(false);
+  const [isEndOpen, setIsEndOpen] = useState(false);
+  const [dateDifference, setDateDifference] = useState(0);
+
+
+
 
   //<span class="bookBasicInfo_spec__yzTpy">420<!-- -->쪽</span>
   useEffect(() => {
@@ -56,6 +68,15 @@ const BookEdit = () => {
       }
     }
   }, [link]);
+
+  useEffect(() => {
+    //     // 요약된 디스크립션 생성
+    if (description?.length > 1) {
+      setShortenedDescription(description.substring(0, 100) + "... ...");
+    } else {
+      setShortenedDescription(description);
+    }
+  });
 
   //알라딘 빠이..... https로 인해 알라딘은 못씀..빠이..안녕..
   //   useEffect(() => {
@@ -102,20 +123,6 @@ const BookEdit = () => {
   //       .catch((e) => console.log("에러: " + e.message));
   //   }, []);
 
-  const setStartDate = () => {
-    return(
-    <DatePicker selected={startYmd} onChange={handleStartDateChange}></DatePicker>;
-    );
-  };
-
-  const handleStartDateChange = (date) => {
-    setStartYmd(date); // 선택된 날짜를 state에 저장
-  };
-
-  const setEndDate = () => {
-    alert("종료일 달력");
-  };
-
   const pageEdit = () => {
     //사용자가 책page바꾸고싶을때
     if (inRef.current) {
@@ -155,6 +162,54 @@ const BookEdit = () => {
   const save = () => {
     alert("저장합니다");
   };
+
+
+
+  const clickStartCalendar = () => {
+    setIsStartOpen(!isStartOpen);
+  };
+
+  const startDateChange = (selectedDate) => {
+    setIsStartOpen(false);
+    setStartDate(selectedDate);
+  };
+
+  const clickEndCalendar = () => {
+    setIsEndOpen(!isEndOpen);
+  };
+
+  const endDateChange = (selectedDate) => {
+    setIsEndOpen(false);
+    // setEndDate(moment(selectedDate).format("YYYY년 MM월 DD일"));
+    setEndDate(selectedDate);
+  };
+
+  if(startDate && endDate){
+    calculateDateDifference()
+  }
+
+  // 날짜 차이 계산 함수
+  const calculateDateDifference = () => {
+    if (startDate && endDate && startDate !== null && endDate !== null) {
+      const start = moment(startDate);
+      const end = moment(endDate);
+  
+      // 시작 날짜가 끝 날짜와 같을 때는 일 수 차이를 1로 설정
+      if (start.isSame(end, "day")) {
+        setDateDifference(1);
+      } else if (start.isAfter(end)) {
+        alert("시작 날짜는 끝 날짜보다 이후일 수 없습니다.");
+        return;
+      } else {
+        const diffInDays = end.diff(start, "days");
+        setDateDifference(diffInDays);
+      }
+    } else {
+      setDateDifference(null);
+    }
+  };
+
+
 
   return (
     <div style={{ textAlign: "center", padding: "5%" }}>
@@ -220,36 +275,56 @@ const BookEdit = () => {
         <Period>
           <HeadText>목표 기간</HeadText>
           <div className="startToEnd">
-            <span>시작</span>
-            <Date>2024.6.1.</Date>
-            <FaRegCalendarAlt
-              style={{ cursor: "pointer" }}
-              onClick={setStartDate}
-            />
-
+            {/* ~~~~시작날짜~~~~~ */}
+            <span onClick={clickStartCalendar}>
+              <span>시작 </span>
+              <Date>{startDate ? moment(startDate).format("YYYY년 MM월 DD일")  : "   달력 클릭  "}</Date>&nbsp; &nbsp;
+              <FaRegCalendarAlt style={{ cursor: "pointer" }}>
+                {/* <Calendar
+                  isOpen={isStartOpen}
+                  onChange={startDateChange}
+                  value={startDate}
+                ></Calendar> */}
+              </FaRegCalendarAlt>
+            </span>
             <span>~</span>
-            <span>끝</span>
-            <Date>2024.6.1.</Date>
-            <FaRegCalendarAlt
-              style={{ cursor: "pointer" }}
-              onClick={setEndDate}
-            />
+
+          {/* ~~~~끝날짜~~~~~ */}
+            <span onClick={clickEndCalendar}>
+              <span>끝 </span>
+              <Date>{endDate ? moment(endDate).format("YYYY년 MM월 DD일") : "   달력 클릭  "}</Date> &nbsp; &nbsp;
+              <FaRegCalendarAlt style={{ cursor: "pointer" }}/>
+                {/* <Calendar
+                  isOpen={isEndOpen}
+                  onChange={endDateChange}
+                  value={endDate}
+                ></Calendar> */}
+             
+            </span>
           </div>
+
+          {isStartOpen && (
+            <Calendar onChange={startDateChange} value={startDate} />
+          )}
+          {isEndOpen && (
+            <Calendar onChange={endDateChange} value={endDate} />
+          )}
+          
         </Period>
         <Target>
-          <HeadText>페이지 : {page}쪽</HeadText>
+          <HeadText>페이지 : {page? `${page}쪽` : ` 쪽`}</HeadText>
           <div className="graph">
             <Bar>
               <Progress width="50%" />
               {/* <div className="progress" width="50%"></div> */}
             </Bar>
-            <input
+            {/* <input
               ref={inRef}
               type="text"
               placeholder="쪽수"
               style={{ width: "3rem" }}
-            ></input>
-            <EditBtn onClick={() => pageEdit}>수정</EditBtn>
+            ></input> */}
+            <EditBtn onClick={() => pageEdit()}>수정</EditBtn>
           </div>
           <div className="numbers">
             <Number $left="0%">0p</Number>
@@ -258,8 +333,8 @@ const BookEdit = () => {
           </div>
           <div>
             <p className="note">
-              <span className="nickname">배추껍질</span>님의 하루 적정 독서
-              페이지는 <span className="point">100p</span>입니다.
+              <span className="nickname">{page? page : "?"}쪽을 {dateDifference? dateDifference:"?"}일 동안 읽으셔야 하기에, 하루 권장 독서
+              페이지는 --<span className="point">100p</span>입니다.</span>
             </p>
           </div>
         </Target>
