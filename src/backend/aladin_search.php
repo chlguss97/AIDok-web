@@ -33,7 +33,7 @@
 
     //3.curl 작업 시작
     $response = curl_exec($ch);
-    echo $response;
+    echo json_encode($response);
 
 
     //4.curl작업 닫기
