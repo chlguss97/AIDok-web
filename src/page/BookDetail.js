@@ -160,10 +160,10 @@ const BackButtonWrapper = styled.div`
 const BookDetail = () => {
 
   
-  const YULYjbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
-    "a6e0e7411107bcf35da8623fb02f13a7b559dd455855d5a44baae620c142d4b8";
+  const jbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
+    "3de6856d1fbee758931e324ef85f34590549f6c5de34db53624fcd28a9684f63";
   const DEAHANjbNaruServiceKey = " ";
-  const HYUNWOLjbNaruServiceKey = " ";
+  const HYUNWOLjbNaruServiceKey = "";
   const TEAMJANGjbNaruServiceKey = " ";
   const location = useLocation();
   const [bookItem, setBookItem] = useState({}); //useLoacation으로 받아온 book객체
@@ -192,7 +192,7 @@ const BookDetail = () => {
 
       
 
-      const url = `https://data4library.kr/api/usageAnalysisList?authKey=${YULYjbNaruServiceKey}&isbn13=${location.state.book.isbn13}`;
+      const url = `http://data4library.kr/api/usageAnalysisList?authKey=${jbNaruServiceKey}&isbn13=${location.state.book.isbn13}`;
       fetch(url)
         .then((res) => res.text()) //정보나루api는 xml줘용
         .then((xmlText) => {
@@ -231,7 +231,7 @@ const BookDetail = () => {
 
               // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
               const coPromise = fetch(
-                `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
               )
                 .then((res) => res.text())
                 .then((xmlText) => {
@@ -295,7 +295,7 @@ const BookDetail = () => {
 
               //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
               const maniaPromise = fetch(
-                `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
               )
                 .then((res) => res.text())
                 .then((xmlText) => {
@@ -360,7 +360,7 @@ const BookDetail = () => {
 
               //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
               const readerPromise = fetch(
-                `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
               )
                 .then((res) => res.text())
                 .then((xmlText) => {
@@ -427,7 +427,7 @@ const BookDetail = () => {
     
     setBookItem({...book});
 
-    const url = `https://data4library.kr/api/usageAnalysisList?authKey=${YULYjbNaruServiceKey}&isbn13=${book.isbn13}`;
+    const url = `http://data4library.kr/api/usageAnalysisList?authKey=${jbNaruServiceKey}&isbn13=${book.isbn13}`;
     fetch(url)
       .then((res) => res.text()) //정보나루api는 xml줘용
       .then((xmlText) => {
@@ -466,7 +466,7 @@ const BookDetail = () => {
 
             // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const coPromise = fetch(
-              `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
+              `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
             )
               .then((res) => res.text())
               .then((xmlText) => {
@@ -530,7 +530,7 @@ const BookDetail = () => {
 
             //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const maniaPromise = fetch(
-              `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
+              `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
             )
               .then((res) => res.text())
               .then((xmlText) => {
@@ -572,6 +572,7 @@ const BookDetail = () => {
         //==========================다독자를 위한 추천도서
         const readerRecBooks =
           xmlDoc.getElementsByTagName("readerRecBooks")[0];
+          console.log(readerRecBooks)
         if (!readerRecBooks) {
           console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
           return;
@@ -595,7 +596,7 @@ const BookDetail = () => {
 
             //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const readerPromise = fetch(
-              `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
+              `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn13}`
             )
               .then((res) => res.text())
               .then((xmlText) => {

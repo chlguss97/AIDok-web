@@ -32,7 +32,6 @@ const BookEdit = () => {
     console.log("링크를 줄까안줄까.:"+link)
 
 
-
     if(link!==undefined){
         if(link.match(/catalog\/(\d+)/)){
             const match = link.match(/catalog\/(\d+)/);
@@ -56,7 +55,6 @@ const BookEdit = () => {
                     });
                   });
               }
-
         }
 
         
@@ -236,6 +234,7 @@ const BookEdit = () => {
               <Progress width="50%" />
               {/* <div className="progress" width="50%"></div> */}
             </Bar>
+            <input type="text" placeholder="쪽수" style={{width:'3rem'}}></input>
             <EditBtn onClick={pageEdit}>수정</EditBtn>
           </div>
           <div className="numbers">

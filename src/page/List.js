@@ -160,29 +160,25 @@ const List = () => {
   
 
   useEffect(() => {
-
-  if (location.state) {
-    const searchQuery = location.state.query;
-    setQuery(searchQuery);
-    const url = `./backend/naver_search.php?query=${searchQuery}`;
-    fetch(url)
-      .then((res) => res.json())
-      .then((jsonData) => {
-        alert(JSON.stringify(jsonData, null, 2)); // JSON 데이터를 알림으로 표시
-
-        setBooks(jsonData.items);
-      })
-      .catch((e) => alert(e.message));
-  }
-}, [location.state]);
-
+    if (location.state) {
+      setQuery(location.state.query);
+      const url = `./backend/naver_search.php?query=${query}`;
+      fetch(url)
+        .then((res) => res.json())
+        .then((jsonData) => {
+          setBooks(jsonData.items)
+          console.log("aaaaaa"+jsonData.items)
+          })
+        .catch((e) => alert(e.message));
+    }
+  }, [query, location.state]);
 
   const inputImgClick = () => {
     if (searchTerm) {
       const url = `./backend/naver_search.php?query=${searchTerm}`;
       fetch(url)
         .then((res) => res.json())
-        .then((jsonData) => setBooks(jsonData.items.link))
+        .then((jsonData) => setBooks(jsonData.items))
         .catch((e) => alert(e.message));
     }
   };
