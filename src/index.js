@@ -6,12 +6,10 @@ import reportWebVitals from "./reportWebVitals";
 import { combineReducers, legacy_createStore as createStore } from "redux";
 import { Provider } from "react-redux";
 import userAccountReducer from "./redux/account";
-import aReducer from "./redux/a";
 
 
 const rootReducer = combineReducers({
   userA: userAccountReducer,
-  a: aReducer,
 });
 const store = createStore(rootReducer);
 

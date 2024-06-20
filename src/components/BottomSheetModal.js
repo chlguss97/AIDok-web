@@ -8,7 +8,7 @@ Modal.setAppElement('#root');
 const modalStyle = {
     content: {
         position: 'absolute',
-        bottom: 0,
+        bottom: 80,
         left: 0,
         right: 0,
         top: 'auto',

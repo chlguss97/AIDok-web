@@ -19,6 +19,7 @@ const SearchInputWrapper = styled.div`
   position: relative;
   width: 100%;
 `;
+
 const SearchInput = styled.input`
   border: none;
   font-size: 16px;
@@ -45,16 +46,17 @@ const SearchBar = ({ searchTerm, setSearchTerm, onClick,placeholder }) => {
   return (
     <SearchBarContainer>
     <SearchInputWrapper>
-      <SearchInput
-        placeholder={placeholder}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+      <SearchInput 
+        placeholder={placeholder} 
+        value={searchTerm} 
+        onChange={(e) => setSearchTerm(e.target.value)} 
       />
       <SearchButton onClick={onClick}>
         <Icon src={searchicon} alt='Search Icon' />
       </SearchButton>
     </SearchInputWrapper>
   </SearchBarContainer>
+
   )
 };
 export default SearchBar;

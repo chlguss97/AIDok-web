@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import book from '../assets/book.png';
@@ -7,6 +7,7 @@ import icon2 from '../assets/icon2.png';
 import SaveBtn from '../components/SaveBtn';
 import BackBtn from '../components/BackBtn';
 import BookModal from '../components/BookModal';
+import BottomSheetModal from '../components/BottomSheetModal'
 
 const Container = styled.div`
   display: flex;
@@ -105,11 +106,20 @@ const Icon = styled.img`
 
 const WriteNote = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState({
     title: '책 추가',
     authors: '',
     cover: book
   });
+
+  const openBottomSheet = () => {
+    setIsBottomSheetOpen(true);
+  };
+
+  const closeBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+  };
 
   const bookData = Array.from({ length: 20 }, (_, index) => ({
     title: `트렌드 코리아 ${2024 - index}`,
@@ -141,19 +151,22 @@ const WriteNote = () => {
           <BookAuthors>{selectedBook.authors}</BookAuthors>
         </BookInfo>
       </Header>
+      <BottomSheetModal
+        isOpen={isBottomSheetOpen}
+        onRequestClose={closeBottomSheet}
+      />
       <Content>
-        <ActionButton>
+        <ActionButton onClick={openBottomSheet} style={{cursor:"pointer"}}>
           <Icon src={icon1} alt="Underline Icon" />
           사진 & 하이라이트
         </ActionButton>
-        <ActionButton>
-          <Icon src={icon2} alt="Underline Icon" />
+        <ActionButton onClick={openBottomSheet} style={{cursor:"pointer"}}>
+          <Icon src={icon2} alt="Underline Icon"  />
           AI로 텍스트 추출
         </ActionButton>
         <NoteInput placeholder="노트에 저장할 내용을 작성하세요" />
       </Content>
       <SaveBtn name={"저장하기"} />
-
       <BookModal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
