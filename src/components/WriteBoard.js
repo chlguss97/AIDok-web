@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import SaveBtn from './SaveBtn';
 import { FaPlus } from 'react-icons/fa';
 import backIcon from '../assets/backicon.png';
 import BookModal from '../components/BookModal';
 import book from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
+import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   padding: 20px;
@@ -153,7 +155,6 @@ const BookAuthors = styled.div`
 `;
 
 const WriteBoard = () => {
-  const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
   const [content, setContent] = useState('');
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -164,6 +165,7 @@ const WriteBoard = () => {
   });
   const fileInputRef2 = useRef(null);
   const navigate = useNavigate();
+  const user = useSelector((state) => state.userA.userAccount);
 
   const handleImageChange2 = (e) => {
     const file = e.target.files[0];
@@ -180,9 +182,28 @@ const WriteBoard = () => {
     navigate(-1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save the post logic here
+    
+    try {
+      const postRef = await addDoc(collection(db, 'posts'), {
+        id: user.userId,
+        bookTitle: selectedBook.title,
+        bookImg: selectedBook.cover,
+        img: image2,
+        writingContent: content,
+        date: new Date().toISOString()
+      });
+
+      // 서브 컬렉션으로 빈 boardComment 컬렉션을 생성
+      await setDoc(doc(db, 'posts', postRef.id, 'boardComment', 'init'), { initialized: true });
+
+      console.log("Document written with ID: ", postRef.id);
+      alert("게시가 완료되었습니다.");
+      navigate('/board');  // 게시판 페이지로 이동
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   const handleBookInfoClick = () => {
@@ -191,7 +212,6 @@ const WriteBoard = () => {
 
   const handleBookSelect = (book) => {
     setSelectedBook(book);
-    setImage1(book.cover);  // 책 선택 시 이미지 업데이트
     setModalIsOpen(false);
   };
 
@@ -205,8 +225,8 @@ const WriteBoard = () => {
         <InfoContainer>
           <BookInfo onClick={handleBookInfoClick}>
             <BookImage src={selectedBook.cover} alt="Book Cover" />
-            <BookTitle> {selectedBook.title}</BookTitle>
-            <BookAuthors> {selectedBook.authors}</BookAuthors>
+            <BookTitle>{selectedBook.title}</BookTitle>
+            <BookAuthors>{selectedBook.authors}</BookAuthors>
           </BookInfo>
         </InfoContainer>
         <FullWidthImageUploadWrapper hasImage={!!image2} onClick={handleImageUploadClick2}>
@@ -230,7 +250,20 @@ const WriteBoard = () => {
           onChange={(e) => setContent(e.target.value)}
           placeholder="공유하고 싶은 내용을 작성하세요"
         />
-        <SaveBtn name="저장하기" />
+        <button type="submit" style={{
+          backgroundColor: "#6F4E37",
+          border: "none",
+          borderRadius: "10px",
+          color: "white",
+          width: "200px",
+          height: "2.5rem",
+          margin: "0 auto",
+          fontSize: "18px",
+          fontWeight: "bold",
+          cursor: "pointer"
+        }}>
+          저장하기
+        </button>
       </Form>
       <BookModal
         isOpen={modalIsOpen}

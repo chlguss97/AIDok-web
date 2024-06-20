@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaHeart, FaRegHeart, FaCommentDots, FaEllipsisH, FaPen } from 'react-icons/fa';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { useSelector } from 'react-redux';
 
 const BoardContainer = styled.div`
   padding-top: 8%;
@@ -174,65 +177,58 @@ const Title = styled.p`
 `;
 
 const Board = () => {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      username: '대한',
-      profileImage: 'https://images.ddengle.com/files/attach/images/11334861/189/465/015/4b9097d5699b7fa4b153b1dd8d97814c.jpeg',
-      content: '집에 가고 싶다..',
-      postImage: 'https://jjal.today/data/file/gallery/1028612757_NCiaYZQs_77b66db361dba5c22df56f4cb7da21a078a2539f.jpeg',
-      likes: 0,
-      comments: 2,
-      liked: false,
-      bookTitle: '트렌드 코리아 2023',
-      bookImage: 'https://image.yes24.com/goods/113416767/XL',
-      date: '2023년 06월 15일' // Add the date here
-    },
-    {
-      id: 2,
-      username: '노상진',
-      profileImage: 'https://xen-api.linkareer.com/attachments/107214',
-      content: '난 사실 아무 생각이 없어',
-      postImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3ux6b26C7E5tu4xKPTtRD9k6BIWWocpRlYw&s',
-      likes: 0,
-      comments: 2,
-      liked: false,
-      bookTitle: '트렌드 코리아 2024',
-      bookImage: 'https://image.yes24.com/goods/122790776/XL',
-      date: '2023년 05월 11일' // Add the date here
-    }
-  ]);
-
+  const [posts, setPosts] = useState([]);
   const [showDropdown, setShowDropdown] = useState({});
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const user = useSelector((state) => state.userA.userAccount);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const querySnapshot = await getDocs(collection(db, 'posts'));
+      const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setPosts(postsData);
+    };
+
+    fetchPosts();
+  }, []);
+
   const handleCreatePost = () => {
     navigate('/write');
   };
+
   const handleViewComments = () => {
     navigate('/comments');
   };
+
   const toggleDropdown = (postId) => {
     setShowDropdown(prevShowDropdown => ({
       ...prevShowDropdown,
       [postId]: !prevShowDropdown[postId]
     }));
   };
+
   const handleEdit = (postId) => {
     console.log('Edit post', postId);
     // Add your edit logic here
   };
+
   const handleDelete = (postId) => {
     console.log('Delete post', postId);
     // Add your delete logic here
   };
-  const handleLikeToggle = (postId) => {
-    setPosts(prevPosts =>
-      prevPosts.map(post =>
-        post.id === postId ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 } : post
-      )
+
+  const handleLikeToggle = async (postId) => {
+    const updatedPosts = posts.map(post =>
+      post.id === postId ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 } : post
     );
+    setPosts(updatedPosts);
+
+    const post = updatedPosts.find(post => post.id === postId);
+    const postRef = doc(db, 'posts', postId);
+    await updateDoc(postRef, { likes: post.likes });
   };
+
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.options-icon')) {
       setShowDropdown({});
@@ -253,11 +249,11 @@ const Board = () => {
         <PostContainer key={post.id}>
           <PostHeader>
             <HeaderLeft>
-              <Avatar src={post.profileImage} />
+              <Avatar src={post.userimg} />
               <div>
-                <Username>{post.username}</Username>
+                <Username>{post.id}</Username>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <BookImage src={post.bookImage} />
+                  <BookImage src={post.bookImg} />
                   <div>
                     <BookTitle>{post.bookTitle}</BookTitle> <PostText>을(를) 공유했습니다.</PostText>
                   </div>
@@ -272,25 +268,25 @@ const Board = () => {
               </DropdownMenu>
             </div>
           </PostHeader>
-          <PostImage src={post.postImage} alt="post" />
+          <PostImage src={post.img} alt="post" />
           <PostContent>
-            <p>{post.content}</p>
+            <p>{post.writingContent}</p>
           </PostContent>
-          <PostFooter>          
+          <PostFooter>
             <PostFooterIcons>
               {post.liked ? (
                 <FaHeart color="red" onClick={() => handleLikeToggle(post.id)} />
               ) : (
                 <FaRegHeart onClick={() => handleLikeToggle(post.id)} />
               )}
-              <IconText>{post.likes} Likes</IconText>
+              <IconText>{post.likes || 0} Likes</IconText>
               <CommentIconWrapper onClick={handleViewComments}>
                 <FaCommentDots style={{ marginLeft: '10px' }} />
-                <IconText>{post.comments} Comments</IconText>
+                <IconText>{post.commentcount || 0} Comments</IconText>
               </CommentIconWrapper>
             </PostFooterIcons>
           </PostFooter>
-          <PostDate>{post.date}</PostDate>
+          <PostDate>{new Date(post.date).toLocaleDateString()}</PostDate>
         </PostContainer>
       ))}
       <FloatingButton onClick={handleCreatePost}>

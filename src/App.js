@@ -32,7 +32,7 @@ function App() {
           <Route path="/WriteNote" element={<WriteNote />} />
           <Route path="/Board" element={<Board />} />
           <Route path="/write" element={<WriteBoard />} />
-          <Route path="/comments" element={<BoardComment />} />
+          <Route path="/board/:postId/comments" element={<BoardComment />} />
           
           
 
