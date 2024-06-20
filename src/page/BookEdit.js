@@ -3,7 +3,7 @@ import styled from "styled-components";
 import SaveBtn from "../components/SaveBtn";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import BackBtn from "../components/BackBtn";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import blackBook from "../assets/blankBook.png";
 import DatePicker from "react-datepicker";
@@ -20,106 +20,114 @@ const BookEdit = () => {
   const isbn13 = location.state.book.isbn13;
   const link = location.state.book.link;
   const [page, setPage] = useState("페이지정보없음");
+  const [startYmd, setStartYmd] = useState("1988.04.12");
 
   const [clickedIndex, setClickedIndex] = useState(3); //기본이 "선택되지 않음"
-  const [startDate, setStartDate] = useState();
 
-
+  const inRef = useRef();
 
   //<span class="bookBasicInfo_spec__yzTpy">420<!-- -->쪽</span>
   useEffect(() => {
+    console.log("링크를 줄까안줄까.:" + link);
 
-    console.log("링크를 줄까안줄까.:"+link)
-
-
-    if(link!==undefined){
-        if(link.match(/catalog\/(\d+)/)){
-            const match = link.match(/catalog\/(\d+)/);
-            if (match) {
-                const query = match[1];
-                console.log(query);
-                fetch(`./backend/naver_link.php?query=${query}`)
-                  .then((res) => res.text())
-                  .then((text) => {
-                    const dom = new DOMParser();
-                    const doc = dom.parseFromString(text, "text/html"); //두번째 파라미터 : mimeType
-                    const es = doc.querySelectorAll(".bookBasicInfo_spec__yzTpy"); // bookBasicInfo_spec__yzTpy라는 클래스 선택자를 이용하여 요소찾기
-                    console.log("es는무엇인가  " + es);
-                    es.forEach((element) => {
-                      const textContent = element.textContent;
-                      if (textContent.includes("쪽")) {
-                        console.log("쪽이 포함된 텍스트:", textContent);
-                        const cleanedText = textContent.replace(/쪽/g, "")
-                        setPage(cleanedText)
-                      }
-                    });
-                  });
-              }
+    if (link !== undefined) {
+      if (link.match(/catalog\/(\d+)/)) {
+        const match = link.match(/catalog\/(\d+)/);
+        if (match) {
+          const query = match[1];
+          console.log(query);
+          fetch(`./backend/naver_link.php?query=${query}`)
+            .then((res) => res.text())
+            .then((text) => {
+              const dom = new DOMParser();
+              const doc = dom.parseFromString(text, "text/html"); //두번째 파라미터 : mimeType
+              const es = doc.querySelectorAll(".bookBasicInfo_spec__yzTpy"); // bookBasicInfo_spec__yzTpy라는 클래스 선택자를 이용하여 요소찾기
+              console.log("es는무엇인가  " + es);
+              es.forEach((element) => {
+                const textContent = element.textContent;
+                if (textContent.includes("쪽")) {
+                  console.log("쪽이 포함된 텍스트:", textContent);
+                  const cleanedText = textContent.replace(/쪽/g, "");
+                  setPage(cleanedText);
+                }
+              });
+            });
         }
-
-        
+      }
     }
-   
-
-  });
-
-
+  }, [link]);
 
   //알라딘 빠이..... https로 인해 알라딘은 못씀..빠이..안녕..
-//   useEffect(() => {
-//     // 요약된 디스크립션 생성
-//     if (description?.length > 1) {
-//       setShortenedDescription(description.substring(0, 100) + "... ...");
-//     } else {
-//       setShortenedDescription(description);
-//     }
+  //   useEffect(() => {
+  //     // 요약된 디스크립션 생성
+  //     if (description?.length > 1) {
+  //       setShortenedDescription(description.substring(0, 100) + "... ...");
+  //     } else {
+  //       setShortenedDescription(description);
+  //     }
 
-//     console.log(bookName + authors + description + bookImageUrl + isbn13);
-//     const url = `./backend/aladin_search.php?query=${location.state.book.isbn13}`;
+  //     console.log(bookName + authors + description + bookImageUrl + isbn13);
+  //     const url = `./backend/aladin_search.php?query=${location.state.book.isbn13}`;
 
-//     fetch(url)
-//       .then((response) => response.text())
-//       .then((xmlText) => {
-//         const domParser = new DOMParser();
-//         const xmlDoc = domParser.parseFromString(xmlText, "text/xml");
+  //     fetch(url)
+  //       .then((response) => response.text())
+  //       .then((xmlText) => {
+  //         const domParser = new DOMParser();
+  //         const xmlDoc = domParser.parseFromString(xmlText, "text/xml");
 
-//         if (!xmlDoc) {
-//           console.error("XML 데이터 파싱 실패");
-//           return;
-//         }
+  //         if (!xmlDoc) {
+  //           console.error("XML 데이터 파싱 실패");
+  //           return;
+  //         }
 
-//         // 네임스페이스 URI를 변수로 정의
-//         const namespaceURI = "http://www.aladin.co.kr/ttb/apiguide.aspx";
+  //         // 네임스페이스 URI를 변수로 정의
+  //         const namespaceURI = "http://www.aladin.co.kr/ttb/apiguide.aspx";
 
-//         // 네임스페이스 URI를 사용하여 요소를 선택할 때는 getElementsByTagNameNS를 사용
-//         const itemPageElements = xmlDoc.getElementsByTagNameNS(
-//           namespaceURI,
-//           "itemPage"
-//         );
+  //         // 네임스페이스 URI를 사용하여 요소를 선택할 때는 getElementsByTagNameNS를 사용
+  //         const itemPageElements = xmlDoc.getElementsByTagNameNS(
+  //           namespaceURI,
+  //           "itemPage"
+  //         );
 
-//         if (itemPageElements.length > 0) {
-//           // 여기서는 첫 번째 itemPage 요소를 선택합니다.
-//           const itemPageElement = itemPageElements[0];
-//           const page = itemPageElement.textContent.trim();
-//           setPage(page);
-//           console.log("책의 총 페이지 수: " + page);
-//         } else {
-//           console.log("itemPage 요소를 찾을 수 없습니다.");
-//         }
-//       })
-//       .catch((e) => console.log("에러: " + e.message));
-//   }, []);
+  //         if (itemPageElements.length > 0) {
+  //           // 여기서는 첫 번째 itemPage 요소를 선택합니다.
+  //           const itemPageElement = itemPageElements[0];
+  //           const page = itemPageElement.textContent.trim();
+  //           setPage(page);
+  //           console.log("책의 총 페이지 수: " + page);
+  //         } else {
+  //           console.log("itemPage 요소를 찾을 수 없습니다.");
+  //         }
+  //       })
+  //       .catch((e) => console.log("에러: " + e.message));
+  //   }, []);
 
-  //   const setStartDate = () => {
-  //     <DatePicker selected={startDate} onChange={handleStartDateChange} />;
-  //   };
+  const setStartDate = () => {
+    return(
+    <DatePicker selected={startYmd} onChange={handleStartDateChange}></DatePicker>;
+    );
+  };
+
+  const handleStartDateChange = (date) => {
+    setStartYmd(date); // 선택된 날짜를 state에 저장
+  };
 
   const setEndDate = () => {
     alert("종료일 달력");
   };
 
   const pageEdit = () => {
-    alert("페이지 수정");
+    //사용자가 책page바꾸고싶을때
+    if (inRef.current) {
+      const newPage = parseInt(inRef.current.value, 10);
+      if (isNaN(newPage) || newPage < 1 || newPage > 5000) {
+        alert("페이지 수는 1에서 5000 사이의 숫자여야 합니다.");
+        return;
+      } else {
+        setPage(newPage);
+        console.log("사용자가 입력한 바뀐 페이지: " + newPage);
+      }
+    }
   };
 
   const timeEdit = () => {
@@ -218,6 +226,7 @@ const BookEdit = () => {
               style={{ cursor: "pointer" }}
               onClick={setStartDate}
             />
+
             <span>~</span>
             <span>끝</span>
             <Date>2024.6.1.</Date>
@@ -234,7 +243,13 @@ const BookEdit = () => {
               <Progress width="50%" />
               {/* <div className="progress" width="50%"></div> */}
             </Bar>
-            <EditBtn onClick={pageEdit}>수정</EditBtn>
+            <input
+              ref={inRef}
+              type="text"
+              placeholder="쪽수"
+              style={{ width: "3rem" }}
+            ></input>
+            <EditBtn onClick={() => pageEdit}>수정</EditBtn>
           </div>
           <div className="numbers">
             <Number $left="0%">0p</Number>
