@@ -25,17 +25,11 @@ const Home = () => {
 
   useEffect(() => {
     // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
-<<<<<<< HEAD
-    window.sendToWeb = function(route, userId, userProfileImg){
-      console.log('sendToWeb function called:', { route, userId, userProfileImg }); // 디버깅용 로그 추가
-      if(route!="/"){
-=======
+
     window.sendToWeb = function (route, userId, userProfileImg) {
       // console.log("유즈셀렉터.."+userAccount.userId)
       dispatch(setUserAccount(userId, userProfileImg));
-
       if (route !== "/") {
->>>>>>> a090995dbb4fb359cc8aac73b19e899437cc6450
         navigate(route);
       }
     };
