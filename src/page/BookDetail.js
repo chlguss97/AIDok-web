@@ -196,8 +196,10 @@ const BookDetail = () => {
       fetch(url)
         .then((res) => res.text()) //정보나루api는 xml줘용
         .then((xmlText) => {
+          console.log("왜안돼"+xmlText)
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+          
           if (!xmlDoc) {
             console.error("Failed to parse XML data");
             return;
@@ -237,6 +239,7 @@ const BookDetail = () => {
                 .then((xmlText) => {
                   const parser = new DOMParser();
                   const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                  console.log("서버잘오나"+xmlDoc)
                   if (!xmlDoc) {
                     console.error("Failed to parse XML data");
                     return null;
