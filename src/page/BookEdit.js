@@ -11,8 +11,6 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
 
-
-
 const BookEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,21 +20,19 @@ const BookEdit = () => {
   const description = location.state.book.description;
   const [shortenedDescription, setShortenedDescription] = useState("");
   // const bookImageUrl = location.state.book.bookImageUrl;
-  const bookImageUrl = "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1i65pp.img?w=768&h=544&m=6&x=373&y=154&s=234&d=234"
+  const bookImageUrl =
+    "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1i65pp.img?w=768&h=544&m=6&x=373&y=154&s=234&d=234";
   const isbn13 = location.state.book.isbn13;
   const link = location.state.book.link;
   const [page, setPage] = useState("페이지정보없음");
 
   const [clickedIndex, setClickedIndex] = useState(3); //기본이 "선택되지 않음"
   const inRef = useRef();
-  const [startDate, setStartDate] = useState()
-  const [endDate, setEndDate] = useState()
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [isEndOpen, setIsEndOpen] = useState(false);
   const [dateDifference, setDateDifference] = useState(0);
-
-
-
 
   //<span class="bookBasicInfo_spec__yzTpy">420<!-- -->쪽</span>
   useEffect(() => {
@@ -163,8 +159,6 @@ const BookEdit = () => {
     alert("저장합니다");
   };
 
-
-
   const clickStartCalendar = () => {
     setIsStartOpen(!isStartOpen);
   };
@@ -180,12 +174,11 @@ const BookEdit = () => {
 
   const endDateChange = (selectedDate) => {
     setIsEndOpen(false);
-    // setEndDate(moment(selectedDate).format("YYYY년 MM월 DD일"));
     setEndDate(selectedDate);
   };
 
-  if(startDate && endDate){
-    calculateDateDifference()
+  if (startDate && endDate) {
+    calculateDateDifference();
   }
 
   // 날짜 차이 계산 함수
@@ -193,7 +186,7 @@ const BookEdit = () => {
     if (startDate && endDate && startDate !== null && endDate !== null) {
       const start = moment(startDate);
       const end = moment(endDate);
-  
+
       // 시작 날짜가 끝 날짜와 같을 때는 일 수 차이를 1로 설정
       if (start.isSame(end, "day")) {
         setDateDifference(1);
@@ -208,8 +201,6 @@ const BookEdit = () => {
       setDateDifference(null);
     }
   };
-
-
 
   return (
     <div style={{ textAlign: "center", padding: "5%" }}>
@@ -278,41 +269,60 @@ const BookEdit = () => {
             {/* ~~~~시작날짜~~~~~ */}
             <span onClick={clickStartCalendar}>
               <span>시작 </span>
-              <Date>{startDate ? moment(startDate).format("YYYY년 MM월 DD일")  : "   달력 클릭  "}</Date>&nbsp; &nbsp;
-              <FaRegCalendarAlt style={{ cursor: "pointer" }}>
-                {/* <Calendar
-                  isOpen={isStartOpen}
-                  onChange={startDateChange}
-                  value={startDate}
-                ></Calendar> */}
-              </FaRegCalendarAlt>
+              {/* <Date>{startDate ? moment(startDate).format("YYYY년 MM월 DD일")  : "   달력 클릭  "}</Date>&nbsp; &nbsp; */}
+              <FaRegCalendarAlt style={{ cursor: "pointer" }} />
+              <span className="dateText">
+                {startDate ? startDate.toLocaleDateString() : "시작일 선택"}
+              </span>
             </span>
+
+            {isStartOpen && (
+              <Calendar
+                onChange={startDateChange}
+                value={startDate}
+                maxDate={new Date()}
+                formatDay={(locale, date) =>
+                  date.toLocaleString("en", { day: "numeric" })
+                }
+              />
+            )}
+
             <span>~</span>
 
-          {/* ~~~~끝날짜~~~~~ */}
+            {/* ~~~~끝날짜~~~~~ */}
             <span onClick={clickEndCalendar}>
-              <span>끝 </span>
-              <Date>{endDate ? moment(endDate).format("YYYY년 MM월 DD일") : "   달력 클릭  "}</Date> &nbsp; &nbsp;
-              <FaRegCalendarAlt style={{ cursor: "pointer" }}/>
-                {/* <Calendar
-                  isOpen={isEndOpen}
-                  onChange={endDateChange}
-                  value={endDate}
-                ></Calendar> */}
-             
+              <span>끝 : </span>
+              {/* <Date>
+                {endDate
+                  ? moment(endDate).format("YYYY년 MM월 DD일")
+                  : "   달력 클릭  "}
+              </Date>{" "} */}
+              &nbsp; &nbsp;
+              <FaRegCalendarAlt style={{ cursor: "pointer" }} />
+              <span className="dateText">
+          {endDate ? endDate.toLocaleDateString() : "종료일 선택"}
+        </span>
+
+
             </span>
           </div>
 
           {isStartOpen && (
-            <Calendar onChange={startDateChange} value={startDate} />
-          )}
-          {isEndOpen && (
-            <Calendar onChange={endDateChange} value={endDate} />
-          )}
-          
+        <Calendar
+          onChange={startDateChange}
+          value={startDate}
+          maxDate={new Date()}
+          formatDay={(locale, date) =>
+            date.toLocaleString("en", { day: "numeric" })
+          }
+        />
+      )}
+
+      
+          {isEndOpen && <Calendar onChange={endDateChange} value={endDate} />}
         </Period>
         <Target>
-          <HeadText>페이지 : {page? `${page}쪽` : ` 쪽`}</HeadText>
+          <HeadText>페이지 : {page ? `${page}쪽` : ` 쪽`}</HeadText>
           <div className="graph">
             <Bar>
               <Progress width="50%" />
@@ -333,8 +343,11 @@ const BookEdit = () => {
           </div>
           <div>
             <p className="note">
-              <span className="nickname">{page? page : "?"}쪽을 {dateDifference? dateDifference:"?"}일 동안 읽으셔야 하기에, 하루 권장 독서
-              페이지는 --<span className="point">100p</span>입니다.</span>
+              <span className="nickname">
+                {page ? page : "?"}쪽을 {dateDifference ? dateDifference : "?"}
+                일 동안 읽으셔야 하기에, 하루 권장 독서 페이지는 --
+                <span className="point">100p</span>입니다.
+              </span>
             </p>
           </div>
         </Target>
