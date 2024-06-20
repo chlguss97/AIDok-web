@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaArrowLeft } from 'react-icons/fa';
+import backIcon from '../assets/backicon.png';
 import { PiArrowElbowRightUpBold } from 'react-icons/pi';
+import { db, Timestamp } from '../firebase/firebase';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   padding-top: 8%;
@@ -11,7 +14,6 @@ const Container = styled.div`
   max-width: 600px;
   margin: 0 auto;
   position: relative;
-  
 `;
 
 const Header = styled.div`
@@ -24,15 +26,16 @@ const Header = styled.div`
 
 const BackButton = styled.button`
   position: absolute;
-  left: 0;
+  top: 20px;
+  left: 0px;
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
-  display: none;
+  display: block;
 
-  @media (max-width: 768px) {
-    display: block;
+  img {
+    width: 20px;
+    height: 20px;
   }
 `;
 
@@ -41,11 +44,10 @@ const Title = styled.h2`
   font-size: 1.7rem;
   font-weight: bold;
   text-align: center;
-  
 `;
 
 const CommentList = styled.div`
-  //margin-top: 10px;
+  margin-top: 10px;
 `;
 
 const CommentContainer = styled.div`
@@ -95,9 +97,9 @@ const CommentInputContainer = styled.div`
   border-top: 1px solid #ccc;
   position: fixed;
   bottom: 10px;
-  width: calc(100% - 40px);
+  width: calc(100% - 16%);
   background-color: white;
-  max-width: 560px;
+  max-width: 600px;
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 5px;
@@ -111,11 +113,6 @@ const CommentInput = styled.input`
   margin-right: 10px;
   box-sizing: border-box;
   min-width: 0;
-
-  @media (max-width: 768px) {
-    padding: 8px;
-    margin-right: 5px;
-  }
 `;
 
 const SendButton = styled.button`
@@ -125,64 +122,84 @@ const SendButton = styled.button`
   cursor: pointer;
   display: flex;
   align-items: center;
-
-  @media (max-width: 768px) {
-    font-size: 1.2rem;
-  }
 `;
 
 const BoardComment = () => {
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      username: '이재용',
-      profileImage: 'https://cdn.dailycc.net/news/photo/202312/765910_670599_189.png',
-      date: '2024년 6월 10일 20시 37분',
-      text: '집에 가라고...',
-    },
-    {
-      id: 2,
-      username: '오우',
-      profileImage: 'https://t2.daumcdn.net/thumb/R720x0/?fname=http://t1.daumcdn.net/brunch/service/user/To1/image/ejOA9PFhzaJ0As9W77yqWnKSh0k.jpg',
-      date: '2024년 6월 16일 10시 20분',
-      text: '나와',
-    },
-    
-  ]);
-
+  const { postId } = useParams();
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const user = useSelector((state) => state.userA.userAccount);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Post ID from params:", postId); // 로그 추가
+    if (postId) {
+      fetchComments();
+    }
+  }, [postId]);
+
+  const fetchComments = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'posts', postId, 'boardComment'));
+      const commentsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setComments(commentsData);
+    } catch (e) {
+      console.error("Error fetching comments: ", e);
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!newComment) return;
+
+    try {
+      await addDoc(collection(db, 'posts', postId, 'boardComment'), {
+        id: user.userId,
+        date: Timestamp.now(),
+        comment: newComment,
+        userimg: user.userImg
+      });
+      setNewComment('');
+      fetchComments();
+    } catch (e) {
+      console.error("Error adding comment: ", e);
+    }
+  };
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
-  
-
   return (
     <Container>
-      
       <Header>
         <BackButton onClick={handleBackClick}>
-          <FaArrowLeft />
+          <img src={backIcon} alt="Back" />
         </BackButton>
-        <Title>comments</Title>
+        <Title>Comments</Title>
       </Header>
       <CommentList>
         {comments.map(comment => (
           <CommentContainer key={comment.id}>
-            <Avatar src={comment.profileImage} />
+            <Avatar src={comment.userimg} />
             <CommentContent>
-              <Username>{comment.username}</Username>
-              <Date>{comment.date}</Date>
-              <Text>{comment.text}</Text>
+              <Username>{comment.id}</Username>
+              <Date>{comment.date.toDate().toLocaleString()}</Date>
+              <Text>{comment.comment}</Text>
             </CommentContent>
           </CommentContainer>
         ))}
       </CommentList>
       <CommentInputContainer>
-        <Avatar src="https://images.ddengle.com/files/attach/images/11334861/189/465/015/4b9097d5699b7fa4b153b1dd8d97814c.jpeg" />
-        <CommentInput placeholder="댓글 추가..." />
-        <SendButton>
+        <Avatar src={user.userImg} alt="user" />
+        <CommentInput 
+          placeholder="댓글 추가..." 
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+        <SendButton onClick={handleCommentSubmit}>
           <PiArrowElbowRightUpBold />
         </SendButton>
       </CommentInputContainer>
