@@ -165,10 +165,10 @@ const List = () => {
       const url = `./backend/naver_search.php?query=${query}`;
       fetch(url)
         .then((res) => res.json())
-        .then((jsonData) => 
-          setBooks(jsonData.items),
-          
-        )
+        .then((jsonData) => {
+          setBooks(jsonData.items)
+          console.log("aaaaaa"+jsonData.items)
+          })
         .catch((e) => alert(e.message));
     }
   }, [query, location.state]);
@@ -189,7 +189,8 @@ const List = () => {
       bookImageUrl:book.image,
       authors:book.author,
       isbn13:book.isbn,
-      description:book.description
+      description:book.description,
+      link:book.link
     }
     navigate('/BookDetail', {state: {book:book2}} )
     console.log(`보내는 북: ${book.title}`)

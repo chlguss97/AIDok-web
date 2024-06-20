@@ -178,13 +178,20 @@ const BookDetail = () => {
 
 
 
+
+
+
   useEffect(() => {
     // List에서넘어온 book객체의 변수 : 
-    //bookName,title,bookImageUrl,image,authors,isbn13, description
-    
+    //bookName,title,bookImageUrl,image,authors,isbn13, description, link
+
     if (location.state.book) {
       // setBookItem(location.state.book);
       setBookItem({ ...location.state.book });
+
+  
+
+      
 
       const url = `https://data4library.kr/api/usageAnalysisList?authKey=${YULYjbNaruServiceKey}&isbn13=${location.state.book.isbn13}`;
       fetch(url)
@@ -402,7 +409,7 @@ const BookDetail = () => {
     // 요약된 디스크립션 생성
     if (bookItem?.description?.length > 1) {
       bookItem?.description.replace(/&lt;/g, "<").replace(/gt;/g, ">")
-      setShortenedDescription(bookItem.description.substring(0, 180) + "...");
+      setShortenedDescription(bookItem.description.substring(0, 180) + "... ...");
   } else {
       setShortenedDescription(bookItem.description);
   }
