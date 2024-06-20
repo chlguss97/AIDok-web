@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import BackBtn from "../components/BackBtn";
 import { useNavigate, useLocation } from "react-router-dom";
 import searchIcon from "../assets/searchicon.png";
 import backicon from "../assets/backicon.png";
@@ -11,7 +12,7 @@ const Container = styled.div`
   background-color: white;
   height: 100vh;
   font-family: Arial, sans-serif;
-  overflow: hidden;
+  overflow: hidden; /* Prevents body scroll */
   padding-top: 8%;
   padding-left: 8%;
   padding-right: 8%;
@@ -21,15 +22,21 @@ const Header = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
+  /* position: relative; Allows positioning of the back button */
   padding: 20px;
   margin-bottom: 20px;
 
-  .backImg {
+  .backImg{
     width: 20px;
     height: 20px;
     margin-left: 20px;
     cursor: pointer;
   }
+`;
+
+const BackButtonWrapper = styled.div`
+  position: absolute;
+  left: 10px;
 `;
 
 const Title = styled.p`
@@ -39,10 +46,10 @@ const Title = styled.p`
   justify-content: center;
   text-align: center;
   display: inline-block;
-  flex: 1;
+  flex: 1,
 `;
 
-const SearchBarContainer = styled.div`
+const SearchBarWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
@@ -61,8 +68,8 @@ const Content = styled.div`
   padding-left: 5%;
   padding-right: 5%;
   overflow-y: auto;
-  height: calc(100vh - 120px);
-  box-sizing: border-box;
+  height: calc(100vh - 120px); /* Adjust height based on header size */
+  box-sizing: border-box; /* Include padding in height calculation */
 `;
 
 const BookCard = styled.div`
@@ -91,6 +98,22 @@ const BookTitle = styled.div`
   color: #5f5c5c;
 `;
 
+const SearchBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #5e7e71;
+  border-radius: 20px;
+  padding: 10px 10px;
+  background-color: #6f4e37;
+  width: 100%;
+  max-width: 240px; /* 최대 너비를 240px로 제한 */
+  margin: 0 auto 30px auto;
+
+  &:focus-within {
+    background-color: #5e7e71; /* 초록색으로 변경 */
+  }
+`;
 const SearchInputWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -101,7 +124,7 @@ const SearchInput = styled.input`
   font-size: 16px;
   outline: none;
   width: 100%;
-  padding-left: 30px;
+  padding-left: 30px; /* 이미지 공간 확보 */
   background: none;
   color: white;
 `;
@@ -113,7 +136,6 @@ const SearchButton = styled.button`
   position: absolute;
   left: 86%;
   top: 50%;
-  
   transform: translateY(-50%);
 `;
 
@@ -122,61 +144,68 @@ const Icon = styled.img`
   height: 22px;
 `;
 
+// 알라딘 ttb api 키: ttbbaechu100402002
+//배유리 정보나루(학원 id:ddokddok pw:actbae88^^  집 id:ddokddok2 pw:actbae88^^)
+//정보나루 서비스키:(배유리학원) c3a39d682934e71b3876a8ef03f04a3504b289273cd616beef7ef385b7733334
+//https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbbaechu100402002&Query=%EA%B0%90%EC%9E%90
+// (네이버) clientId: q0Llra2n2oQB3OC27M5l , clientSecret: XOzSKgv1ip
+
 const List = () => {
   const location = useLocation();
-  const [query, setQuery] = useState("리액트");
+  const [query, setQuery] = useState("리액트"); //받아온 쿼리
   const [searchTerm, setSearchTerm] = useState("");
   const [books, setBooks] = useState([]);
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  
 
   useEffect(() => {
     if (location.state) {
       setQuery(location.state.query);
-      const url = `./backend/naver_search.php?query=${encodeURIComponent(location.state.query)}`;
+      const url = `./backend/naver_search.php?query=${query}`;
       fetch(url)
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error('Network response was not ok ' + res.statusText);
-          }
-          return res.text();
-        })
-        .then((text) => {
-          console.log(text);  // 데이터를 확인하기 위해 추가
-          const jsonData = JSON.parse(text); // JSON 문자열을 객체로 변환
-          setBooks(jsonData.items);
-        })
+        .then((res) => res.json())
+        .then((jsonData) => 
+          setBooks(jsonData.items),
+          
+        )
         .catch((e) => alert(e.message));
     }
-  }, [location.state]);
+  }, [query, location.state]);
 
   const inputImgClick = () => {
     if (searchTerm) {
-      const url = `./backend/naver_search.php?query=${encodeURIComponent(searchTerm)}`;
+      const url = `./backend/naver_search.php?query=${searchTerm}`;
       fetch(url)
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error('Network response was not ok ' + res.statusText);
-          }
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((jsonData) => setBooks(jsonData.items))
         .catch((e) => alert(e.message));
     }
   };
 
-  const bookCardClick = (book) => {
-    navigate('/BookDetail', { state: { book: book } });
-    console.log(`보내는 북: ${book.title}`);
-  };
+  const bookCardClick=(book) =>{
+    const book2 = {
+      bookName:book.title,
+      bookImageUrl:book.image,
+      authors:book.author,
+      isbn13:book.isbn,
+      description:book.description
+    }
+    navigate('/BookDetail', {state: {book:book2}} )
+    console.log(`보내는 북: ${book.title}`)
+  }
 
-  const backButtonClick = () => {
-    navigate('/');
-  };
+  const backButtonClick= ()=>{
+    navigate('/')
+  }
 
   return (
     <Container>
       <Header>
-        <img src={backicon} alt="뒤로가기버튼" className="backImg" onClick={backButtonClick} />
+        {/* <BackButtonWrapper>
+          <BackBtn />
+        </BackButtonWrapper> */}
+        <img src={backicon} alt="뒤로가기버튼" className="backImg" onClick={backButtonClick}></img>
         <Title>책 검색</Title>
       </Header>
       <SearchBarContainer>
@@ -193,15 +222,74 @@ const List = () => {
       </SearchBarContainer>
 
       <Content>
-        {books?.map((book, index) => (
-          <BookCard key={index} onClick={() => bookCardClick(book)}>
-            <BookImage src={book.image} alt="책" />
-            <BookTitle>{book.title}</BookTitle>
+        {books?.map((book, index, array) => {
+          return (
+            <BookCard key={index} onClick={()=>bookCardClick(book)}>
+              <BookImage src={book.image} alt="책" />
+              <BookTitle>{book.title}</BookTitle>
+            </BookCard>
+          );
+        })}
+      </Content>
+
+      {/* <Content>
+        {Array.from({ length: 20 }, (_, index) => (
+          <BookCard key={index}>
+            <BookImage
+              src="https://via.placeholder.com/150"
+              alt={`트렌드 코리아 ${2024 - index}`}
+            />
+            <BookTitle>트렌드 코리아 {2024 - index}</BookTitle>
           </BookCard>
         ))}
-      </Content>
+      </Content> */}
     </Container>
   );
 };
 
 export default List;
+
+export function xmlToJson(xml) {
+  // Create the return object
+  var obj = {};
+  if (xml.nodeType == 1) {
+    // element
+    // do attributes
+    if (xml.attributes.length > 0) {
+      obj["@attributes"] = {};
+      for (var j = 0; j < xml.attributes.length; j++) {
+        var attribute = xml.attributes.item(j);
+        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+  } else if (xml.nodeType == 3) {
+    // text
+    obj = xml.nodeValue;
+  }
+  // do children
+  // If all text nodes inside, get concatenated text from them.
+  var textNodes = [].slice.call(xml.childNodes).filter(function (node) {
+    return node.nodeType === 3;
+  });
+  if (xml.hasChildNodes() && xml.childNodes.length === textNodes.length) {
+    obj = [].slice.call(xml.childNodes).reduce(function (text, node) {
+      return text + node.nodeValue;
+    }, "");
+  } else if (xml.hasChildNodes()) {
+    for (var i = 0; i < xml.childNodes.length; i++) {
+      var item = xml.childNodes.item(i);
+      var nodeName = item.nodeName;
+      if (typeof obj[nodeName] == "undefined") {
+        obj[nodeName] = xmlToJson(item);
+      } else {
+        if (typeof obj[nodeName].push == "undefined") {
+          var old = obj[nodeName];
+          obj[nodeName] = [];
+          obj[nodeName].push(old);
+        }
+        obj[nodeName].push(xmlToJson(item));
+      }
+    }
+  }
+  return obj;
+}

@@ -48,10 +48,11 @@ const BookEdit = () => {
       .then((response) => response.text())
       .then(text => {
         console.log("텍스트로받은거: " + text);
+        const trimmedText = text.trim() //공백문자제거하기 . 오류났거든용: SyntaxError: Unexpected non-whitespace character after JSON at position 2191 (line 1 column 2192)
        
       
         try{
-            const data = JSON.parse(text); //수동으로 제이슨파싱
+            const data = JSON.parse(trimmedText); //수동으로 제이슨파싱
             console.log("파싱된데이타 : "+data)
         }catch(error){
             console.log("에러 : ", error);
