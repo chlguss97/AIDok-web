@@ -1,42 +1,149 @@
 import styled from 'styled-components'
-import { FaPlusCircle } from "react-icons/fa";
-import { LuSearch } from "react-icons/lu";
 import AiList from '../components/AiList';
 import BookSlick from '../components/BookSlick';
 import SearchBar from '../components/SearchBar';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Toolbar from '../components/Toolbar';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from "firebase/firestore"; 
-import { getAnalytics } from "firebase/analytics";
-
-// firebase 설정값
-const firebaseConfig = {
-    apiKey: "AIzaSyBGAzQiUPzTMbbgCmg0OWaqxD3r-bC26nA",
-    authDomain: "ddokdok-33eef.firebaseapp.com",
-    projectId: "ddokdok-33eef",
-    storageBucket: "ddokdok-33eef.appspot.com",
-    messagingSenderId: "15289053114",
-    appId: "1:15289053114:web:93087956a86eb6ad6d7783",
-    measurementId: "G-2N7RKZHZR4"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const analytics = getAnalytics(app);
+import { collection, doc, getDoc, getDocs } from "firebase/firestore"; 
+import { db } from '../components/firebaseConfig';
 
 
+let id= "test"
+let isbn= '9788963717562'
+let date= '20240620'
+
+const fetchSubcollections = async (docRef) => {
+    const subcollections = [];
+    const collectionsSnapshot = await getDocs(collection(db, docRef.id));
+  
+    for (const subcollection of collectionsSnapshot.docs) {
+      const subcollectionPath = `${docRef.path}/${subcollection.id}`;
+      const subcollectionRef = collection(db, subcollectionPath);
+      const subcollectionSnapshot = await getDocs(subcollectionRef);
+  
+      for (const doc of subcollectionSnapshot.docs) {
+        if (doc.exists()) {
+          subcollections.push({
+            id: doc.id,
+            ...doc.data()
+          });
+  
+          const nestedSubcollections = await fetchSubcollections(doc.ref);
+          subcollections.push(...nestedSubcollections);
+        }
+      }
+    }
+  
+    return subcollections;
+  };
+  
+  const fetchData = async () => {
+    const docRef = doc(db, 'bert', id);
+  
+    try {
+      const docSnap = await getDoc(docRef);
+      let data = [];
+  
+      if (docSnap.exists()) {
+        data.push({ id: docSnap.id, ...docSnap.data() });
+  
+        const subcollections = await fetchSubcollections(docRef);
+        data.push(...subcollections);
+      } else {
+        console.log('No such document!');
+      }
+  
+      return data;
+    } catch (error) {
+      console.error('Error fetching document:', error);
+      return null;
+    }
+  };
 
 
-const items= [
-    {no:1, date: "2024/5/1", text: "text1 ", q: "질문1", a: "질문1"},
-    {no:2, date: "2024/5/8", text: "text2 ", q: "질문2", a: "질문2"},
-    {no:3, date: "2024/5/30", text: "text3 ", q: "질문3", a: "질문3"}
-]
 
 const Ai= ()=>{
+
+    const [aiData, setAiData]= useState([])
+
+    id= "test"
+
+    // const fetchData = async () => {
+    //     const docRef = doc(db, 'bert', id);
+      
+    //     const fetchSubcollections = async (docRef) => {
+    //       const collectionsSnapshot = await getDocs(collection(docRef));
+    //       const data = [];
+      
+    //       for (const subcollection of collectionsSnapshot.docs) {
+    //         const subDocRef = doc(docRef, subcollection.id);
+    //         const subDocSnap = await getDoc(subDocRef);
+    //         if (subDocSnap.exists()) {
+    //           data.push({
+    //             id: subcollection.id,
+    //             ...subDocSnap.data()
+    //           });
+      
+    //           const subcollections = await fetchSubcollections(subDocRef);
+    //           data.push(...subcollections);
+    //         }
+    //       }
+      
+    //       return data;
+    //     };
+      
+    //     try {
+    //       const docSnap = await getDoc(docRef);
+    //       let data = [];
+      
+    //       if (docSnap.exists()) {
+    //         data.push({ id: docSnap.id, ...docSnap.data() });
+      
+    //         const subcollections = await fetchSubcollections(docRef);
+    //         data.push(...subcollections);
+    //       } else {
+    //         console.log('No such document!');
+    //       }
+      
+    //       return data;
+    //     } catch (error) {
+    //       console.error('Error fetching document:', error);
+    //       return null;
+    //     }
+    //   };
+
+
+    // // 특정 date 문서의 모든 필드값을 가져오는 함수
+    // const fetchData = async () => {
+    //     try {
+    //       // Firestore에서 데이터 가져오기
+    //       const docRef = doc(db, 'bert', id, isbn, date);
+    //       const docSnap = await getDoc(docRef);
+    
+    //       if (docSnap.exists()) {
+    //         const data = docSnap.data();
+    //         alert(`Data: ${JSON.stringify(data, null, 2)}`);
+    //         console.log(data)
+    //         setAiData(data)
+
+    //       } else {
+    //         console.log("No such document!");
+    //       }
+    //     } catch (error) {
+    //       console.error("Error fetching document: ", error);
+    //     }
+    // };
+
+    useEffect(() => {
+        const getData = async () => {
+          const data = await fetchData(id);
+          setAiData(data);
+          console.log('Fetched AI Data:', data); // 데이터 확인용 console.log
+        };
+    
+        getData();
+      }, [id]);
 
     const [searchTerm, setSearchTerm]= useState('') 
 
@@ -50,58 +157,6 @@ const Ai= ()=>{
         alert("QnA를 추가합니다")
         navigate("../WriteAi")
     }
-
-
-
-    // Firestore에서 데이터 불러오기 함수
-const fetchBertData = async () => {
-    try {
-      // bert 컬렉션의 모든 문서를 가져옵니다.
-      const bertCollection = collection(db, 'bert');
-      const bertSnapshot = await getDocs(bertCollection);
-      
-      bertSnapshot.forEach(async (doc) => {
-        const bertData = doc.data();
-        console.log(`Data for bert ID ${doc.id}:`, bertData);
-        
-        // id 컬렉션의 모든 문서를 가져옵니다.
-        const idCollection = collection(db, `bert/${doc.id}/id`);
-        const idSnapshot = await getDocs(idCollection);
-        
-        idSnapshot.forEach(async (idDoc) => {
-          const idData = idDoc.data();
-          console.log(`Data for id ${idDoc.id}:`, idData);
-          
-          // ISBN 컬렉션의 모든 문서를 가져옵니다.
-          const isbnCollection = collection(db, `bert/${doc.id}/id/${idDoc.id}/ISBN`);
-          const isbnSnapshot = await getDocs(isbnCollection);
-          
-          isbnSnapshot.forEach(async (isbnDoc) => {
-            const isbnData = isbnDoc.data();
-            console.log(`Data for ISBN ${isbnDoc.id}:`, isbnData);
-            
-            // date 컬렉션의 모든 문서를 가져옵니다.
-            const dateCollection = collection(db, `bert/${doc.id}/id/${idDoc.id}/ISBN/${isbnDoc.id}/date`);
-            const dateSnapshot = await getDocs(dateCollection);
-            
-            dateSnapshot.forEach((dateDoc) => {
-              const dateData = dateDoc.data();
-              console.log(`Data for date ${dateDoc.id}:`, dateData);
-            });
-          });
-        });
-      });
-    } catch (error) {
-      console.error("Error fetching Firestore data: ", error);
-    }
-};
-
-
-
-
-    useEffect(()=>{
-        fetchBertData()
-    },[])
     
 
     return(
@@ -113,9 +168,10 @@ const fetchBertData = async () => {
                 <BookSlick></BookSlick>
             </div>
             <>
-                {items.slice().reverse().map((props)=>{
+                {aiData ? <AiList data={aiData}></AiList> : <p>loading</p>}
+                {/* {items.slice().reverse().map(()=>{
                     return <AiList key={props.no} date={props.date} text={props.text} q={props.q} a={props.a}></AiList>
-                })}
+                })} */}
             </>
             <FloatingButton onClick={addQnA}>+</FloatingButton>
         </Container>

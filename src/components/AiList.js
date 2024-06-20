@@ -1,19 +1,41 @@
 import styled from "styled-components"
+import React, { useEffect, useState } from 'react';
+import { getDoc, doc } from "firebase/firestore";
+import { db } from './firebaseConfig';
+import AiItem from "./AiItem";
 
-const AiList= (props)=>{
-
-    let today= new Date();
-    let date = (today.getFullYear() + '/' + (today.getMonth()+1) + '/' + today.getDate()).toString()
-
+const AiList= ({data})=>{
+   
     return(
-        <Content>
-            <p className='date'>작성일자: {props.date}</p>
-            <ExtractedText>{props.text}대통령이 궐위되거나 사고로 인하여 직무를 수행할 수 없을 때에는 국무총리, 법률이 정한 국무위원의 순서로 그 권한을 대행한다. 이 헌법시행 당시의 대법원장과 대법원판사가 아닌 법관은 제1항 단서의 규정에 불구하고 이 헌법에 의하여 임명된 것으로 본다. 지방자치단체는 주민의 복리에 관한 사무를 처리하고 재산을 관리하며, 법령의 범위안에서 자치에 관한 규정을 제정할 수 있다. 정부는 회계연도마다 예산안을 편성하여 회계연도 개시 90일전까지 국회에 제출하고, 국회는 회계연도 개시 30일전까지 이를 의결하여야 한다.</ExtractedText>
-                <QnA>
-                    <p>Q: {props.q}</p>
-                    <p>A: {props.a}</p>
-                </QnA>
-        </Content>
+        <>
+             <div>
+                {data.map((item) => (
+                    <div key={item.id}>
+                    <h2>{item.title}</h2>
+                    <p>{item.answer}</p>
+                    <p>{item.bookImg}</p>
+                    <p>{item.date && item.date.seconds ? new Date(item.date.seconds * 1000).toLocaleDateString() : ''}</p>
+                    <p>{item.passage}</p>
+                    <p>{item.question}</p>
+                    </div>
+                ))}
+                </div>
+            {/* {
+                data.slice(0, 10).map((value, index, array)=>{
+                    return <AiItem props={value} key={index}></AiItem>
+                })
+            } */}
+
+            {/* <AiItem props={value}></AiItem> */}
+        </>
+    //     <Content>
+    //         <p className='date'>작성일자: {data.date}</p>
+    //         <ExtractedText>메시지 내용 추출된 텍스트: {data.passage}</ExtractedText>
+    //             <QnA>
+    //                 <p>Q: {data.question}</p>
+    //                 <p>A: {data.answer}</p>
+    //             </QnA>
+    //     </Content>
     )
 }
 
