@@ -382,7 +382,7 @@ const BookEdit = () => {
         </Target>
       </div>
 
-      <SaveBtn name="저장하기" onClick={save}></SaveBtn>
+      <SaveBtn type="submit" name="저장하기" onClick={save}></SaveBtn>
     </div>
   );
 };
