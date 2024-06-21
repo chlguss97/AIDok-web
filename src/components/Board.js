@@ -197,8 +197,9 @@ const Board = () => {
     navigate('/write');
   };
 
-  const handleViewComments = () => {
-    navigate('/comments');
+  const handleViewComments = (postId) => {
+    localStorage.setItem('postId', postId); // Store postId in localStorage
+    navigate(`/board/${postId}/comments`);
   };
 
   const toggleDropdown = (postId) => {
@@ -280,7 +281,7 @@ const Board = () => {
                 <FaRegHeart onClick={() => handleLikeToggle(post.id)} />
               )}
               <IconText>{post.likes || 0} Likes</IconText>
-              <CommentIconWrapper onClick={handleViewComments}>
+              <CommentIconWrapper onClick={() => handleViewComments(post.id)}>
                 <FaCommentDots style={{ marginLeft: '10px' }} />
                 <IconText>{post.commentcount || 0} Comments</IconText>
               </CommentIconWrapper>

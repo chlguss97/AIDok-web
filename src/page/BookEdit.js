@@ -6,7 +6,7 @@ import BackBtn from "../components/BackBtn";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import blackBook from "../assets/blankBook.png";
-import DatePicker from "react-datepicker";
+
 
 const BookEdit = () => {
   const location = useLocation();

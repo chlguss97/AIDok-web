@@ -30,7 +30,7 @@ function App() {
           <Route path="/Notepage" element={<NotePage />} />
           <Route path="/WriteAi" element={<WriteAi />} />
           <Route path="/WriteNote" element={<WriteNote />} />
-          <Route path="/Board" element={<Board />} />
+          <Route path="/board" element={<Board />} />
           <Route path="/write" element={<WriteBoard />} />
           <Route path="/board/:postId/comments" element={<BoardComment />} />
           

@@ -4,10 +4,11 @@ import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
 import backIcon from '../assets/backicon.png';
 import BookModal from '../components/BookModal';
-import book from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
-import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
+import book from '../assets/book.png';
+import { db, storage } from '../firebase/firebase';
 import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Container = styled.div`
   padding: 20px;
@@ -170,7 +171,7 @@ const WriteBoard = () => {
   const handleImageChange2 = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage2(URL.createObjectURL(file));
+      setImage2(file);
     }
   };
 
@@ -182,29 +183,42 @@ const WriteBoard = () => {
     navigate(-1);
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    let imageURL = null;
+  
+    if (image2) {
+      const storageRef = ref(storage, `images/${image2.name}`);
+      await uploadBytes(storageRef, image2);
+      imageURL = await getDownloadURL(storageRef);
+    }
+  
     try {
       const postRef = await addDoc(collection(db, 'posts'), {
         id: user.userId,
         bookTitle: selectedBook.title,
         bookImg: selectedBook.cover,
-        img: image2,
+        img: imageURL,
         writingContent: content,
         date: new Date().toISOString()
       });
-
-      // 서브 컬렉션으로 빈 boardComment 컬렉션을 생성
-      await setDoc(doc(db, 'posts', postRef.id, 'boardComment', 'init'), { initialized: true });
-
+  
+      // Store postId in local storage
+      localStorage.setItem('postId', postRef.id);
+      console.log("Stored postId in localStorage:", postRef.id); // 확인용 로그
+  
       console.log("Document written with ID: ", postRef.id);
       alert("게시가 완료되었습니다.");
-      navigate('/board');  // 게시판 페이지로 이동
+  
+      // 특정 게시물의 댓글 화면으로 이동
+      navigate('/board');
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
+  
+
 
   const handleBookInfoClick = () => {
     setModalIsOpen(true);
@@ -230,7 +244,7 @@ const WriteBoard = () => {
           </BookInfo>
         </InfoContainer>
         <FullWidthImageUploadWrapper hasImage={!!image2} onClick={handleImageUploadClick2}>
-          {image2 ? <ImagePreview src={image2} alt="이미지 미리보기" /> : (
+          {image2 ? <ImagePreview src={URL.createObjectURL(image2)} alt="이미지 미리보기" /> : (
             <>
               <PlusIcon />
               <AddPhotoText>사진추가</AddPhotoText>
