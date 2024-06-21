@@ -26,7 +26,8 @@ const modalStyle = {
     },
 };
 
-const BottomSheetModal = ({ isOpen, onRequestClose }) => {
+const BottomSheetModal = ({ isOpen, onRequestClose, onFileChange }) => {
+
     const videoRef = useRef(null);
 
     const handleOpenCamera = () => {
@@ -47,6 +48,9 @@ const BottomSheetModal = ({ isOpen, onRequestClose }) => {
         const file = event.target.files[0];
         if (file) {
             console.log(`Selected file: ${file.name}`);
+            onFileChange(file);
+            onRequestClose();
+
         }
     };
 

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "styled-components"
 // import BookStatus from "../components/BookStatus"
 import SaveBtn from "../components/SaveBtn";
 import { FaRegCalendarAlt } from "react-icons/fa";
@@ -31,7 +31,9 @@ const BookEdit = () => {
 
     console.log("링크를 줄까안줄까.:"+link)
 
-
+    const handleStatusClick = (index) => {
+        setClickedIndex(index)
+      }
 
     if(link!==undefined){
         if(link.match(/catalog\/(\d+)/)){
@@ -58,7 +60,6 @@ const BookEdit = () => {
               }
 
         }
-
         
     }
    
@@ -280,13 +281,41 @@ export default BookEdit;
 
 const BookInfo = styled.div`
   display: flex;
-  .info {
+    .info{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 0 auto;
+        height: 200px;
+    }
+    .bookImg{
+        height: 150px;
+        margin: 16px;
+        border: 1px solid #6F4E37;
+        border-radius: 5px;
+    }
+    .titleAuthor{
+        height: 150px;
+        margin-right: auto;
+        text-align: start;
+        >p{
+            margin: 10px 0;
+            color: #6F4E37;
+            font-size: 14px;
+        }
+    }
+`
+const StatusContainer= styled.div`
+    height: 100px;
+    width: 320px;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     flex-direction: row;
     align-items: center;
     margin: 0 auto;
     height: 200px;
-  }
+
   .bookImg {
     height: 150px;
     margin: 16px;
@@ -304,18 +333,7 @@ const BookInfo = styled.div`
     }
   }
 `;
-const StatusContainer = styled.div`
-  height: 100px;
-  width: 360px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  > div {
-    margin: 5px 10px;
-  }
-`;
+
 const BookStatus = styled.div`
   display: inline-block;
   width: 120px;
