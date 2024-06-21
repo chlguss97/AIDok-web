@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
 import backIcon from '../assets/backicon.png';
 import BookModal from '../components/BookModal';
-import book from '../assets/book.png';
-import { db, storage } from '../firebase/firebase';
+import book from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
+import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
 import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -183,7 +183,6 @@ const WriteBoard = () => {
     navigate(-1);
   };
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     let imageURL = null;
@@ -204,21 +203,18 @@ const WriteBoard = () => {
         date: new Date().toISOString()
       });
   
-      // Store postId in local storage
+      // 서브컬렉션 comment 생성
+      await setDoc(doc(db, 'posts', postRef.id, 'comment', 'initial'), { initialized: true });
+  
       localStorage.setItem('postId', postRef.id);
-      console.log("Stored postId in localStorage:", postRef.id); // 확인용 로그
   
       console.log("Document written with ID: ", postRef.id);
       alert("게시가 완료되었습니다.");
-  
-      // 특정 게시물의 댓글 화면으로 이동
-      navigate('/board');
+      navigate('/board');  // 게시판 페이지로 이동
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
-  
-
 
   const handleBookInfoClick = () => {
     setModalIsOpen(true);

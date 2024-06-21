@@ -132,11 +132,9 @@ const BoardComment = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const localStoragePostId = localStorage.getItem('postId');
-    console.log("Post ID from localStorage:", localStoragePostId);
+    const postId = paramsPostId || localStorage.getItem('postId');
     console.log("Post ID from useParams:", paramsPostId);
-
-    const postId = paramsPostId || localStoragePostId;
+    console.log("Post ID from localStorage:", postId);
 
     if (postId) {
       fetchComments(postId);
@@ -145,7 +143,7 @@ const BoardComment = () => {
 
   const fetchComments = async (postId) => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'posts', postId, 'boardComment'));
+      const querySnapshot = await getDocs(collection(db, 'posts', postId, 'comment'));
       const commentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -155,18 +153,18 @@ const BoardComment = () => {
       console.error("Error fetching comments: ", e);
     }
   };
-
+  
   const handleCommentSubmit = async () => {
     if (!newComment) return;
-
+  
     const postId = paramsPostId || localStorage.getItem('postId');
     if (!postId) {
       console.error("Post ID is missing");
       return;
     }
-
+  
     try {
-      await addDoc(collection(db, 'posts', postId, 'boardComment'), {
+      await addDoc(collection(db, 'posts', postId, 'comment'), {
         id: user.userId,
         date: Timestamp.now(),
         comment: newComment,

@@ -198,7 +198,6 @@ const Board = () => {
   };
 
   const handleViewComments = (postId) => {
-    localStorage.setItem('postId', postId); // Store postId in localStorage
     navigate(`/board/${postId}/comments`);
   };
 
