@@ -11,9 +11,12 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
+// import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db } from '../firebase/firebase'; // firebase.js에서 db를 가져옴
+import { doc, setDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 
 
@@ -127,29 +130,23 @@ const BookEdit = () => {
 
   const onAlertSaveClick = async () => {
     try {
-      const isbn13 = location.state.book.isbn13; // 책의 ISBN13 번호
-      const bookName = location.state.book.bookName; // 책의 이름
-  
-      // Firestore에서 Firestore 인스턴스 가져오기
-      const firestore = db.firestore();
-  
-      // 'user' 컬렉션에서 userId를 문서 이름으로 가진 문서 참조
-      const userDocRef = firestore.collection('user').doc(user.userId); // user.userId를 사용하여 문서 이름 설정
-  
-      // 'user' 컬렉션 내 'book' 서브컬렉션에 isbn13를 문서 이름으로 가진 문서 참조
-      const bookSubDocRef = userDocRef.collection('book').doc(isbn13);
-  
-      // 서브컬렉션에 책 데이터 추가
-      await bookSubDocRef.set({
+      const userDocRef = doc(db, 'user', user.userId) //도큐먼트만들기
+      const bookSubDocRef = doc(userDocRef, 'book', isbn13) //서브컬렉션은 'book', 서브도큐먼트이름이 isbn13으로 만드러주세영
+
+      await setDoc(bookSubDocRef, {
         title: bookName,
-        // 필요한 경우 추가 필드 추가
-      });
-  
-      console.log('데이터가 성공적으로 Firestore에 추가되었습니다.');
-    } catch (error) {
-      console.error('Firestore에 데이터를 추가하는 중 오류 발생:', error);
+        authors,
+        description,
+        bookImageUrl,
+        page,
+      })
+
+      console.log('데이터가 성공적으로 Firebase에 추가되써열~~')
+    }catch(error) {
+      console.log('firebase에 데이터추가 오류발생 : '+error)
     }
-  };
+  }
+  
 
   const save = () => {
 
