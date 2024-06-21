@@ -11,9 +11,18 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
+// import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db } from "../firebase/firebase"; // firebase.js에서 db를 가져옴
+import { doc, setDoc, deleteDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { ToastContainer, toast } from "react-toastify"; //토스트 라이브러리 yarn add react-toastify
+import "react-toastify/dist/ReactToastify.css";
+
+
+
+
 
 
 
@@ -29,9 +38,9 @@ const BookEdit = () => {
   const authors = location.state.book.authors;
   const description = location.state.book.description;
   const [shortenedDescription, setShortenedDescription] = useState("");
-  // const bookImageUrl = location.state.book.bookImageUrl;
-  const bookImageUrl =
-    "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1i65pp.img?w=768&h=544&m=6&x=373&y=154&s=234&d=234";
+  const bookImageUrl = location.state.book.bookImageUrl;
+  // const bookImageUrl =
+  //   "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1i65pp.img?w=768&h=544&m=6&x=373&y=154&s=234&d=234";
   const isbn13 = location.state.book.isbn13;
   const link = location.state.book.link;
   const [page, setPage] = useState("페이지정보없음");
@@ -41,18 +50,9 @@ const BookEdit = () => {
 
   const user = useSelector((state) => state.userA.userAccount);
 
-  
-
-
-
-
-
-
-
-
   //<span class="bookBasicInfo_spec__yzTpy">420<!-- -->쪽</span>
   useEffect(() => {
-    console.log("로그인한유저아이디 : "+user.userId)
+    console.log("로그인한유저아이디 : " + user.userId);
     console.log("링크를 줄까안줄까.:" + link);
 
     if (link) {
@@ -110,70 +110,119 @@ const BookEdit = () => {
     if (index === 0) {
       // 읽고싶은책
       setClickedIndex(index);
-      alert("읽고싶은책");
     } else if (index === 1) {
       // 읽고있는책 클릭했을때
       setClickedIndex(index);
-      alert("읽고있는책");
     } else if (index === 2) {
       setClickedIndex(index);
-      alert("다읽은책");
     } else if (index === 3) {
       setClickedIndex(index);
-      alert("해당없음");
-    }
-  };
-
-
-  const onAlertSaveClick = async () => {
-    try {
-      const isbn13 = location.state.book.isbn13; // 책의 ISBN13 번호
-      const bookName = location.state.book.bookName; // 책의 이름
-  
-      // Firestore에서 Firestore 인스턴스 가져오기
-      const firestore = db.firestore();
-  
-      // 'user' 컬렉션에서 userId를 문서 이름으로 가진 문서 참조
-      const userDocRef = firestore.collection('user').doc(user.userId); // user.userId를 사용하여 문서 이름 설정
-  
-      // 'user' 컬렉션 내 'book' 서브컬렉션에 isbn13를 문서 이름으로 가진 문서 참조
-      const bookSubDocRef = userDocRef.collection('book').doc(isbn13);
-  
-      // 서브컬렉션에 책 데이터 추가
-      await bookSubDocRef.set({
-        title: bookName,
-        // 필요한 경우 추가 필드 추가
-      });
-  
-      console.log('데이터가 성공적으로 Firestore에 추가되었습니다.');
-    } catch (error) {
-      console.error('Firestore에 데이터를 추가하는 중 오류 발생:', error);
     }
   };
 
   const save = () => {
-
+    let result = null;
+    if (clickedIndex === 1) {
       // 시작일과 종료일을 설정하지 않은 경우
-  if (!startDate || !endDate) {
-    alert("시작일과 종료일을 지정하셔야 합니다.");
-    return;
-  }
-    const result = window.confirm("저장하시겠습니까?");
+      if (!startDate || !endDate) {
+        alert("시작일과 종료일을 지정하셔야 합니다.");
+        return;
+      }
+      result = window.confirm("읽고 있는 책으로 저장하시겠습니까?");
+    } else if (clickedIndex === 0) {
+      result = window.confirm("읽고 싶은 책으로 저장하시겠습니까?");
+    } else if (clickedIndex === 2) {
+      result = window.confirm("다 읽은 책으로 저장하시겠습니까?");
+    } else if (clickedIndex === 3) {
+      result = window.confirm("선택하지 않음으로 저장하시겠습니까?\n그전에 저장하신 데이터가 있다면 모두 사라지게 됩니다. ");
+    }
+
     if (result) {
       onAlertSaveClick(); // 저장 처리 함수 호출
     } else {
       // 사용자가 취소를 선택한 경우
-      console.log("얼러트에서 취소눌렀음")
+      console.log("얼러트에서 취소눌렀음");
     }
   };
 
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const onAlertSaveClick = async () => {
+    console.log("클릭된인덱스번호" + clickedIndex);
+    //만약 clickedIndex가0이면 읽고싶은책. firebase에 user컬렉션-사용자id도큐-book서브컬렉션-isbn도큐 중 이 문서에isbn13과 일치하는게 있으면
+    //덮어쓰기할거고.. 없으면 만들겠지..
+    //clickedIndex가0이면 firebase에 state를 want로..
+    try {
+      const userDocRef = doc(db, "user", user.userId); //도큐먼트만들거나 가져오기
+      const bookSubDocRef = doc(userDocRef, "book", isbn13); //서브컬렉션은 'book', 서브도큐먼트이름이 isbn13으로 만드러주세영
+
+      if (clickedIndex === 0) {
+        await setDoc(bookSubDocRef, {
+          state: "want",
+          title: bookName, //책제목
+          writer: authors, //작가
+          totalpage: page, //첵 토탈페이지
+          img: bookImageUrl, //책이미지
+          summary: description, //책요약
+          completedDate: completedDate, //다읽은책이면 다읽은날짜
+          totalReadTime: totalReadTime, //누적 읽은 시간
+          startDate: startDate, //시작날짜
+          endDate: endDate, //종료날짜
+          currentPage: currentPage, //현재까지읽은 누적페이지
+          isbn: isbn13,
+        });
+        console.log("데이터가 성공적으로 Firebase에 추가되써열~~");
+        toast.success("읽고 싶은 책에 저장되었습니다.");
+      } else if (clickedIndex === 1) {
+        await setDoc(bookSubDocRef, {
+          state: "ing",
+          title: bookName, //책제목
+          writer: authors, //작가
+          totalpage: page, //첵 토탈페이지
+          img: bookImageUrl, //책이미지
+          summary: description, //책요약
+          completedDate: completedDate, //다읽은책이면 다읽은날짜
+          totalReadTime: totalReadTime, //누적 읽은 시간
+          startDate : startDate ? moment(startDate).format('YYYY-MM-DD') : "", //시작날짜
+          endDate: endDate ? moment(endDate).format('YYYY-MM-DD') : "", //종료날짜
+          currentPage: currentPage, //현재까지읽은 누적페이지
+          isbn: isbn13,
+        });
+        console.log("데이터가 성공적으로 Firebase에 추가되써열~~");
+        toast.success("읽고 있는 책에 저장되었습니다.");
+      } else if (clickedIndex === 2) {
+        await setDoc(bookSubDocRef, {
+          state: "end",
+          title: bookName, //책제목
+          writer: authors, //작가
+          totalpage: page, //첵 토탈페이지
+          img: bookImageUrl, //책이미지
+          summary: description, //책요약
+          completedDate: completedDate, //다읽은책이면 다읽은날짜
+          totalReadTime: totalReadTime, //누적 읽은 시간
+          startDate: startDate, //시작날짜
+          endDate: endDate, //종료날짜
+          currentPage: currentPage, //현재까지읽은 누적페이지
+          isbn: isbn13,
+        });
+
+        toast.success("다 읽은 책에 저장되었습니다.");
+      } else if (clickedIndex === 3) {
+        await deleteDoc(bookSubDocRef);
+        toast.success("선택하지 않음.");
+      }
+    } catch (error) {
+      console.log("firebase에 데이터추가 오류발생 : " + error);
+      toast.error("저장에 문제가 생겼습니다." + error.message);
+    }
+  };
+
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [isEndOpen, setIsEndOpen] = useState(false);
-  const [dateDifference, setDateDifference] = useState("0");
-
-
+  const [dateDifference, setDateDifference] = useState("");
+  const [completedDate, setCompletedDate] = useState(""); //다읽은책이면 다읽은 날짜
+  const [totalReadTime, setTotalReadTime] = useState(""); //읽은 누적 시간
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
 
   const clickStartCalendar = () => {
     setIsStartOpen(!isStartOpen);
@@ -210,15 +259,12 @@ const BookEdit = () => {
         alert("시작 날짜는 끝 날짜보다 이후일 수 없습니다.");
       } else {
         const diffInDays = end.diff(start, "days");
-        setDateDifference(diffInDays+1);
+        setDateDifference(diffInDays + 1);
       }
     } else {
       setDateDifference(null);
     }
   };
-
-
-
 
   return (
     <div style={{ textAlign: "center", padding: "5%" }}>
@@ -288,7 +334,7 @@ const BookEdit = () => {
             {/* ~~~~시작날짜~~~~~ */}
             <span onClick={clickStartCalendar}>
               <span>시작 : </span>
-            
+
               <FaRegCalendarAlt style={{ cursor: "pointer" }} />
               <span className="dateText">
                 {startDate ? startDate.toLocaleDateString() : "시작일 선택"}
@@ -330,11 +376,12 @@ const BookEdit = () => {
           </div>
         </Period>
         <Target>
-          <HeadText>페이지 설정 : {page ? `${page}쪽` : ` 쪽`}</HeadText>
+          <HeadText>
+            {bookName} : {page ? `${page}쪽` : ` 쪽`}
+          </HeadText>
           <div className="graph">
             <Bar>
               <Progress width="0%" />
-              {/* <div className="progress" width="50%"></div> */}
             </Bar>
             {/* <input
               ref={inRef}
@@ -345,23 +392,28 @@ const BookEdit = () => {
             {/* <EditBtn onClick={() => pageEdit()}>수정</EditBtn> */}
           </div>
           <div className="numbers">
-            <Number $left="0%">0p</Number>
-            {/* <Number $left="1%">1p</Number> */}
-            <Number $left="100%">{page}p</Number>
+            <Number $left="0%"><span style={{fontWeight:"bold", fontSize:"0.8rem",color:"gray", marginTop:"3rem"}}>0p</span></Number>
+            <Number $left="100%"><span style={{fontWeight:"bold", fontSize:"0.8rem",color:"gray", marginTop:"3rem"}}>{page}p</span></Number>
           </div>
           <div>
             <p className="note">
               <span className="nickname">
                 {page ? page : "?"}쪽을 {dateDifference ? dateDifference : "?"}
                 일 동안 읽으셔야 하기에, 하루 권장 독서 페이지는
-                <span className="point">{ (page && dateDifference) ? (page/dateDifference).toFixed(1) : "?"}p</span>입니다.
+                <span className="point">
+                  {page && dateDifference
+                    ? (page / dateDifference).toFixed(1)
+                    : "?"}
+                  p
+                </span>
+                입니다.
                 {/* .toFixed(1) 소수점 첫째자리 */}
               </span>
             </p>
           </div>
         </Target>
         <Target style={{ marginBottom: "20px" }}>
-          <HeadText>시간</HeadText>
+          <HeadText>추천 시간 : {page}분</HeadText>
           <div className="graph">
             <Bar>
               <Progress width="0%" />
@@ -369,20 +421,28 @@ const BookEdit = () => {
             {/* <EditBtn onClick={timeEdit}>수정</EditBtn> */}
           </div>
           <div className="numbers">
-            <Number $left="0%">0분</Number>
-            {/* <Number $left="1%">1분</Number> */}
-            <Number $left="100%">{page}분</Number>
+            <Number $left="0%"><span style={{fontWeight:"bold", fontSize:"0.8rem",color:"gray", marginTop:"3rem"}}>0분</span></Number>
+         
+            <Number $left="100%"><span style={{fontWeight:"bold", fontSize:"0.8rem",color:"gray", marginTop:"3rem"}}>{page}분</span></Number>
           </div>
           <div>
             <p className="note">
-              <span className="nickname">배추껍질</span>님의 하루 적정 독서
-              시간은 <span className="point">{ (page && dateDifference) ? (page/dateDifference).toFixed(1) : "?"}분</span>입니다.
+              <span className="nickname">{user.userId}</span>님의 하루 적정 독서
+              시간은 
+              <span className="point">
+                {page && dateDifference
+                  ? (page / dateDifference).toFixed(1)
+                  : "?"}
+                분
+              </span>
+              입니다.
             </p>
           </div>
         </Target>
       </div>
 
       <SaveBtn type="submit" name="저장하기" onClick={save}></SaveBtn>
+      <ToastContainer />
     </div>
   );
 };
@@ -495,6 +555,7 @@ const Number = styled.span`
   left: ${(props) => props.$left};
   transform: translate(-50%);
   width: 35px;
+  margin-top: 10px;
 `;
 const Bar = styled.div`
   /* font-size: 11px; */
