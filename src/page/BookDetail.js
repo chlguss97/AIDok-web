@@ -160,10 +160,12 @@ const BackButtonWrapper = styled.div`
 const BookDetail = () => {
 
   
-  const YULYjbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
-    "a6e0e7411107bcf35da8623fb02f13a7b559dd455855d5a44baae620c142d4b8";
+  const jbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
+    "3de6856d1fbee758931e324ef85f34590549f6c5de34db53624fcd28a9684f63";
   const DEAHANjbNaruServiceKey = " ";
+
   const jbNaruServiceKey = "3de6856d1fbee758931e324ef85f34590549f6c5de34db53624fcd28a9684f63";
+
   const TEAMJANGjbNaruServiceKey = " ";
   const location = useLocation();
   const [bookItem, setBookItem] = useState({}); //useLoacation으로 받아온 book객체
@@ -183,7 +185,6 @@ const BookDetail = () => {
 
   useEffect(() => {
     // List에서넘어온 book객체의 변수 : 
-    //bookName,title,bookImageUrl,image,authors,isbn13, description, link
 
     if (location.state.book) {
       // setBookItem(location.state.book);
@@ -197,8 +198,10 @@ const BookDetail = () => {
       fetch(url)
         .then((res) => res.text()) //정보나루api는 xml줘용
         .then((xmlText) => {
+          console.log("왜안돼"+xmlText)
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+          
           if (!xmlDoc) {
             console.error("Failed to parse XML data");
             return;
@@ -238,6 +241,7 @@ const BookDetail = () => {
                 .then((xmlText) => {
                   const parser = new DOMParser();
                   const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                  console.log("서버잘오나"+xmlDoc)
                   if (!xmlDoc) {
                     console.error("Failed to parse XML data");
                     return null;
@@ -573,6 +577,7 @@ const BookDetail = () => {
         //==========================다독자를 위한 추천도서
         const readerRecBooks =
           xmlDoc.getElementsByTagName("readerRecBooks")[0];
+          console.log(readerRecBooks)
         if (!readerRecBooks) {
           console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
           return;

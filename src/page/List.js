@@ -22,31 +22,24 @@ const Header = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  /* position: relative; Allows positioning of the back button */
+  justify-content: center; /* 중앙 정렬을 위해 추가 */
   padding: 20px;
   margin-bottom: 20px;
 
-  .backImg{
+  .backImg {
     width: 20px;
     height: 20px;
-    margin-left: 20px;
+    margin-right: auto; /* 왼쪽으로 배치하기 위해 추가 */
     cursor: pointer;
   }
-`;
-
-const BackButtonWrapper = styled.div`
-  position: absolute;
-  left: 10px;
 `;
 
 const Title = styled.p`
   color: #6f4e37;
   font-size: 1.6rem;
   font-weight: bold;
-  justify-content: center;
   text-align: center;
-  display: inline-block;
-  flex: 1,
+  flex: 1;
 `;
 
 const SearchBarWrapper = styled.div`
@@ -114,6 +107,7 @@ const SearchBarContainer = styled.div`
     background-color: #5e7e71; /* 초록색으로 변경 */
   }
 `;
+
 const SearchInputWrapper = styled.div`
   position: relative;
   width: 100%;
