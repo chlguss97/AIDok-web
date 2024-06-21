@@ -5,7 +5,7 @@ import SearchBar from '../components/SearchBar';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, doc, getDocs } from "firebase/firestore"; 
-import { db } from '../components/firebaseConfig';
+import { db } from '../firebase/firebase';
 
 const Ai = () => {
     const [aiData, setAiData] = useState();
