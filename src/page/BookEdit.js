@@ -33,30 +33,29 @@ import "react-toastify/dist/ReactToastify.css";
 const BookEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const bookName = location.state.book.bookName;
-  const authors = location.state.book.authors;
-  const description = location.state.book.description;
+  const bookItem = location.state.book
+  //받아온 book에는 title, img, writer, isbn, summary, link가 있다.
   const [shortenedDescription, setShortenedDescription] = useState("");
-  const bookImageUrl = location.state.book.bookImageUrl;
-  // const bookImageUrl =
-  //   "https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BB1i65pp.img?w=768&h=544&m=6&x=373&y=154&s=234&d=234";
-  const isbn13 = location.state.book.isbn13;
-  const link = location.state.book.link;
   const [page, setPage] = useState("페이지정보없음");
-
   const [clickedIndex, setClickedIndex] = useState(3); //기본이 "선택되지 않음"
   const inRef = useRef();
-
   const user = useSelector((state) => state.userA.userAccount);
+  const [isStartOpen, setIsStartOpen] = useState(false);
+  const [isEndOpen, setIsEndOpen] = useState(false);
+  const [dateDifference, setDateDifference] = useState("");
+  const [completedDate, setCompletedDate] = useState(""); //다읽은책이면 다읽은 날짜
+  const [totalReadTime, setTotalReadTime] = useState(0); //읽은 누적 시간
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
 
-  //<span class="bookBasicInfo_spec__yzTpy">420<!-- -->쪽</span>
+
   useEffect(() => {
     console.log("로그인한유저아이디 : " + user.userId);
-    console.log("링크를 줄까안줄까.:" + link);
+    console.log("링크를 줄까안줄까.:" + bookItem.link);
 
-    if (link) {
-      const match = link.match(/catalog\/(\d+)/);
+    if ( bookItem.link) {
+      const match = bookItem.link.match(/catalog\/(\d+)/);
       if (match) {
         const query = match[1];
         console.log(query);
@@ -78,16 +77,16 @@ const BookEdit = () => {
           });
       }
     }
-  }, [link]);
+  }, [ bookItem.link]);
 
   useEffect(() => {
     //     // 요약된 디스크립션 생성
-    if (description?.length > 1) {
-      setShortenedDescription(description.substring(0, 100) + "... ...");
+    if ( bookItem.summary?.length > 1) {
+      setShortenedDescription( bookItem.summary.substring(0, 100) + "... ...");
     } else {
-      setShortenedDescription(description);
+      setShortenedDescription( bookItem.summary);
     }
-  }, [description]);
+  }, [ bookItem.summary]);
 
   const pageEdit = () => {
     if (inRef.current) {
@@ -152,56 +151,57 @@ const BookEdit = () => {
     //clickedIndex가0이면 firebase에 state를 want로..
     try {
       const userDocRef = doc(db, "user", user.userId); //도큐먼트만들거나 가져오기
-      const bookSubDocRef = doc(userDocRef, "book", isbn13); //서브컬렉션은 'book', 서브도큐먼트이름이 isbn13으로 만드러주세영
+      const bookSubDocRef = doc(userDocRef, "book",  bookItem.isbn); //서브컬렉션은 'book', 서브도큐먼트이름이 isbn으로 만드러주세영
 
       if (clickedIndex === 0) {
         await setDoc(bookSubDocRef, {
           state: "want",
-          title: bookName, //책제목
-          writer: authors, //작가
+          title:  bookItem.title, //책제목
+          writer:  bookItem.writer, //작가
           totalpage: page, //첵 토탈페이지
-          img: bookImageUrl, //책이미지
-          summary: description, //책요약
+          img:  bookItem.img, //책이미지
+          summary:  bookItem.summary, //책요약
           completedDate: completedDate, //다읽은책이면 다읽은날짜
           totalReadTime: totalReadTime, //누적 읽은 시간
           startDate: startDate, //시작날짜
           endDate: endDate, //종료날짜
           currentPage: currentPage, //현재까지읽은 누적페이지
-          isbn: isbn13,
+          isbn:  bookItem.isbn,
         });
         console.log("데이터가 성공적으로 Firebase에 추가되써열~~");
+        navigate('/', {replace:true})
         toast.success("읽고 싶은 책에 저장되었습니다.");
       } else if (clickedIndex === 1) {
         await setDoc(bookSubDocRef, {
           state: "ing",
-          title: bookName, //책제목
-          writer: authors, //작가
+          title:  bookItem.title, //책제목
+          writer:  bookItem.writer, //작가
           totalpage: page, //첵 토탈페이지
-          img: bookImageUrl, //책이미지
-          summary: description, //책요약
+          img:  bookItem.img, //책이미지
+          summary:  bookItem.summary, //책요약
           completedDate: completedDate, //다읽은책이면 다읽은날짜
           totalReadTime: totalReadTime, //누적 읽은 시간
           startDate : startDate ? moment(startDate).format('YYYY-MM-DD') : "", //시작날짜
           endDate: endDate ? moment(endDate).format('YYYY-MM-DD') : "", //종료날짜
           currentPage: currentPage, //현재까지읽은 누적페이지
-          isbn: isbn13,
+          isbn:  bookItem.isbn,
         });
         console.log("데이터가 성공적으로 Firebase에 추가되써열~~");
         toast.success("읽고 있는 책에 저장되었습니다.");
       } else if (clickedIndex === 2) {
         await setDoc(bookSubDocRef, {
           state: "end",
-          title: bookName, //책제목
-          writer: authors, //작가
+          title: bookItem.title, //책제목
+          writer: bookItem.writer, //작가
           totalpage: page, //첵 토탈페이지
-          img: bookImageUrl, //책이미지
-          summary: description, //책요약
+          img: bookItem.img, //책이미지
+          summary: bookItem.summary, //책요약
           completedDate: completedDate, //다읽은책이면 다읽은날짜
           totalReadTime: totalReadTime, //누적 읽은 시간
           startDate: startDate, //시작날짜
           endDate: endDate, //종료날짜
           currentPage: currentPage, //현재까지읽은 누적페이지
-          isbn: isbn13,
+          isbn: bookItem.isbn,
         });
 
         toast.success("다 읽은 책에 저장되었습니다.");
@@ -209,20 +209,14 @@ const BookEdit = () => {
         await deleteDoc(bookSubDocRef);
         toast.success("선택하지 않음.");
       }
+      navigate('/',{replace:true})
     } catch (error) {
       console.log("firebase에 데이터추가 오류발생 : " + error);
       toast.error("저장에 문제가 생겼습니다." + error.message);
     }
   };
 
-  const [isStartOpen, setIsStartOpen] = useState(false);
-  const [isEndOpen, setIsEndOpen] = useState(false);
-  const [dateDifference, setDateDifference] = useState("");
-  const [completedDate, setCompletedDate] = useState(""); //다읽은책이면 다읽은 날짜
-  const [totalReadTime, setTotalReadTime] = useState(""); //읽은 누적 시간
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+
 
   const clickStartCalendar = () => {
     setIsStartOpen(!isStartOpen);
@@ -277,12 +271,12 @@ const BookEdit = () => {
         <div className="info">
           <img
             className="bookImg"
-            src={bookImageUrl ? bookImageUrl : blackBook}
-            alt={bookName}
+            src={bookItem.img ? bookItem.img : blackBook}
+            alt={bookItem.title}
           ></img>
           <div className="titleAuthor">
-            <p>제목: {bookName ? bookName : "책제목 없음"}</p>
-            <p>저자: {authors ? authors : "작가이름 없음"}</p>
+            <p>제목: {bookItem.title ? bookItem.title : "책제목 없음"}</p>
+            <p>저자: {bookItem.writer ? bookItem.writer : "작가이름 없음"}</p>
             <p>
               요약:{" "}
               {shortenedDescription ? shortenedDescription : "요약내용 없음"}
@@ -377,7 +371,7 @@ const BookEdit = () => {
         </Period>
         <Target>
           <HeadText>
-            {bookName} : {page ? `${page}쪽` : ` 쪽`}
+            {bookItem.title} : {page ? `${page}쪽` : ` 쪽`}
           </HeadText>
           <div className="graph">
             <Bar>
@@ -440,7 +434,7 @@ const BookEdit = () => {
           </div>
         </Target>
       </div>
-
+      <br></br><br></br><br></br>
       <SaveBtn type="submit" name="저장하기" onClick={save}></SaveBtn>
       <ToastContainer />
     </div>
@@ -481,7 +475,7 @@ const StatusContainer = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin: 0 auto;
+  margin: 60px auto;
   > div {
     margin: 5px 10px;
   }
