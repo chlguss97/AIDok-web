@@ -14,6 +14,7 @@ import Navigation from './Navigation';
 import Board from './components/Board';
 import WriteBoard from './components/WriteBoard';
 import BoardComment from './components/BoardComment';
+import Timer from './page/Timer';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/Board" element={<Board />} />
           <Route path="/write" element={<WriteBoard />} />
           <Route path="/comments" element={<BoardComment />} />
+          <Route path="/timer" element={<Timer/>} />
           
           
 
