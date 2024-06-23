@@ -36,8 +36,8 @@ const CircleBook = ({ book }) => {
       </div>
       <p
         style={{
-          marginLeft: "10%",
-          width: "60%",
+          marginLeft: "5%",
+          width: "65%",
           fontSize: "5%",
           color: "gray",
         }}
@@ -54,8 +54,8 @@ const Container = styled.div`
     border-radius: 50%;
     border: 2px solid #5e7e71;
     background-color: #6f4e37;
-    width: 70px; /* 원의 너비와 높이 */
-    height: 65px;
+    width: 85px; /* 원의 너비와 높이 */
+    height: 85px;
     display: flex;
     justify-content: center;
     align-items: center;

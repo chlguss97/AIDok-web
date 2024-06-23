@@ -15,7 +15,7 @@ const HomeBookItem = ({ book }) => {
     img : book.img,
     writer : book.writer,
     summary : book.summary,
-    totalPage : book.totalpage,
+    totalPage : book.totalPage,
     currentPage : book.currentPage,
     startDate : book.startDate,
     endDate : book.endDate,
@@ -30,7 +30,7 @@ const HomeBookItem = ({ book }) => {
   const [dayPassed, setDayPassed] = useState()
 
   useEffect(()=>{
-    console.log("읽기시작한날 : "+book1.startDate+", 현재페이지:"+ book1.currentPage)
+    console.log("읽기시작한날111 : "+book1.startDate+", 현재페이지:"+ book1.currentPage)
     calculateDaysPassed()
   })
 
@@ -39,7 +39,7 @@ const HomeBookItem = ({ book }) => {
   }
   
   const btnClick = ()=>{
-    navigate("/BookDetail", 
+    navigate("/BookEdit", 
       {state: {book: book1},
       replace: true // 이전 페이지를 대체하며, 뒤로가기 시 무시됩니다.})
       })
@@ -66,11 +66,11 @@ const HomeBookItem = ({ book }) => {
         <img className="bookImg" src={book1.img} alt="책사진" onClick={btnClick}></img>
         <div className="contents">
           <div className="title" onClick={btnClick}>
-            <span style={{fontSize:"10px", fontWeight:"bold"}}>제목 : </span>
+            <span style={{fontSize:"15px", fontWeight:"bold"}}>제목 : </span>
             <span> { book1.title}</span>
           </div>
           <div className="writer" onClick={btnClick}>
-            <span style={{fontSize:"10px"}}>저자 : </span>
+            <span style={{fontSize:"15px", fontWeight:"bold"}}>저자 : </span>
             <span>{ book1.writer}</span>
           </div>
           <input
