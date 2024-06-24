@@ -10,6 +10,7 @@ const LOGIN = 'LOGIN';
 
 // 액션생성함수: 내가 여기저기서 쓸 함수 - 액션객체 리턴해준다. (회원가입(로그인) 후 받아온 response를 리덕스에 저장)
 export const setUserAccount = (id, img)=>{
+    console.log('setUserAccount action:', { id, img }); // 디버깅용 로그 추가
     return {
         type: LOGIN, 
         loginUser:{
@@ -20,6 +21,7 @@ export const setUserAccount = (id, img)=>{
 
 
 export default function userAccountReducer(state = initState, action){
+    console.log('userAccountReducer action:', action); // 디버깅용 로그 추가
 
     switch(action.type) {
         case LOGIN:

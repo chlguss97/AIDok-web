@@ -11,7 +11,7 @@
 
     // $encQuery = urlencode($query); 숫자밖에 없으니 이 작업 필요없음isbn..
     //Output요청파라미터없으면 기본 response가본이 XML
-    $url= "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?TTBKey=ttbbaechu100402002&ItemId=".$query."&ItemIdType=ISBN13";
+    $url= "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?TTBKey=ttbbaechu100402003&ItemId=".$query."&ItemIdType=ISBN13";
 
 
     //1.curl 작업 시작 - 초기화

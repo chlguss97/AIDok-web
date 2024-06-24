@@ -1,50 +1,98 @@
 import styled from "styled-components";
 import book1 from "../assets/HomeBook1.png";
+import memo4 from "../assets/memo4.gif"
 import memoImg from "../assets/memo2.png";
 import ggalpi from "../assets/tek.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const HomeBookItem = ({ onClick }) => {
-  const totalPage = 300; //책의 전체페이지
-  const currentPage = 103; //사용자가 현재 읽은 페이지
+const HomeBookItem = ({ book }) => {
+
+  const book1= {
+    state: book.state,
+    isbn : book.isbn,
+    title : book.title,
+    img : book.img,
+    writer : book.writer,
+    summary : book.summary,
+    totalPage : book.totalPage,
+    currentPage : book.currentPage,
+    startDate : book.startDate,
+    endDate : book.endDate,
+    state : book.state,
+    totalReadTime : book.totalReadTime,
+    completedDate: book.completedDate,
+  }
+
+  
+  const navigate = useNavigate()
+  
+  const [dayPassed, setDayPassed] = useState()
+
+  useEffect(()=>{
+    console.log("읽기시작한날111 : "+book1.startDate+", 현재페이지:"+ book1.currentPage)
+    calculateDaysPassed()
+  })
+
+  const memoClick = ()=>{
+    navigate("/NotePage", {state: {book: book1}}) 
+  }
+  
+  const btnClick = ()=>{
+    navigate("/BookEdit", 
+      {state: {book: book1},
+      replace: true // 이전 페이지를 대체하며, 뒤로가기 시 무시됩니다.})
+      })
+  }
+
+  const calculateDaysPassed = () => {
+    const sd = new Date( book1.startDate);
+    console.log(`스타드데이트: ${sd}`)
+    const today = new Date();
+    const timeDiff = today - sd;
+    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    setDayPassed(daysDiff + 1); // Including the start day
+  };
+
 
   return (
     <Container>
-      <div className="bigContents" onClick={onClick}>
+      <div className="bigContents" >
         <div className="ggalpiTotal">
           <img id="ggalpi" src={ggalpi} alt="책깔피사진"></img>
-          <VerticalText>5일째</VerticalText>
+          <VerticalText>{ dayPassed? dayPassed : "?"}일째</VerticalText>
         </div>
 
-        <img className="bookImg" src={book1} alt="책사진"></img>
+        <img className="bookImg" src={book1.img} alt="책사진" onClick={btnClick}></img>
         <div className="contents">
-          <div className="title">
-            <span>제목 : </span>
-            <span> 리액트 뿌시기 제 1권</span>
+          <div className="title" onClick={btnClick}>
+            <span style={{fontSize:"15px", fontWeight:"bold"}}>제목 : </span>
+            <span> { book1.title}</span>
           </div>
-          <div className="writer">
-            <span>저자 : </span>
-            <span>김종철</span>
+          <div className="writer" onClick={btnClick}>
+            <span style={{fontSize:"15px", fontWeight:"bold"}}>저자 : </span>
+            <span>{ book1.writer}</span>
           </div>
           <input
             id="slider"
             type="range"
             min="0"
-            max={totalPage}
-            value={currentPage}
+            max={ book1.totalPage}
+            value={ book1.currentPage?  book1.currentPage : 0}
             step="1"
+            onClick={btnClick}
           ></input>
-          <div className="page">
+          <div className="page" onClick={btnClick}>
             <span style={{ color: "#6F4E37", fontWeight: "bold" }}>
-              {currentPage}
+              {book1.currentPage? book1.currentPage : "0"}
             </span>
             <span>/</span>
-            <span style={{ color: "#6F4E37" }}>{totalPage}</span>
-            <em style={{ color: "#6F4E37", fontWeight: "bold" }}>p</em>
+            <span style={{ color: "#6F4E37" }}>{ book1.totalPage?  book1.totalPage : "페이지정보없음"}</span>
+            <em style={{ color: "#6F4E37", fontWeight: "bold" }}> p</em>
           </div>
         </div>
-        <div className="memoImg">
-          <img src={memoImg} alt="메모사진"></img>
+        <div className="memoImg"onClick={memoClick} >
+          <img src={memo4} alt="메모사진" onClick={memoClick}></img>
         </div>
       </div>
       {/* card*/}
@@ -59,7 +107,7 @@ const Container = styled.div`
     margin-left: 6%;
     border: 2px solid #6f4e37;
     border-radius: 40px;
-    padding: 2% 2%;
+    padding: 2% .5%;
     background-color: #fffaed;
     width: 70%;
     position: relative;
@@ -69,23 +117,29 @@ const Container = styled.div`
     .ggalpiTotal {
       width: 8%;
       position: relative;
-      left: 85%;
+      left: 82%;
       margin-top: -4%;
+
+     
 
       #ggalpi {
         width: 100%;
         position: absolute;
         height: 50%;
-        left: 1%;
+        left: -7%;
+
       }
     }
 
     .bookImg {
-      width: 40%;
-      margin-right: 5%;
+      width: 140px !important;
+      height: 180px !important;
+      border-radius: 5%;
+      margin-right: 3%;
+      object-fit: cover;
     }
     .contents {
-      width: 60%;
+      width: 32%;
       .title span{
         font-size: 2.7vw;
       }
@@ -107,12 +161,14 @@ const Container = styled.div`
       
     }
     .memoImg{
+        padding: 5%;
         width: 15%;
         height: 15%;
-        margin-top: 25%;
+        margin-top: 40%;
+        margin-left: 1%;
         img{
-          width: 85%;
-          height: 80%;
+          width: 100%;
+          height: 100%;
         }
     }
   }
