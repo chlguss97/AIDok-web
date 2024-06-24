@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import styled from "styled-components"
-// import BookStatus from "../components/BookStatus"
-=======
 import styled from "styled-components";
->>>>>>> 22a5afd811d178aeadb33a7ce2b755e813dba9d9
 import SaveBtn from "../components/SaveBtn";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import BackBtn from "../components/BackBtn";
@@ -58,45 +53,13 @@ const BookEdit = () => {
         const docSnap = await getDoc(subDocRef);
         console.log(`도큐먼트스냅이있는지 여부 : ${docSnap.exists()}`);
 
-<<<<<<< HEAD
-
-    const handleStatusClick = (index) => {
-        setClickedIndex(index)
-      }
-
-
-    if(link!==undefined){
-        if(link.match(/catalog\/(\d+)/)){
-            const match = link.match(/catalog\/(\d+)/);
-            if (match) {
-                const query = match[1];
-                console.log(query);
-                fetch(`./backend/naver_link.php?query=${query}`)
-                  .then((res) => res.text())
-                  .then((text) => {
-                    const dom = new DOMParser();
-                    const doc = dom.parseFromString(text, "text/html"); //두번째 파라미터 : mimeType
-                    const es = doc.querySelectorAll(".bookBasicInfo_spec__yzTpy"); // bookBasicInfo_spec__yzTpy라는 클래스 선택자를 이용하여 요소찾기
-                    console.log("es는무엇인가  " + es);
-                    es.forEach((element) => {
-                      const textContent = element.textContent;
-                      if (textContent.includes("쪽")) {
-                        console.log("쪽이 포함된 텍스트:", textContent);
-                        const cleanedText = textContent.replace(/쪽/g, "")
-                        setPage(cleanedText)
-                      }
-                    });
-                  });
-              }
-        }
-        
-=======
         if (docSnap.exists()) {
           const data = docSnap.data();
           setBookItem(data);
           setPage(data.totalPage);
           setStartDate(data.startDate);
           setEndDate(data.endDate);
+          
           if (data.state === "want") {
             console.log("Document exists and state is 'want':", data);
             setClickedIndex(0);
@@ -148,7 +111,6 @@ const BookEdit = () => {
         }
       }
 
->>>>>>> 22a5afd811d178aeadb33a7ce2b755e813dba9d9
     }
 
   }, [bookItem.link]);
@@ -373,7 +335,7 @@ const BookEdit = () => {
               제목: {bookItem.title ? bookItem.title : "책제목 없음"}
             </p>
             <p style={{ fontSize: "15px", fontWeight: "bold" }}>
-              저자: {bookItem.writer ? bookItem.writer : "작가이름 없음"}
+              저자: {(bookItem.writer).replace(/\^/g, ',') ? (bookItem.writer).replace(/\^/g, ',') : "작가이름 없음"}
             </p>
             <p style={{ fontSize: "15px", fontWeight: "bold" }}>
               요약:{" "}
@@ -467,12 +429,8 @@ const BookEdit = () => {
           </HeadText>
           <div className="graph">
             <Bar>
-              <Progress width="0%" />
+            <Progress width={`${(bookItem.currentPage / bookItem.totalPage) * 100}%`} />
             </Bar>
-<<<<<<< HEAD
-            <input type="text" placeholder="쪽수" style={{width:'3rem'}}></input>
-            <EditBtn onClick={pageEdit}>수정</EditBtn>
-=======
             {/* <input
               ref={inRef}
               type="text"
@@ -480,7 +438,6 @@ const BookEdit = () => {
               style={{ width: "3rem" }}
             ></input> */}
             {/* <EditBtn onClick={() => pageEdit()}>수정</EditBtn> */}
->>>>>>> 22a5afd811d178aeadb33a7ce2b755e813dba9d9
           </div>
           <div className="numbers">
             <Number $left="0%">
@@ -587,41 +544,13 @@ export default BookEdit;
 
 const BookInfo = styled.div`
   display: flex;
-    .info{
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin: 0 auto;
-        height: 200px;
-    }
-    .bookImg{
-        height: 150px;
-        margin: 16px;
-        border: 1px solid #6F4E37;
-        border-radius: 5px;
-    }
-    .titleAuthor{
-        height: 150px;
-        margin-right: auto;
-        text-align: start;
-        >p{
-            margin: 10px 0;
-            color: #6F4E37;
-            font-size: 14px;
-        }
-    }
-`
-const StatusContainer= styled.div`
-    height: 100px;
-    width: 320px;
+  .info {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     flex-direction: row;
     align-items: center;
     margin: 0 auto;
     height: 200px;
-
+  }
   .bookImg {
     height: 150px;
     margin: 16px;
@@ -639,9 +568,6 @@ const StatusContainer= styled.div`
     }
   }
 `;
-<<<<<<< HEAD
-
-=======
 const StatusContainer = styled.div`
   height: 100px;
   width: 360px;
@@ -654,7 +580,6 @@ const StatusContainer = styled.div`
     margin: 5px 10px;
   }
 `;
->>>>>>> 22a5afd811d178aeadb33a7ce2b755e813dba9d9
 const BookStatus = styled.div`
   display: inline-block;
   width: 120px;

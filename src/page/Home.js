@@ -38,28 +38,25 @@ const Home = () => {
   const [ingBooks, setIngBooks] = useState([]);
   const [endBooks, setEndBooks] = useState([]);
 
-  useEffect(() => {
-    // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
-    window.sendToWeb = function (route, userId, userProfileImg) {
-      // console.log("유즈셀렉터.."+userAccount.userId)
-      dispatch(setUserAccount(userId, userProfileImg));
-      if (route !== "/") {
-        navigate(route);
-      }
-    };
-  }, [dispatch, navigate]);
 
-  useEffect(() => {
-    console.log(
-      "앱에서넘겨준함수통해 리덕스에 깐 유저데이터:  " +
-        user.userId +
-        "그리고" +
-        user.userImg
-    );
-  }, [user]);
+  window.sendToWeb = function (route, userId, userProfileImg) {
+  
+    alert(`받냐못받냐${userId}`)
+    dispatch(setUserAccount(userId, userProfileImg));
+    
+    if (route !== "/") {
+      navigate(route);
+    }
+
+    
+  };
+
+  
+
 
   useEffect(() => {
     // 사용자 책의 상태값 보여주기
+    
     const checkUserDocumentExists = async () => {
       try {
         const docRef = doc(db, "user", user.userId); //도큐먼트(유저아이디)
@@ -181,7 +178,7 @@ const Home = () => {
           className="user"
           onClick={handelImageClick}
         />
-        <Title>홈 화면</Title>
+        <Title>홈 화면{user.userId}</Title>
       </TitleContainer>
       <Container>
         <SearchBarContainer>

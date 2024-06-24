@@ -5,6 +5,7 @@
   "dependencies": {
     "@tensorflow-models/qna": "^1.0.2",
     "@tensorflow/tfjs": "^4.20.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.20.0",
     "@tensorflow/tfjs-converter": "^4.20.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",

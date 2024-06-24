@@ -8,6 +8,9 @@ import SaveBtn from '../components/SaveBtn';
 import BackBtn from '../components/BackBtn';
 import BookModal from '../components/BookModal';
 import BottomSheetModal from '../components/BottomSheetModal';
+import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore'; // 필요한 Firebase 함수들을 import
+import { db } from '../firebase/firebase';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   display: flex;
@@ -154,7 +157,8 @@ const WriteNote = () => {
   const [selectedBook, setSelectedBook] = useState({
     title: '책 추가',
     authors: '',
-    cover: book
+    img: book,
+    isbn: ''
   });
   const [ocrText, setOcrText] = useState('');
   const [imageData, setImageData] = useState('');
@@ -162,6 +166,8 @@ const WriteNote = () => {
   const canvasRef = useRef(null);
   const [showWebcam, setShowWebcam] = useState(false);
   const [isAIExtract, setIsAIExtract] = useState(false);
+  const user = useSelector((state) => state.userA.userAccount);
+  const navigate = useNavigate();
 
   const handleBookInfoClick = () => {
     setModalIsOpen(true);
@@ -172,7 +178,6 @@ const WriteNote = () => {
     setModalIsOpen(false);
   };
 
-  const navigate = useNavigate();
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -183,8 +188,9 @@ const WriteNote = () => {
   };
 
   const handleAIExtractClick = () => {
-    setIsAIExtract(true);
-    setShowWebcam(true);
+    if (window.AndroidInterface && window.AndroidInterface.openCameraForOCR) {
+      window.AndroidInterface.openCameraForOCR();
+    }
   };
 
   const takePicture = () => {
@@ -206,14 +212,14 @@ const WriteNote = () => {
   };
 
   const sendImageToApp = (dataUrl) => {
-    if (window.Android) {
-      window.Android.receiveImage(dataUrl);
+    if (window.AndroidInterface && window.AndroidInterface.receiveImage) {
+      window.AndroidInterface.receiveImage(dataUrl);
     }
   };
 
   useEffect(() => {
     if (showWebcam && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } })
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then(stream => {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
@@ -226,30 +232,84 @@ const WriteNote = () => {
     }
 
     window.handleOCRResult = (result) => {
-      setOcrText(result); // OCR 결과를 새로운 텍스트 박스에 설정
-      setShowWebcam(false);
+      setOcrText((prevText) => prevText + '\n' + result); // OCR 결과를 NoteInput 박스에 추가
     };
   }, [showWebcam]);
 
-  useEffect(() => {
-    if (ocrText) {
-      // 기존 입력 내용에 OCR 결과를 추가
-      setOcrText((prevText) => prevText + '\n' + ocrText);
-    }
-  }, [ocrText]);
+  const handleSaveClick = async () => {
+    const noteData = {
+      authors: selectedBook.authors || '',
+      bookImgUrl: selectedBook.img || '',
+      date: new Date(),
+      noteText: ocrText,
+      title: selectedBook.title || '',
+    };
 
-  const bookData = Array.from({ length: 20 }, (_, index) => ({
-    title: `트렌드 코리아 ${2024 - index}`,
-    authors: `저자 ${index + 1}`,
-    cover: 'https://via.placeholder.com/150'
-  }));
+    try {
+      const docRef = doc(db, "note", user.userId);
+      const subColRef = collection(docRef, "books");
+      const bookDocRef = doc(subColRef, selectedBook.isbn);
+
+      await setDoc(bookDocRef, noteData);
+      alert("노트가 저장되었습니다.");
+      navigate(-1); // 이전 페이지로 이동
+    } catch (error) {
+      console.error("노트 저장 중 오류 발생:", error);
+      alert("노트 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  useEffect(() => {
+    const checkUserDocumentExists = async () => {
+      try {
+        const docRef = doc(db, "user", user.userId);
+        const subColRef = collection(docRef, "book");
+
+        //======state : ing인 서브도큐먼트 찾기================================
+        const ingStateQuery = query(subColRef, where("state", "==", "ing")); //조건!!!!
+        const ingQuerySnapshot = await getDocs(ingStateQuery); //서브컬렉션안에 조건에맞는 서브도큐먼트 찾아와
+        const ingBooks = [];
+        if (!ingQuerySnapshot.empty) {
+          ingQuerySnapshot.forEach((doc) => {
+            ingBooks.push(doc.data());
+          });
+          setIngBooks(ingBooks);
+        } else {
+          console.log("도큐먼트가 존재하지 않습니다.");
+        }
+
+        //======state : end인 서브도큐먼트 찾기================================
+        const endStateQuery = query(subColRef, where("state", "==", "end")); //조건!!!!
+        const endQuerySnapshot = await getDocs(endStateQuery); //서브컬렉션안에 조건에맞는 서브도큐먼트 찾아와
+        const endBooks = [];
+        if (!endQuerySnapshot.empty) {
+          endQuerySnapshot.forEach((doc) => {
+            endBooks.push(doc.data());
+          });
+          setEndBooks(endBooks);
+        } else {
+          console.log("도큐먼트가 존재하지 않습니다.");
+        }
+
+        setBookData([...ingBooks, ...endBooks]); // 가져온 ing 및 end 북들을 필터된 노트로 설정
+      } catch (error) {
+        console.error("도큐먼트 존재 확인 중 오류 발생:", error);
+      }
+    };
+
+    checkUserDocumentExists();
+  }, [user.userId]);
+
+  const [ingBooks, setIngBooks] = useState([]);
+  const [endBooks, setEndBooks] = useState([]);
+  const [bookData, setBookData] = useState([]);
 
   return (
     <Container>
       <BackBtn onClick={handleBackClick} />
       <Header>
         <BookInfo onClick={handleBookInfoClick}>
-          <BookImage src={selectedBook.cover} alt='Book Cover' />
+          <BookImage src={selectedBook.img} alt='Book Cover' />
           <BookTitle>{selectedBook.title}</BookTitle>
           <BookAuthors>{selectedBook.authors}</BookAuthors>
         </BookInfo>
@@ -284,17 +344,12 @@ const WriteNote = () => {
             <img src={imageData} alt='Captured' style={{ width: '100%', height: 'auto', marginBottom: '10px', border: '1px solid #6F4E37', borderRadius: '5px' }} />
           </ImageContainer>
         )}
-        {ocrText && (
-          <OCRTextBox>
-            {ocrText}
-          </OCRTextBox>
-        )}
         <NoteInput
           placeholder='노트에 저장할 내용을 작성하세요'
           value={ocrText}
           onChange={(e) => setOcrText(e.target.value)}
         />
-        <SaveBtn name={'저장하기'} style={{ marginTop: '10px', marginBottom: '60px' }} />
+        <SaveBtn name={'저장하기'} style={{ marginTop: '10px', marginBottom: '60px' }} onClick={handleSaveClick} />
       </Content>
       <BookModal
         isOpen={modalIsOpen}
