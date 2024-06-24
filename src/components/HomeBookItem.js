@@ -71,7 +71,7 @@ const HomeBookItem = ({ book }) => {
           </div>
           <div className="writer" onClick={btnClick}>
             <span style={{fontSize:"15px", fontWeight:"bold"}}>저자 : </span>
-            <span>{ book1.writer}</span>
+            <span>{ (book1.writer).replace(/\^/g, ',')}</span>
           </div>
           <input
             id="slider"
@@ -153,7 +153,7 @@ const Container = styled.div`
         width: 95%;
       }
       .page{
-        margin-left: 55%;
+        margin-left: 48%;
         span, em{
           font-size: 2.7vw;
         }

@@ -12,9 +12,11 @@ import {
   deleteDoc,
   collection,
   where,
+  updateDoc,
   query,
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
+import {useNavigate } from "react-router-dom";
 
 
 
@@ -27,7 +29,8 @@ const Timer = () => {
   const [timerRefs, setTimerRefs] = useState({})
   const user = useSelector((state) => state.userA.userAccount);
   const [stoppedTimes, setStoppedTimes] = useState([]); // 멈춘 시간을 저장할 상태
-
+  const navigate = useNavigate()
+  
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
@@ -151,11 +154,53 @@ const Timer = () => {
     slidesToScroll: 1,
   };
 
-  const clickSave = () => {
-    //firebase에 currentPage, totalReadTime에 누적하여 저장
-    //변수 currentPage가 있으면 그거넣고 아니면 그냥 bookItem.currentPage넣기
-    //{formatTime(stoppedTimes[index])}
+
+  const formatTimeForFirebase = (seconds) => {
+
+    if (seconds === undefined || seconds === null) {
+      return "00:00:00";
+    }
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
+
+  
+  const clickSave = async () => {
+    try {
+      await Promise.all(bookItems.map(async (book, index) => {
+        const bookRef = doc(db, "user", user.userId, "book", book.isbn);
+        
+        // Fetch the total read time from Firebase and convert it to seconds
+        const firebaseTotalTime = convertFirebaseTimeToSeconds(book.totalReadTime);
+        // Calculate the total reading time in seconds
+        const totalReadingTimeInSeconds = (stoppedTimes[index] || 0) + firebaseTotalTime;
+        
+        await updateDoc(bookRef, {
+          currentPage: book.currentPage,
+          totalReadTime: formatTimeForFirebase(totalReadingTimeInSeconds)
+        });
+
+      
+      }));
+      alert(`저장되었습니다.`);
+      navigate('/');
+    } catch (error) {
+      console.error("저장하는 도중 오류가 발생했습니다: ", error);
+      alert("저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+  
+  // Helper function to convert Firebase time format (HH:MM:SS) to seconds
+  const convertFirebaseTimeToSeconds = (timeString) => {
+    const [hours, minutes, seconds] = timeString.split(':').map(Number);
+    return (hours * 3600) + (minutes * 60) + seconds;
+  };
+
 
   const changePage = (bookIndex) => {
     if (!/^\d+$/.test(page)) {
@@ -232,7 +277,8 @@ const Timer = () => {
                 <div className="timeContainer">
                   <span className="label">누적시간 :</span>
                   <span className="nujuck">{book.totalReadTime}</span>
-                  <span className="nujuck1">  + {formatTime(stoppedTimes[index])}</span>
+                  <span className="nujuck1">  + {formatTime(stoppedTimes[index] || 0)}</span>
+                  {/* <p className="time">{formatTime(times[index] || 0)}</p> */}
                   <p className="time">{formatTime(times[index])}</p>
                 </div>
               </p>

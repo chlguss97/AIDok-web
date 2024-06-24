@@ -59,6 +59,7 @@ const BookEdit = () => {
           setPage(data.totalPage);
           setStartDate(data.startDate);
           setEndDate(data.endDate);
+
           if (data.state === "want") {
             console.log("Document exists and state is 'want':", data);
             setClickedIndex(0);
@@ -315,6 +316,12 @@ const BookEdit = () => {
     setDateDifference(`${diff}일 남았습니다.`);
   };
 
+
+
+
+
+
+
   return (
     <div style={{ textAlign: "center", padding: "5%" }}>
       <BackBtn
@@ -334,7 +341,7 @@ const BookEdit = () => {
               제목: {bookItem.title ? bookItem.title : "책제목 없음"}
             </p>
             <p style={{ fontSize: "15px", fontWeight: "bold" }}>
-              저자: {bookItem.writer ? bookItem.writer : "작가이름 없음"}
+              저자: {(bookItem.writer).replace(/\^/g, ',') ? (bookItem.writer).replace(/\^/g, ',') : "작가이름 없음"}
             </p>
             <p style={{ fontSize: "15px", fontWeight: "bold" }}>
               요약:{" "}
@@ -428,7 +435,7 @@ const BookEdit = () => {
           </HeadText>
           <div className="graph">
             <Bar>
-              <Progress width="0%" />
+            <Progress width={`${(bookItem.currentPage / bookItem.totalPage) * 100}%`} />
             </Bar>
             {/* <input
               ref={inRef}
@@ -449,6 +456,19 @@ const BookEdit = () => {
                 }}
               >
                 0p
+              </span>
+            </Number>
+
+            <Number $left={`${(bookItem.currentPage / bookItem.totalPage) * 100}%`}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  color: "gray",
+                  marginTop: "3rem",
+                }}
+              >
+                {bookItem.currentPage}p
               </span>
             </Number>
             <Number $left="100%">
@@ -502,6 +522,8 @@ const BookEdit = () => {
                 0분
               </span>
             </Number>
+
+
 
             <Number $left="100%">
               <span
