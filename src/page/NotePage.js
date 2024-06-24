@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -7,21 +7,9 @@ import backIcon from '../assets/backicon.png'; // 뒤로가기 아이콘 이미�
 import SearchBar from '../components/SearchBar'; // 새로 만든 SearchBar 컴포넌트를 가져옵니다.
 import BackBtn from '../components/BackBtn';
 import { useNavigate } from 'react-router-dom';
-
-const books = [
-  { id: 1, title: 'qwer', image: 'https://via.placeholder.com/150' },
-  { id: 2, title: 'asdf', image: 'https://via.placeholder.com/150' },
-  { id: 3, title: 'test', image: 'https://via.placeholder.com/150' },
-  { id: 4, title: 'aaaaa', image: 'https://via.placeholder.com/150' },
-  { id: 5, title: 'aaaaaa', image: 'https://via.placeholder.com/150' },
-];
-
-const initialNotes = [
-  { id: 1, title: "qwer", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" },
-  { id: 2, title: "Learning React 2", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" },
-  { id: 3, title: "Learning React 3", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" },
-  { id: 4, title: "Learning React 4", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" }
-];
+import { collection, doc, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   padding-top: 8%;
@@ -114,37 +102,71 @@ const BackButton = styled.button`
   }
 `;
 
-const Note = ({ title, content, date, image }) => (
+
+
+const Note = ({item}) => (
+  
   <NoteContainer>
-    <NoteImage src={image} alt="Book Cover" />
+    <NoteImage src={item.bookImgUrl} alt="Book Cover" />
     <NoteContentContainer>
-      <NoteTitle>{title}</NoteTitle>
-      <NoteContent>{content}</NoteContent>
-      <NoteDate>{date}</NoteDate>
+      <NoteTitle>{item.title}</NoteTitle>
+      <NoteContent>{item.noteText}</NoteContent>
+      {/* <NoteDate>{item.date}</NoteDate> */}
     </NoteContentContainer>
   </NoteContainer>
 );
 
 const NoteList = ({ notes }) => (
   <div id="notesContainer">
-    {notes.map((note, index) => {
-      const book = books.find(book => book.id === note.id);
-      return (
-        <Note 
-          key={index}
-          title={note.title}
-          content={note.content}
-          date={note.date}
-          image={book ? book.image : 'https://via.placeholder.com/150'}
-        />
-      );
-    })}
+
+    <div>
+      {notes.length > 0 ? (
+          notes.map((filteredNotes, index) => (
+              <Note key={index} item={filteredNotes} />
+          ))
+      ) : (
+          <p>No notes available.</p>
+      )}
+    </div>
+
   </div>
+
 );
 
 const NotePage = () => {
+
+  const user = useSelector((state) => state.userA.userAccount);
+
+  const [note, setNotes] = useState({});  // 객체(초기값 빈 객체)
+  const [filteredNotes, setFilteredNotes] = useState([]); // 배열(초기값 빈 배열)
+
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const noteDocRef = doc(db, 'note', user.userId); // 'note' 컬렉션의 id 문서 참조
+            const booksCollectionRef = collection(noteDocRef, 'books'); // 'books' 서브컬렉션 참조
+            const querySnapshot = await getDocs(booksCollectionRef); // 참조의 모든 문서 가져오기
+            const data = {};
+
+            // 각 문서의 books 서브컬렉션을 반복
+            querySnapshot.forEach(doc => {
+                data[doc.id] = doc.data();
+            });
+
+            setNotes(data);
+            setFilteredNotes(Object.values(data).flat());
+            console.log('Fetched AI Data:', data); // 데이터 확인용 console.log
+        } catch (error) {
+            console.error('Error fetching data: ', error);
+        }
+    };
+
+    fetchData();
+}, [user]);
+
+  // 검색바
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredNotes, setFilteredNotes] = useState(initialNotes);
+  
   const navigate = useNavigate(); // useNavigate 훅을 컴포넌트 내부에서 호출
 
   const handleSearchChange = (event) => {
@@ -152,9 +174,10 @@ const NotePage = () => {
   };
 
   const handleSearchClick = () => {
-    const filtered = initialNotes.filter(note =>
-      note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      note.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const allNotes = Object.values(note).flat(); // notes 객체의 모든 값을 배열로 변환하고 평탄화
+    const filtered = allNotes.filter(note =>
+      (note.content && note.content.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (note.title && note.title.toString().toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredNotes(filtered);
   };
@@ -187,7 +210,11 @@ const NotePage = () => {
         />
       </SearchBarWrapper>
       <div className="note-details">
-        <NoteList notes={filteredNotes} />
+        {Object.keys(filteredNotes).length > 0 ? (
+            <NoteList notes={filteredNotes} />
+        ) : (
+            <p>데이터를 로딩 중입니다...</p>
+        )}
       </div>
       <FloatingButton onClick={handleCreatePost}>+</FloatingButton>
     </Container>

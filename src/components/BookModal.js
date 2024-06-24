@@ -1,7 +1,10 @@
 // src/components/BookModal.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
+import { db } from '../firebase/firebase';
+import { useSelector } from 'react-redux';
+import { collection, doc, getDocs } from 'firebase/firestore';
 
 const ModalContent = styled.div`
   display: grid;
@@ -45,7 +48,43 @@ const ModalButton = styled.button`
   cursor: pointer;
 `;
 
-const BookModal = ({ isOpen, onRequestClose, books, onBookSelect }) => {
+const BookModal = ({ isOpen, onRequestClose, userId, onBookSelect }) => {
+
+  const user = useSelector((state) => state.userA.userAccount);
+
+  const [books, setBooks] = useState([])
+
+  useEffect(() => {
+    if (isOpen) {
+      // Firestore에서 데이터 가져오기
+      const fetchBooks = async () => {
+        try {
+          // const booksCollection = await db.collection('user').doc(user.userId).collection('books').get();
+          const userDocRef = doc(db, 'user', user.userId)
+          const booksCollectionRef = collection(userDocRef, 'book')
+          const querySnapshot = await getDocs(booksCollectionRef)
+          
+          const booksData = [];
+          querySnapshot.forEach(doc => {
+            booksData.push({
+              id: doc.id,
+              ...doc.data()
+            });
+          });
+
+          console.log(booksData)
+          setBooks(booksData);
+        } catch (error) {
+          console.error("Error fetching books: ", error);
+        }
+      };
+
+      fetchBooks();
+    }
+  }, [isOpen, userId]);
+
+  if (!isOpen) return null;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -56,7 +95,7 @@ const BookModal = ({ isOpen, onRequestClose, books, onBookSelect }) => {
       <ModalContent>
         {books.map((book, index) => (
           <BookCard key={index} onClick={() => onBookSelect(book)}>
-            <BookImage src={book.cover} alt={book.title} />
+            <BookImage src={book.img} alt={book.title} />
             <BookTitle>{book.title}</BookTitle>
           </BookCard>
         ))}

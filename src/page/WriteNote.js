@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import book from '../assets/book.png';
+import bookImage from '../assets/book.png';
 import icon1 from '../assets/icon1.png';
 import icon2 from '../assets/icon2.png';
 import SaveBtn from '../components/SaveBtn';
 import BackBtn from '../components/BackBtn';
 import BookModal from '../components/BookModal';
 import BottomSheetModal from '../components/BottomSheetModal'
+import { useSelector } from 'react-redux';
+import { Timestamp, collection, doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
 
 const Container = styled.div`
   display: flex;
@@ -105,13 +108,66 @@ const Icon = styled.img`
 `;
 
 const WriteNote = () => {
+
+  const user = useSelector((state) => state.userA.userAccount);
+
+  // 상태 객체로 모든 필드값을 관리
+  const [formData, setFormData] = useState({
+    bookImgUrl: '',
+    title: '',
+    authors: '',
+    // noteImg: '',
+    noteText: '',
+  });
+
+  const [isbn, setIsbn] = useState('')
+
+  const save = async () => {
+    const timestamp = Timestamp.fromDate(new Date());
+
+    // Firestore에 데이터 저장
+    try {
+      // 'bert' 컬렉션의 user.userId 문서 참조
+      const userDocRef = doc(db, 'note', user.userId); 
+      // 'bert' 컬렉션의 user.userId 문서의 'books' 서브컬렉션 참조
+      const booksCollectionRef = collection(userDocRef, 'books');
+      // 'books' 서브컬렉션의 isbn 서브문서 참조
+      const subDocRef = doc(booksCollectionRef, isbn);
+      
+      await setDoc(subDocRef, {
+        ...formData,
+        date: timestamp
+      });
+      console.log('데이터가 성공적으로 업로드되었습니다.');
+      alert('데이터가 성공적으로 업로드되었습니다.');
+    } catch (error) {
+      console.error('데이터 업로드 중 오류 발생:', error);
+      alert('데이터 업로드가 실패하였습니다.');
+      console.log(formData);
+    }
+  }
+
+
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState({
+    isbn: '',
     title: '책 추가',
     authors: '',
-    cover: book
+    cover: bookImage
   });
+
+  useEffect(() => {
+    setIsbn(selectedBook.isbn)
+    setFormData((prevData) => ({
+      ...prevData,
+      bookImgUrl: selectedBook.cover,
+      title: selectedBook.title,
+      authors: selectedBook.authors
+    }));
+  }, [selectedBook]);
+
+
 
   const openBottomSheet = () => {
     setIsBottomSheetOpen(true);
@@ -122,8 +178,9 @@ const WriteNote = () => {
   };
 
   const bookData = Array.from({ length: 20 }, (_, index) => ({
+    isbn: "100000000000"+index,
     title: `트렌드 코리아 ${2024 - index}`,
-    authors: `저자 ${index + 1}`,
+    authors  : `저자 ${index + 1}`,
     cover: "https://via.placeholder.com/150"
   }));
 
@@ -164,9 +221,14 @@ const WriteNote = () => {
           <Icon src={icon2} alt="Underline Icon"  />
           AI로 텍스트 추출
         </ActionButton>
-        <NoteInput placeholder="노트에 저장할 내용을 작성하세요" />
+        <NoteInput placeholder="노트에 저장할 내용을 작성하세요" value={formData.noteText} onChange={(e) =>
+            setFormData((prevData) => ({
+              ...prevData,
+              noteText: e.target.value
+            }))
+          }/>
       </Content>
-      <SaveBtn name={"저장하기"} />
+      <SaveBtn name={"저장하기"}  onClick={save}/>
       <BookModal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
