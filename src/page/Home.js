@@ -34,35 +34,36 @@ const Home = () => {
   const user = useSelector((state) => state.userA.userAccount);
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
-  const [wantBooks, setWantBooks] = useState([]);
-  const [ingBooks, setIngBooks] = useState([]);
-  const [endBooks, setEndBooks] = useState([]);
+  const [wantBooks, setWantBooks] = useState([{},{},{}]);
+  const [ingBooks, setIngBooks] = useState([{}]);
+  const [endBooks, setEndBooks] = useState([{},{},{}]);
+  
+  //실행순서 : 
+  //1.가져온거eee
+  //2.가져온거eee, 디스패치한거  //처음엔 디스패치가안됐다. 비동기라
+  //3.트라이안에서유저:eee //이때는 디스패치됬다.
+  //4.가져온거:eee
+  //5.가져온거:eee, 디스패치한거:eee //두번쨰는 디스패치가 잘됬다.
+  
+
+  window.sendToWeb = function (route, userId, userProfileImg) {
+    // alert(`가져온거:${userId}`);
+    // console.log("유즈셀렉터.."+userAccount.userId)
+    dispatch(setUserAccount(userId, userProfileImg));
+    if (route !== "/") {
+      navigate(route);
+    }
+    // alert(`가져온거:${userId}, 디스패치한거:${user.userId}`);
+  };
 
   useEffect(() => {
-    // 앱에서 사용자가 로그인하면 앱에서 웹으로 함수넘겨준거 받기
-    window.sendToWeb = function (route, userId, userProfileImg) {
-      // console.log("유즈셀렉터.."+userAccount.userId)
-      dispatch(setUserAccount(userId, userProfileImg));
-      if (route !== "/") {
-        navigate(route);
-      }
-    };
-  }, [dispatch, navigate]);
+    
 
-  useEffect(() => {
-    console.log(
-      "앱에서넘겨준함수통해 리덕스에 깐 유저데이터:  " +
-        user.userId +
-        "그리고" +
-        user.userImg
-    );
-  }, [user]);
-
-  useEffect(() => {
     // 사용자 책의 상태값 보여주기
     const checkUserDocumentExists = async () => {
       try {
         const docRef = doc(db, "user", user.userId); //도큐먼트(유저아이디)
+        // alert("트라이안에서유저:" + user.userId);
         const subColRef = collection(docRef, "book"); //서브컬렉션book찾아오기
         console.log(`docRef:` + docRef + ` ,  subColRef = ${subColRef}`);
 
@@ -113,7 +114,7 @@ const Home = () => {
     };
 
     checkUserDocumentExists();
-  }, []);
+  }, [user.userId]);
 
   const handleAfterChange = (currentSlide) => {
     if (sliderRef.current) {
@@ -141,7 +142,7 @@ const Home = () => {
     slidesToScroll: 1,
     afterChange: handleAfterChange,
   };
-  
+
   const endBooksSettings = {
     dots: true,
     infinite: endBooks.length > 3, // 슬라이드 개수가 3개 이상일 때만 무한 스크롤 활성화
@@ -167,10 +168,6 @@ const Home = () => {
     }
     // alert(searchTerm);
   };
-
-
-
-
 
   return (
     <div>
@@ -208,10 +205,10 @@ const Home = () => {
           <p id="wantbook" style={{ paddingLeft: "5%" }}>
             읽고 싶은 책
           </p>
-          <CircleBookStyledSlider ref={sliderRef} {...wantBooksSettings} >
-          {wantBooks.map((book, index, array) => {
-            return <CircleBook key={index} book={book} ></CircleBook>;
-          })}
+          <CircleBookStyledSlider ref={sliderRef} {...wantBooksSettings}>
+            {wantBooks.map((book, index, array) => {
+              return <CircleBook key={index} book={book}></CircleBook>;
+            })}
           </CircleBookStyledSlider>
         </div>
 
@@ -220,9 +217,9 @@ const Home = () => {
             다 읽은 책
           </p>
           <CircleBookStyledSlider {...endBooksSettings}>
-          {endBooks.map((book, index, array) => {
-            return <CircleBook2 key={index} book={book} ></CircleBook2>;
-          })}
+            {endBooks.map((book, index, array) => {
+              return <CircleBook2 key={index} book={book}></CircleBook2>;
+            })}
           </CircleBookStyledSlider>
         </div>
       </Container>
@@ -233,7 +230,7 @@ const Home = () => {
 export default Home;
 
 const Container = styled.div`
-/* 패딩래프트 유리가추가 */
+  /* 패딩래프트 유리가추가 */
   padding-top: 8%;
   padding-bottom: 20%;
   /* background-image: url(${pageBackground});

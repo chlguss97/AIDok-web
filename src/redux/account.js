@@ -1,7 +1,7 @@
 const initState= { //처음에 한번만 초기화..
     userAccount: {
-        userId : "aaa",
-        userImg : "imgimgimgimgimg",
+        userId : "",
+        userImg : "",
     },
 }
 

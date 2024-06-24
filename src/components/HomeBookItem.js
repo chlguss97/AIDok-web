@@ -5,6 +5,7 @@ import memoImg from "../assets/memo2.png";
 import ggalpi from "../assets/tek.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import bookImage from '../assets/blankBook.png'
 
 const HomeBookItem = ({ book }) => {
 
@@ -63,21 +64,21 @@ const HomeBookItem = ({ book }) => {
           <VerticalText>{ dayPassed? dayPassed : "?"}일째</VerticalText>
         </div>
 
-        <img className="bookImg" src={book1.img} alt="책사진" onClick={btnClick}></img>
+        <img className="bookImg" src={book1.img || bookImage} alt="책사진" onClick={btnClick}></img>
         <div className="contents">
           <div className="title" onClick={btnClick}>
             <span style={{fontSize:"15px", fontWeight:"bold"}}>제목 : </span>
-            <span> { book1.title}</span>
+            <span> { book1.title || "책 제목"}</span>
           </div>
           <div className="writer" onClick={btnClick}>
             <span style={{fontSize:"15px", fontWeight:"bold"}}>저자 : </span>
-            <span>{ (book1.writer).replace(/\^/g, ',')}</span>
+            <span>{ (book1.writer || "글쓴이").replace(/\^/g, ',')}</span>
           </div>
           <input
             id="slider"
             type="range"
             min="0"
-            max={ book1.totalPage}
+            max={ book1.totalPage || "책 페이지"}
             value={ book1.currentPage?  book1.currentPage : 0}
             step="1"
             onClick={btnClick}

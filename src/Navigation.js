@@ -35,6 +35,9 @@ const Navigation = () => {
         <li>
           <Link to="/timer">Timer</Link>
         </li>
+        <li>
+          <Link to="/tonggae">Tonggae</Link>
+        </li>
         
 
 

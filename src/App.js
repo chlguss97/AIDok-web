@@ -15,6 +15,7 @@ import Board from './components/Board';
 import WriteBoard from './components/WriteBoard';
 import BoardComment from './components/BoardComment';
 import Timer from './page/Timer';
+import Tonggae from './page/Tonggae';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/write" element={<WriteBoard />} />
           <Route path="/comments" element={<BoardComment />} />
           <Route path="/timer" element={<Timer/>} />
+          <Route path='/tonggae' element={<Tonggae/>}/>
           
           
 

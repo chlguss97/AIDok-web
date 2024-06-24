@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import bookImg from "../assets/HomeBook1.png";
 import { useNavigate } from "react-router-dom";
+import plusImage from "../assets/add.png"
 
 const CircleBook = ({ book }) => {
   const navigate = useNavigate();
@@ -32,17 +33,25 @@ const CircleBook = ({ book }) => {
   return (
     <Container onClick={btnClick}>
       <div className="circle">
-        <img className="bookImg" src={book1.img} alt="책이미지" />
+        <img className="bookImg" src={book1.img || plusImage} alt="책이미지" />
       </div>
       <p
-        style={{
-          marginLeft: "5%",
-          width: "65%",
+         style={{
+          marginLeft: "8%",
+          width: "70%",
           fontSize: "5%",
           color: "gray",
+          textAlign: "center"
+        
         }}
       >
-        {book1.title}
+        {book1.title ? (book1.title) : 
+        (<>
+        {"\u00A0".repeat(4)}책을
+        <br/>
+         추가해주세요
+        </>
+        )}
       </p>
     </Container>
   );

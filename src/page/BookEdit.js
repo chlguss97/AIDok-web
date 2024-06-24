@@ -557,6 +557,8 @@ const BookEdit = () => {
       <br></br>
       <br></br>
       <SaveBtn type="submit" name="저장하기" onClick={save}></SaveBtn>
+      <p style={{marginBottom: "120px"}}></p>
+     
       <ToastContainer />
     </div>
   );

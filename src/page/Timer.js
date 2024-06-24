@@ -173,10 +173,15 @@ const Timer = () => {
   const clickSave = async () => {
     try {
       await Promise.all(bookItems.map(async (book, index) => {
+        // alert(`userId: ${user.userId}`)
+        console.log(`userId: ${user.userId}`)
         const bookRef = doc(db, "user", user.userId, "book", book.isbn);
+        // alert(`isbn: ${book.isbn}`)
         
         // Fetch the total read time from Firebase and convert it to seconds
+        
         const firebaseTotalTime = convertFirebaseTimeToSeconds(book.totalReadTime);
+        // alert(`firebase..:${firebaseTotalTime}`)
         // Calculate the total reading time in seconds
         const totalReadingTimeInSeconds = (stoppedTimes[index] || 0) + firebaseTotalTime;
         
@@ -195,8 +200,13 @@ const Timer = () => {
     }
   };
   
-  // Helper function to convert Firebase time format (HH:MM:SS) to seconds
+ 
+
   const convertFirebaseTimeToSeconds = (timeString) => {
+    if (!timeString) {
+      return 0;
+    }
+  
     const [hours, minutes, seconds] = timeString.split(':').map(Number);
     return (hours * 3600) + (minutes * 60) + seconds;
   };
@@ -311,7 +321,7 @@ const Timer = () => {
 export default Timer;
 
 const Container = styled.div`
-  background-color: #5e7e71;
+  background-color: #5F937E;
   text-align: center;
   padding: 20px;
   position: relative; /* 상대 위치 설정 */
@@ -464,8 +474,10 @@ const Container = styled.div`
 `;
 
 const StyledSlider = styled(Slider)`
+margin-top: 50px;
   div {
     background-color: #83a195;
+    border-radius: 3%;
   }
   .slick-list {
     overflow: hidden;
