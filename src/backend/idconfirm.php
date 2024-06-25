@@ -22,6 +22,7 @@ if (empty($id)) {
 
 // 데이터베이스 연결
 $db = mysqli_connect($db_host, $db_user, $db_password, $db_name);
+// $db = mysqli_connect("localhost", "ddok", "q1w2e3r4!", "ddok");
 if (mysqli_connect_errno()) {
     echo json_encode(['error' => 'Failed to connect to MySQL: ' . mysqli_connect_error()]);
     http_response_code(500); // Internal Server Error

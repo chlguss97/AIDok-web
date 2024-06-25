@@ -8,6 +8,8 @@ import { collection, doc, getDocs } from "firebase/firestore";
 import { db } from '../firebase/firebase';
 import { useSelector } from 'react-redux';
 
+import { useSelector } from 'react-redux';
+
 const Ai = () => {
     const [aiData, setAiData] = useState({}); // 객체 데이터
     const [filteredAiData, setFilteredAiData] = useState(null); // 배열 데이터
@@ -16,10 +18,13 @@ const Ai = () => {
 
     const user = useSelector((state) => state.userA.userAccount);
 
+
     useEffect(() => {
         const fetchData = async () => {
             try {
+
                 const bertDocRef = doc(db, 'bert', user.userId); // 'bert' 컬렉션의 id 문서 참조
+
                 const booksCollectionRef = collection(bertDocRef, 'books'); // 'books' 서브컬렉션 참조
                 const querySnapshot = await getDocs(booksCollectionRef); // 참조의 모든 문서 가져오기
                 const data = {};

@@ -1,27 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { collection, query, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import searchIcon from '../assets/searchicon.png'; // 검색 아이콘 이미지를 가져옵니다.
-import backIcon from '../assets/backicon.png'; // 뒤로가기 아이콘 이미지를 가져옵니다.
-import SearchBar from '../components/SearchBar'; // 새로 만든 SearchBar 컴포넌트를 가져옵니다.
-import BackBtn from '../components/BackBtn';
+import SearchBar from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
-
-const books = [
-  { id: 1, title: 'qwer', image: 'https://via.placeholder.com/150' },
-  { id: 2, title: 'asdf', image: 'https://via.placeholder.com/150' },
-  { id: 3, title: 'test', image: 'https://via.placeholder.com/150' },
-  { id: 4, title: 'aaaaa', image: 'https://via.placeholder.com/150' },
-  { id: 5, title: 'aaaaaa', image: 'https://via.placeholder.com/150' },
-];
-
-const initialNotes = [
-  { id: 1, title: "qwer", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" },
-  { id: 2, title: "Learning React 2", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" },
-  { id: 3, title: "Learning React 3", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" },
-  { id: 4, title: "Learning React 4", content: "온 세상이 경연구 사이에 대해 말하고 있다. 인공지능 기술의 발전으로 인한 삶의 변화를 실감할 수 있었습니다.", date: "2024.06.10" }
-];
 
 const Container = styled.div`
   padding-top: 8%;
@@ -102,18 +87,6 @@ const SearchBarWrapper = styled.div`
   margin: 20px 0;
 `;
 
-const BackButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: absolute;
-  left: 0;
-  img {
-    width: 20px;
-    height: 20px;
-  }
-`;
-
 const Note = ({ title, content, date, image }) => (
   <NoteContainer>
     <NoteImage src={image} alt="Book Cover" />
@@ -127,40 +100,56 @@ const Note = ({ title, content, date, image }) => (
 
 const NoteList = ({ notes }) => (
   <div id="notesContainer">
-    {notes.map((note, index) => {
-      const book = books.find(book => book.id === note.id);
-      return (
-        <Note 
-          key={index}
-          title={note.title}
-          content={note.content}
-          date={note.date}
-          image={book ? book.image : 'https://via.placeholder.com/150'}
-        />
-      );
-    })}
+    {notes.map((note, index) => (
+      <Note 
+        key={index}
+        title={note.title}
+        content={note.noteText}
+        date={note.date.toDate().toLocaleString()}
+        image={note.bookImgUrl}
+      />
+    ))}
   </div>
 );
 
 const NotePage = () => {
+  const user = useSelector((state) => state.userA.userAccount);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredNotes, setFilteredNotes] = useState(initialNotes);
-  const navigate = useNavigate(); // useNavigate 훅을 컴포넌트 내부에서 호출
+  const [filteredNotes, setFilteredNotes] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const subColRef = collection(db, "note", user.userId, "books");
+        const notesQuerySnapshot = await getDocs(subColRef);
+        const notes = [];
+        notesQuerySnapshot.forEach((doc) => {
+          notes.push(doc.data());
+        });
+        setFilteredNotes(notes);
+      } catch (error) {
+        console.error("도큐먼트 존재 확인 중 오류 발생:", error);
+      }
+    };
+
+    fetchNotes();
+  }, [user.userId]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   const handleSearchClick = () => {
-    const filtered = initialNotes.filter(note =>
-      note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filtered = filteredNotes.filter(note =>
+      note.noteText.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredNotes(filtered);
   };
 
   const handleCreatePost = () => {
-    navigate('/WriteNote'); // navigate 함수를 사용하여 라우트 이동
+    navigate('/WriteNote');
   };
 
   const Title = styled.p`
@@ -173,9 +162,6 @@ const NotePage = () => {
   return (
     <Container>
       <TitleContainer>
-        {/* <BackButton>
-          <img src={backIcon} alt="Back" />
-        </BackButton> */}
         <Title>노트</Title>
       </TitleContainer>
       <SearchBarWrapper>
