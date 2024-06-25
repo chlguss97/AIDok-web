@@ -26,23 +26,13 @@ const modalStyle = {
     },
 };
 
-const BottomSheetModal = ({ isOpen, onRequestClose, onFileChange }) => {
+const BottomSheetModal = ({ isOpen, onRequestClose, handleAIExtractClick, handleOpenFileInput, onFileChange }) => {
 
     const videoRef = useRef(null);
 
-    const handleOpenCamera = () => {
-        navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            videoRef.current.srcObject = stream;
-        })
-        .catch(error => {
-            console.error('Error accessing webcam: ', error);
-        });
-    };
-
-    const handleOpenFileInput = () => {
-        document.getElementById('fileInput').click();
-    };
+    // const handleOpenFileInput = () => {
+    //     document.getElementById('fileInput').click();
+    // };
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -68,8 +58,8 @@ const BottomSheetModal = ({ isOpen, onRequestClose, onFileChange }) => {
                 flexDirection: 'row',
                 justifyContent: 'space-evenly'
             }}>
-            <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleOpenCamera}><img width={"40px"} height={"40px"} src={camera}></img>카메라</div>
-            <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleOpenFileInput}><img width={"40px"} height={"40px"} src={gallery}></img>갤러리</div>
+                <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleAIExtractClick}><img width={"40px"} height={"40px"} src={camera}></img>카메라</div>
+                <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleOpenFileInput}><img width={"40px"} height={"40px"} src={gallery}></img>갤러리</div>
             </div>
 
             <video ref={videoRef} width="320" height="240" autoPlay style={{ display: 'none' }}></video>

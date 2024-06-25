@@ -1,7 +1,9 @@
-// src/components/BookModal.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
+import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { useSelector } from 'react-redux';
 
 const ModalContent = styled.div`
   display: grid;
@@ -45,7 +47,45 @@ const ModalButton = styled.button`
   cursor: pointer;
 `;
 
-const BookModal = ({ isOpen, onRequestClose, books, onBookSelect }) => {
+const BookModal = ({ isOpen, onRequestClose, onBookSelect }) => {
+  const [books, setBooks] = useState([]);
+  const user = useSelector((state) => state.userA.userAccount);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const docRef = doc(db, "user", user.userId);
+        const subColRef = collection(docRef, "book");
+
+        // state : ing인 서브도큐먼트 찾기
+        const ingStateQuery = query(subColRef, where("state", "==", "ing"));
+        const ingQuerySnapshot = await getDocs(ingStateQuery);
+        const iBooks = [];
+        if (!ingQuerySnapshot.empty) {
+          ingQuerySnapshot.forEach((doc) => {
+            iBooks.push(doc.data());
+          });
+        }
+
+        // state : end인 서브도큐먼트 찾기
+        const endStateQuery = query(subColRef, where("state", "==", "end"));
+        const endQuerySnapshot = await getDocs(endStateQuery);
+        const eBooks = [];
+        if (!endQuerySnapshot.empty) {
+          endQuerySnapshot.forEach((doc) => {
+            eBooks.push(doc.data());
+          });
+        }
+
+        setBooks([...iBooks, ...eBooks]);
+      } catch (error) {
+        console.error("도큐먼트 존재 확인 중 오류 발생:", error);
+      }
+    };
+
+    fetchBooks();
+  }, [user.userId]);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -56,7 +96,7 @@ const BookModal = ({ isOpen, onRequestClose, books, onBookSelect }) => {
       <ModalContent>
         {books.map((book, index) => (
           <BookCard key={index} onClick={() => onBookSelect(book)}>
-            <BookImage src={book.cover} alt={book.title} />
+            <BookImage src={book.img} alt={book.title} />
             <BookTitle>{book.title}</BookTitle>
           </BookCard>
         ))}
