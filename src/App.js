@@ -14,12 +14,14 @@ import Navigation from './Navigation';
 import Board from './components/Board';
 import WriteBoard from './components/WriteBoard';
 import BoardComment from './components/BoardComment';
+import Timer from './page/Timer';
+import Tonggae from './page/Tonggae';
 
 
 function App() {
   return (
     <Router>
-      <Navigation/>
+      {/* <Navigation/> */}
         <Routes>
           <Route path="/Ai" element={<Ai />} />
           {/* <Route path="/BoardPage" element={<BoardPage />} /> */}
@@ -32,7 +34,10 @@ function App() {
           <Route path="/WriteNote" element={<WriteNote />} />
           <Route path="/Board" element={<Board />} />
           <Route path="/write" element={<WriteBoard />} />
-          <Route path="/board/:postId/comments" element={<BoardComment />} />
+          <Route path="/comments" element={<BoardComment />} />
+          <Route path="/timer" element={<Timer/>} />
+          <Route path='/tonggae' element={<Tonggae/>}/>
+
           
           
 

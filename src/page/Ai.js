@@ -7,15 +7,23 @@ import { useNavigate } from 'react-router-dom';
 import { collection, doc, getDocs } from "firebase/firestore"; 
 import { db } from '../firebase/firebase';
 
-const Ai = () => {
-    const [aiData, setAiData] = useState();
+import { useSelector } from 'react-redux';
 
-    const id= 'test'
+const Ai = () => {
+    const [aiData, setAiData] = useState({}); // 객체 데이터
+    const [filteredAiData, setFilteredAiData] = useState(null); // 배열 데이터
+
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어
+
+    const user = useSelector((state) => state.userA.userAccount);
+
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const bertDocRef = doc(db, 'bert', id); // 'bert' 컬렉션의 id 문서 참조
+
+                const bertDocRef = doc(db, 'bert', user.userId); // 'bert' 컬렉션의 id 문서 참조
+
                 const booksCollectionRef = collection(bertDocRef, 'books'); // 'books' 서브컬렉션 참조
                 const querySnapshot = await getDocs(booksCollectionRef); // 참조의 모든 문서 가져오기
                 const data = {};
@@ -26,6 +34,8 @@ const Ai = () => {
                 });
 
                 setAiData(data);
+                setFilteredAiData(Object.values(data)); // 초기값 설정
+
 
                 console.log('Fetched AI Data:', data); // 데이터 확인용 console.log
             } catch (error) {
@@ -36,12 +46,16 @@ const Ai = () => {
         fetchData();
     }, []);
 
-
     
     // 검색바
-    const [searchTerm, setSearchTerm] = useState('');
     const search = () => {
-        alert(searchTerm + "을/를 검색합니다")
+        // alert(searchTerm + "을/를 검색합니다")
+        const filtered = Object.values(aiData).filter(item =>
+            item.passage.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredAiData(filtered);
+
     }
 
     // QnA 추가로 이동
@@ -57,10 +71,12 @@ const Ai = () => {
             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요" />
 
             <div style={{ textAlign: 'center' }}>
-                <BookSlick />
+
+                <BookSlick setFilteredAiData={setFilteredAiData}/>
             </div>
 
-                {aiData ? <AiList data={aiData}></AiList> : <p>loading</p>}
+                {filteredAiData ? <AiList data={filteredAiData}></AiList> : <p>loading</p>}
+
 
             <FloatingButton onClick={addQnA}>+</FloatingButton>
         </Container>

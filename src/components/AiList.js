@@ -6,11 +6,12 @@ const AiList= ({data})=>{
     return(
         <>
             <div>
-            {Object.keys(data)
-            .sort((a, b) => data[b].date - data[a].date)
-            .map(docId => (
-                <AiItem key={docId} item={data[docId]} />
-                
+
+            {data
+            .sort((a, b) => b.date - a.date)
+            .map((item, index) => (
+                <AiItem key={index} item={item} />
+
             ))}
             </div>
         </>
