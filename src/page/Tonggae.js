@@ -5,6 +5,7 @@ import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import robot from "../assets/robot2.gif";
 
 const Tonggae = () => {
   const user = useSelector((state) => state.userA.userAccount);
@@ -103,7 +104,20 @@ const Tonggae = () => {
 
   // 월별 독서 시간 데이터 생성
   const monthlyReadingTimeData = {
-    labels: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+    labels: [
+      "1월",
+      "2월",
+      "3월",
+      "4월",
+      "5월",
+      "6월",
+      "7월",
+      "8월",
+      "9월",
+      "10월",
+      "11월",
+      "12월",
+    ],
     datasets: [
       {
         label: "월별 독서 시간(2024년)",
@@ -148,6 +162,10 @@ const Tonggae = () => {
         <GraphTitle>월별 독서 시간</GraphTitle>
         <Bar data={monthlyReadingTimeData} options={chartOptions2} />
       </GraphContainer2>
+      <div className="AIdiv">
+        <img src={robot} alt="로봇사진"></img>
+        <textarea>ai가 말해주는 나의 독서 습관과 추천</textarea>
+      </div>
     </Container>
   );
 };
@@ -159,13 +177,32 @@ const Container = styled.div`
   flex-direction: column; /* 차트들을 세로로 배열 */
   align-items: center;
   padding: 20px;
+
+  .AIdiv{
+    margin-bottom: 100px;
+
+    textarea{
+      width: 60%;
+      height: 20%;
+    }
+
+    img {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+    border: 3px solid gray;
+  }
+
+  }
+
+ 
 `;
 
 const PageTitle = styled.h1`
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
-  color: #4C7397;
+  color: #4c7397;
 `;
 
 const GraphContainer1 = styled.div`
@@ -178,11 +215,10 @@ const GraphContainer1 = styled.div`
 
 const GraphContainer2 = styled.div`
   width: 93%; /* 차트 크기를 적절히 설정 */
-  margin-bottom: 100px; /* 차트 간 간격 */
+  margin-bottom: 20px; /* 차트 간 간격 */
   border: 1px solid rgba(153, 102, 255, 1); /* 테두리 설정 */
   background-color: rgba(153, 102, 255, 0.1); /* 배경색 설정 */
   padding: 10px;
-  
 `;
 
 const GraphTitle = styled.p`
