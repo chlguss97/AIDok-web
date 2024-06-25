@@ -170,18 +170,19 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div style={{marginLeft:"10px"}}>
       <TitleContainer>
-        <img
-          src={user.userImg || userBasicImg}
-          alt="user"
-          className="user"
-          onClick={handelImageClick}
-        />
+        
         <Title>홈 화면</Title>
       </TitleContainer>
       <Container>
         <SearchBarContainer>
+        <img
+          src={user.userImg || userBasicImg}
+          alt="user"
+          className="userImg"
+          onClick={handelImageClick}
+        />
           <SearchInputWrapper>
             <SearchInput
               placeholder="책 검색"
@@ -322,15 +323,7 @@ const TitleContainer = styled.div`
   align-items: center;
   margin-bottom: 20px;
 
-  .user {
-    border: 3px solid #6f4e37;
-    border-radius: 100%;
-    position: absolute;
-    left: 10px;
-    width: 38px;
-    height: 38px;
-    margin-right: 10px;
-  }
+  
 `;
 
 const Title = styled.p`
@@ -399,9 +392,20 @@ const SearchBarContainer = styled.div`
   background-color: #6f4e37;
   width: 100%;
   max-width: 240px; /* 최대 너비를 240px로 제한 */
-  margin: 0 auto 70px auto;
+  margin-bottom: 50px;
+  margin-left: 95px;
 
   &:focus-within {
     background-color: #5e7e71; /* 초록색으로 변경 */
+  }
+  .userImg {
+    border: 3px solid #6f4e37;
+    border-radius: 100%;
+    position: absolute;
+    left: 10px;
+    width: 45px;
+    height: 45px;
+    margin-right: 20px;
+    margin-left: 30px;
   }
 `;

@@ -78,6 +78,7 @@ const Timer = () => {
       return updatedTimers;
     });
 
+    //==============================================
     const intervalId = setInterval(() => {
       setTimes((prevTimes) => {
         const updatedTimes = [...prevTimes];
@@ -474,7 +475,7 @@ const Container = styled.div`
 `;
 
 const StyledSlider = styled(Slider)`
-margin-top: 50px;
+
   div {
     background-color: #83a195;
     border-radius: 3%;
@@ -493,7 +494,7 @@ margin-top: 50px;
   .slick-slide img {
     width: 150px;
     height: 200px;
-    margin: 60px auto 12px auto;
+    margin: 30px auto 12px auto;
     border: 3px solid white;
   }
 

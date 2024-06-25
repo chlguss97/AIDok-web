@@ -21,7 +21,7 @@ import Tonggae from './page/Tonggae';
 function App() {
   return (
     <Router>
-      <Navigation/>
+      {/* <Navigation/> */}
         <Routes>
           <Route path="/Ai" element={<Ai />} />
           {/* <Route path="/BoardPage" element={<BoardPage />} /> */}
