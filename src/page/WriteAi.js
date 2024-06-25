@@ -184,6 +184,9 @@ const WriteAi = () => {
 
   const handleBookSelect = (book) => {
     setSelectedBook(book);
+    console.log(book.isbn)
+
+    setIsbn(book.isbn)
     setModalIsOpen(false);
   };
 
@@ -196,8 +199,11 @@ const WriteAi = () => {
     setShowWebcam(true);
   };
 
-  const handleOpenFileInput = () => {
-    document.getElementById('fileInput').click();
+  const handleOpenGalleryClick = () => {
+    setIsBottomSheetOpen(false);
+    if (window.AndroidInterface && window.AndroidInterface.openGalleryForImage) {
+        window.AndroidInterface.openGalleryForImage();
+    }
   };
 
   const handleAIExtractClick = () => {
@@ -321,7 +327,7 @@ const WriteAi = () => {
           isOpen={isBottomSheetOpen}
           onRequestClose={closeBottomSheet}
           handleAIExtractClick={handleAIExtractClick}
-          handleOpenFileInput={handleOpenFileInput}
+          handleOpenGalleryClick={handleOpenGalleryClick}
           onFileChange={onFileChange}>
         </BottomSheetModal>
         
@@ -369,6 +375,7 @@ const Container = styled.div`
   background-color: white;
   height: 100vh;
   font-family: Arial, sans-serif;
+  overflow: scroll;
 `;
 
 const BookInfo = styled.div`
