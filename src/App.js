@@ -37,6 +37,7 @@ function App() {
           <Route path="/comments" element={<BoardComment />} />
           <Route path="/timer" element={<Timer/>} />
           <Route path='/tonggae' element={<Tonggae/>}/>
+
           
           
 

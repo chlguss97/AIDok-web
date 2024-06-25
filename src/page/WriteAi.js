@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
@@ -8,6 +9,7 @@ import bookImage from '../assets/book.png';
 import BottomSheetModal from '../components/BottomSheetModal'
 import '@tensorflow/tfjs-backend-webgl'
 import axios from 'axios';
+
 import { db } from '../firebase/firebase';
 import { useSelector } from 'react-redux';
 import { doc, setDoc, collection, Timestamp, query, where, getDocs } from 'firebase/firestore';
@@ -22,6 +24,7 @@ const proxyUrl = './backend/etri_bert.php'
 
 const WriteAi = () => {
 
+
   // 책 선택 modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState({
@@ -31,10 +34,13 @@ const WriteAi = () => {
     img: bookImage
   });
 
+
+
   // 바텀시트 modal
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+
 
   // 카메라 OCR
   const [ocrText, setOcrText] = useState('');
@@ -156,6 +162,7 @@ const WriteAi = () => {
   };
 
 
+
   const openBottomSheet = () => {
       setIsBottomSheetOpen(true)
   }
@@ -166,6 +173,7 @@ const WriteAi = () => {
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   }
+
 
   const onFileChange = (event) => {
     const file = event.target.files[0];
@@ -207,6 +215,7 @@ const WriteAi = () => {
     }
   };
 
+
   const takePicture = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -230,6 +239,7 @@ const WriteAi = () => {
       window.AndroidInterface.receiveImage(dataUrl);
     }
   };
+
 
   useEffect(() => {
     if (showWebcam && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -304,6 +314,7 @@ const WriteAi = () => {
   const [endBooks, setEndBooks] = useState([]);
   const [bookData, setBookData] = useState([]);
 
+
   return (
     <Container>
       <BackBtn onClick={handleBackClick} />
@@ -325,6 +336,7 @@ const WriteAi = () => {
             transform: "translate(-50%, -50%)"
           }} />
         </AddImg>
+
       )}
         <BottomSheetModal
           isOpen={isBottomSheetOpen}
@@ -334,11 +346,13 @@ const WriteAi = () => {
           onFileChange={onFileChange}>
         </BottomSheetModal>
         
+
         {previewUrl && (
           <div>
             <img src={previewUrl} alt="Preview" style={{ maxHeight: '150px', width: '100%', borderRadius: '10px', marginBottom: '1rem'}} />
           </div>
         )}
+
 
       <ExtractedText placeholder='사진을 추가하면 텍스트가 추출됩니다' defaultValue={ocrText} onChange={(e) =>
         setFormData((prevData) => ({
@@ -354,6 +368,7 @@ const WriteAi = () => {
         </InputText>
       <InputBtn onClick={findAnswer}>입력 완료</InputBtn>
       <Answer>A: {formData.answer}</Answer>
+
       <SaveBtn name="저장하기" onClick={save}></SaveBtn>
       <BookModal
         isOpen={modalIsOpen}
@@ -434,12 +449,14 @@ const ExtractedText = styled.textarea`
   &::placeholder{
     color: white;
   }
+
 `;
 
 const InputText = styled.textarea`
   width: 100%;
   box-sizing: border-box;
   height: 15vh;
+
   background-color: white;
   color: black;
   border: 2px solid #5E7E71;

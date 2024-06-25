@@ -1,3 +1,4 @@
+
 import styled from "styled-components";
 import SaveBtn from "../components/SaveBtn";
 import { FaRegCalendarAlt } from "react-icons/fa";
@@ -52,6 +53,7 @@ const BookEdit = () => {
 
         const docSnap = await getDoc(subDocRef);
         console.log(`도큐먼트스냅이있는지 여부 : ${docSnap.exists()}`);
+
 
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -444,6 +446,7 @@ const BookEdit = () => {
               style={{ width: "3rem" }}
             ></input> */}
             {/* <EditBtn onClick={() => pageEdit()}>수정</EditBtn> */}
+
           </div>
           <div className="numbers">
             <Number $left="0%">
@@ -567,13 +570,41 @@ export default BookEdit;
 
 const BookInfo = styled.div`
   display: flex;
-  .info {
+    .info{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 0 auto;
+        height: 200px;
+    }
+    .bookImg{
+        height: 150px;
+        margin: 16px;
+        border: 1px solid #6F4E37;
+        border-radius: 5px;
+    }
+    .titleAuthor{
+        height: 150px;
+        margin-right: auto;
+        text-align: start;
+        >p{
+            margin: 10px 0;
+            color: #6F4E37;
+            font-size: 14px;
+        }
+    }
+`
+const StatusContainer= styled.div`
+    height: 100px;
+    width: 320px;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     flex-direction: row;
     align-items: center;
     margin: 0 auto;
     height: 200px;
-  }
+
   .bookImg {
     height: 150px;
     margin: 16px;
@@ -591,6 +622,7 @@ const BookInfo = styled.div`
     }
   }
 `;
+
 const StatusContainer = styled.div`
   height: 100px;
   width: 360px;
@@ -603,6 +635,7 @@ const StatusContainer = styled.div`
     margin: 5px 10px;
   }
 `;
+
 const BookStatus = styled.div`
   display: inline-block;
   width: 120px;

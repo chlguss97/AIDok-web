@@ -14,6 +14,7 @@
     $url= "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?TTBKey=ttbbaechu100402003&ItemId=".$query."&ItemIdType=ISBN13";
 
 
+
     //1.curl 작업 시작 - 초기화
     $ch = curl_init();
 

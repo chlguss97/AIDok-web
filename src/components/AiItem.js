@@ -37,11 +37,13 @@ const AiItem= ({item})=>{
 export default AiItem
 
 const Content= styled.div`
+
     width: 93%;
     border: 2px solid #6F4E37;
     border-radius: 10px;
     background-color: #FFFAED;
     margin: 5% auto;
+
 
     .title{
         text-align: left;

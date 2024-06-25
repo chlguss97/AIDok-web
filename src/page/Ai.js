@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, doc, getDocs } from "firebase/firestore"; 
 import { db } from '../firebase/firebase';
+
 import { useSelector } from 'react-redux';
 
 const Ai = () => {
@@ -16,10 +17,13 @@ const Ai = () => {
 
     const user = useSelector((state) => state.userA.userAccount);
 
+
     useEffect(() => {
         const fetchData = async () => {
             try {
+
                 const bertDocRef = doc(db, 'bert', user.userId); // 'bert' 컬렉션의 id 문서 참조
+
                 const booksCollectionRef = collection(bertDocRef, 'books'); // 'books' 서브컬렉션 참조
                 const querySnapshot = await getDocs(booksCollectionRef); // 참조의 모든 문서 가져오기
                 const data = {};
@@ -32,6 +36,7 @@ const Ai = () => {
                 setAiData(data);
                 setFilteredAiData(Object.values(data)); // 초기값 설정
 
+
                 console.log('Fetched AI Data:', data); // 데이터 확인용 console.log
             } catch (error) {
                 console.error('Error fetching data: ', error);
@@ -40,6 +45,7 @@ const Ai = () => {
 
         fetchData();
     }, []);
+
     
     // 검색바
     const search = () => {
@@ -49,6 +55,7 @@ const Ai = () => {
             item.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredAiData(filtered);
+
     }
 
     // QnA 추가로 이동
@@ -64,10 +71,12 @@ const Ai = () => {
             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요" />
 
             <div style={{ textAlign: 'center' }}>
+
                 <BookSlick setFilteredAiData={setFilteredAiData}/>
             </div>
 
                 {filteredAiData ? <AiList data={filteredAiData}></AiList> : <p>loading</p>}
+
 
             <FloatingButton onClick={addQnA}>+</FloatingButton>
         </Container>

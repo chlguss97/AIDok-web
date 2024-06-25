@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+
+    "@tensorflow-models/qna": "^1.0.2",
     "@tensorflow/tfjs": "^4.20.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.20.0",
+    "@tensorflow/tfjs-converter": "^4.20.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "add": "^2.0.6",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
     "firebase": "^10.12.2",
@@ -29,7 +34,8 @@
     "redux": "^5.0.1",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.11",
-    "web-vitals": "^2.1.0"
+    "web-vitals": "^2.1.0",
+    "yarn": "^1.22.22"
   },
   "scripts": {
     "start": "react-scripts start",

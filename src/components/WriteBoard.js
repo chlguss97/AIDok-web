@@ -1,15 +1,20 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaPlus, FaArrowLeft } from 'react-icons/fa';
-import SaveBtn from './SaveBtn';
+import { FaPlus } from 'react-icons/fa';
+import backIcon from '../assets/backicon.png';
+import BookModal from '../components/BookModal';
+import book from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
+import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
-  padding-top:8%;
+  padding-top: 8%;
   padding-bottom: 35%;
   padding-left: 8%;
   padding-right: 8%;
@@ -20,8 +25,6 @@ const Title = styled.h2`
   font-size: 1.6rem;
   font-weight: bold;
   text-align: center;
-  
-  
 `;
 
 const Form = styled.form`
@@ -40,12 +43,11 @@ const BackButton = styled.button`
   left: 20px;
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
-  display: none;
-  
-  @media (max-width: 768px) {
-    display: block;
+
+  img {
+    width: 20px;
+    height: 20px;
   }
 `;
 
@@ -100,7 +102,7 @@ const AddPhotoText = styled.span`
 const InfoContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const InfoText = styled.div`
@@ -117,6 +119,7 @@ const BoldSpan = styled.span`
 const Textarea = styled.textarea`
   width: 100%;
   padding: 10px;
+  margin-top: 10px;
   margin-bottom: 15px;
   border: 1px solid #5E7E71;
   border-radius: 5px;
@@ -124,30 +127,51 @@ const Textarea = styled.textarea`
   resize: none;
 `;
 
+const BookInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #5F5C5C;
+  cursor: pointer;
+`;
+
+const BookImage = styled.img`
+  width: 100px;
+  height: auto;
+  margin-top: 15px;
+  margin-bottom: 8px;
+`;
+
+const BookTitle = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: black;
+`;
+
+const BookAuthors = styled.div`
+  font-size: 14px;
+`;
+
 const WriteBoard = () => {
-  const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
   const [content, setContent] = useState('');
-  const fileInputRef1 = useRef(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState({
+    title: '책 추가',
+    authors: '',
+    cover: book
+  });
   const fileInputRef2 = useRef(null);
   const navigate = useNavigate();
-
-  const handleImageChange1 = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage1(URL.createObjectURL(file));
-    }
-  };
+  const user = useSelector((state) => state.userA.userAccount);
 
   const handleImageChange2 = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage2(URL.createObjectURL(file));
     }
-  };
-
-  const handleImageUploadClick1 = () => {
-    fileInputRef1.current.click();
   };
 
   const handleImageUploadClick2 = () => {
@@ -158,38 +182,53 @@ const WriteBoard = () => {
     navigate(-1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save the post logic here
+    
+    try {
+      const postRef = await addDoc(collection(db, 'posts'), {
+        id: user.userId,
+        bookTitle: selectedBook.title,
+        bookImg: selectedBook.cover,
+        img: image2,
+        writingContent: content,
+        date: new Date().toISOString()
+      });
+
+      // 서브 컬렉션으로 빈 boardComment 컬렉션을 생성
+      await setDoc(doc(db, 'posts', postRef.id, 'boardComment', 'init'), { initialized: true });
+
+      console.log("Document written with ID: ", postRef.id);
+      alert("게시가 완료되었습니다.");
+      navigate('/board');  // 게시판 페이지로 이동
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const handleBookInfoClick = () => {
+    setModalIsOpen(true);
+  };
+
+  const handleBookSelect = (book) => {
+    setSelectedBook(book);
+    setModalIsOpen(false);
   };
 
   return (
     <Container>
       <BackButton onClick={handleBackClick}>
-        <FaArrowLeft />
+        <img src={backIcon} alt="Back" />
       </BackButton>
       <Title>글 작성</Title>
       <Form onSubmit={handleSubmit}>
         <InfoContainer>
-          <ImageUploadWrapper hasImage={!!image1} onClick={handleImageUploadClick1}>
-            {image1 ? <ImagePreview src={image1} alt="이미지 미리보기" /> : (
-              <>
-                <PlusIcon />
-                <AddPhotoText>책 검색</AddPhotoText>
-              </>
-            )}
-          </ImageUploadWrapper>
-          <InfoText>
-            <p><BoldSpan>제목</BoldSpan> : 트렌드 코리아 2023</p>
-            <p><BoldSpan>저자</BoldSpan> : 김난도, 전지현, 박혜수, 최지혜</p>
-          </InfoText>
+          <BookInfo onClick={handleBookInfoClick}>
+            <BookImage src={selectedBook.cover} alt="Book Cover" />
+            <BookTitle>{selectedBook.title}</BookTitle>
+            <BookAuthors>{selectedBook.authors}</BookAuthors>
+          </BookInfo>
         </InfoContainer>
-        <HiddenInput
-          type="file"
-          ref={fileInputRef1}
-          accept="image/*"
-          onChange={handleImageChange1}
-        />
         <FullWidthImageUploadWrapper hasImage={!!image2} onClick={handleImageUploadClick2}>
           {image2 ? <ImagePreview src={image2} alt="이미지 미리보기" /> : (
             <>
@@ -211,8 +250,30 @@ const WriteBoard = () => {
           onChange={(e) => setContent(e.target.value)}
           placeholder="공유하고 싶은 내용을 작성하세요"
         />
-        <SaveBtn name="저장하기" />
+        <button type="submit" style={{
+          backgroundColor: "#6F4E37",
+          border: "none",
+          borderRadius: "10px",
+          color: "white",
+          width: "200px",
+          height: "2.5rem",
+          margin: "0 auto",
+          fontSize: "18px",
+          fontWeight: "bold",
+          cursor: "pointer"
+        }}>
+          저장하기
+        </button>
       </Form>
+      <BookModal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        books={[
+          { title: '트렌드 코리아 2023', authors: '김난도, 전지현, 박혜수, 최지혜', cover: 'https://via.placeholder.com/150' },
+          { title: '트렌드 코리아 2024', authors: '김난도, 전지현, 박혜수, 최지혜', cover: 'https://via.placeholder.com/150' }
+        ]}
+        onBookSelect={handleBookSelect}
+      />
     </Container>
   );
 };

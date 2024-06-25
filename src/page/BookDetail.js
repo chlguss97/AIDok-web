@@ -17,10 +17,12 @@ import {
 import { useSelector } from "react-redux";
 
 const BookDetail = () => {
+
   const jbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
     "3de6856d1fbee758931e324ef85f34590549f6c5de34db53624fcd28a9684f63"; 
   const DEAHANjbNaruServiceKey = " ";
   const HYUNWOLjbNaruServiceKey = "";
+
   const TEAMJANGjbNaruServiceKey = " ";
   const location = useLocation();
   const book = location.state.book; //받아온 book에는 title, img, writer, isbn, summary, link가 있다.
@@ -36,10 +38,13 @@ const BookDetail = () => {
   const [state, setState] = useState("선택 안함");
 
   useEffect(() => {
+
     // List에서넘어온 book객체의 변수 :title, img, writer, isbn, summary, link
+
 
     if (book) {
       setBookItem(book);
+
 
       const url = `http://data4library.kr/api/usageAnalysisList?authKey=${jbNaruServiceKey}&isbn13=${book.isbn}`;
       fetch(url)
@@ -48,6 +53,7 @@ const BookDetail = () => {
           console.log("왜안돼" + xmlText);
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
 
           if (!xmlDoc) {
             console.error("Failed to parse XML data");
@@ -87,6 +93,7 @@ const BookDetail = () => {
                   const parser = new DOMParser();
                   const xmlDoc = parser.parseFromString(xmlText, "text/xml");
                   console.log("서버잘오나" + xmlDoc);
+
                   if (!xmlDoc) {
                     console.error("Failed to parse XML data");
                     return null;
@@ -208,6 +215,7 @@ const BookDetail = () => {
               //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
               const readerPromise = fetch(
                 `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
               )
                 .then((res) => res.text())
                 .then((xmlText) => {
@@ -300,6 +308,7 @@ const BookDetail = () => {
     setBookItem({ ...book });
 
     const url = `http://data4library.kr/api/usageAnalysisList?authKey=${jbNaruServiceKey}&isbn13=${book.isbn}`;
+
     fetch(url)
       .then((res) => res.text()) //정보나루api는 xml줘용
       .then((xmlText) => {
@@ -335,6 +344,7 @@ const BookDetail = () => {
             // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const coPromise = fetch(
               `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
             )
               .then((res) => res.text())
               .then((xmlText) => {
@@ -397,6 +407,7 @@ const BookDetail = () => {
             //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const maniaPromise = fetch(
               `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
             )
               .then((res) => res.text())
               .then((xmlText) => {
@@ -435,8 +446,10 @@ const BookDetail = () => {
 
 
         //==========================다독자를 위한 추천도서
+
         const readerRecBooks = xmlDoc.getElementsByTagName("readerRecBooks")[0];
         console.log(readerRecBooks);
+
         if (!readerRecBooks) {
           console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
           return;
@@ -461,6 +474,7 @@ const BookDetail = () => {
             //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
             const readerPromise = fetch(
               `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
             )
               .then((res) => res.text())
               .then((xmlText) => {

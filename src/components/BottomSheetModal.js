@@ -26,7 +26,10 @@ const modalStyle = {
     },
 };
 
+
 const BottomSheetModal = ({ isOpen, onRequestClose, handleAIExtractClick, handleOpenFileInput, onFileChange }) => {
+
+
 
     const videoRef = useRef(null);
 
