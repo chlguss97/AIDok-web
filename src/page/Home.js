@@ -171,10 +171,7 @@ const Home = () => {
 
   return (
     <div style={{marginLeft:"10px"}}>
-      <TitleContainer>
-        
-        <Title>홈 화면</Title>
-      </TitleContainer>
+      
       <Container>
         <SearchBarContainer>
         <img
@@ -250,13 +247,13 @@ const Container = styled.div`
 
   #wantbook {
     margin-top: 15%;
-    color: #6f4e37;
+    color: #5F5C5C;
     font-weight: bold;
   }
 
   #endbook {
     margin-top: 15%;
-    color: #5e7e71;
+    color: #5F5C5C;
     font-weight: bold;
   }
 `;

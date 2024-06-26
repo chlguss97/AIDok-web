@@ -244,7 +244,6 @@ const Board = () => {
 
   return (
     <BoardContainer>
-      <Title>커뮤니티</Title>
       {posts.map(post => (
         <PostContainer key={post.id}>
           <PostHeader>

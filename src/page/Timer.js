@@ -16,9 +16,7 @@ import {
   query,
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import {useNavigate } from "react-router-dom";
-
-
+import { useNavigate } from "react-router-dom";
 
 const Timer = () => {
   const [times, setTimes] = useState([]); // 초를 저장할 상태
@@ -26,11 +24,11 @@ const Timer = () => {
   const [bookItems, setBookItems] = useState([]);
   const [page, setPage] = useState();
   const [currentPage, setCurrentPage] = useState("");
-  const [timerRefs, setTimerRefs] = useState({})
+  const [timerRefs, setTimerRefs] = useState({});
   const user = useSelector((state) => state.userA.userAccount);
   const [stoppedTimes, setStoppedTimes] = useState([]); // 멈춘 시간을 저장할 상태
-  const navigate = useNavigate()
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
@@ -67,8 +65,8 @@ const Timer = () => {
       //     refs[index] = { ref: null };
       //   });
       //   setTimerRefs(refs);
-      }
-    }, [bookItems]);
+    }
+  }, [bookItems]);
 
   // 타이머 시작 함수
   const startTimer = (index) => {
@@ -146,7 +144,7 @@ const Timer = () => {
       .toString()
       .padStart(2, "0")} : ${remainingSeconds.toString().padStart(2, "0")}`;
   };
-  
+
   const settings = {
     dots: true,
     infinite: false,
@@ -155,9 +153,7 @@ const Timer = () => {
     slidesToScroll: 1,
   };
 
-
   const formatTimeForFirebase = (seconds) => {
-
     if (seconds === undefined || seconds === null) {
       return "00:00:00";
     }
@@ -170,48 +166,47 @@ const Timer = () => {
       .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
-  
   const clickSave = async () => {
     try {
-      await Promise.all(bookItems.map(async (book, index) => {
-        // alert(`userId: ${user.userId}`)
-        console.log(`userId: ${user.userId}`)
-        const bookRef = doc(db, "user", user.userId, "book", book.isbn);
-        // alert(`isbn: ${book.isbn}`)
-        
-        // Fetch the total read time from Firebase and convert it to seconds
-        
-        const firebaseTotalTime = convertFirebaseTimeToSeconds(book.totalReadTime);
-        // alert(`firebase..:${firebaseTotalTime}`)
-        // Calculate the total reading time in seconds
-        const totalReadingTimeInSeconds = (stoppedTimes[index] || 0) + firebaseTotalTime;
-        
-        await updateDoc(bookRef, {
-          currentPage: book.currentPage,
-          totalReadTime: formatTimeForFirebase(totalReadingTimeInSeconds)
-        });
+      await Promise.all(
+        bookItems.map(async (book, index) => {
+          // alert(userId: ${user.userId})
+          console.log(`userId: ${user.userId}`);
+          const bookRef = doc(db, "user", user.userId, "book", book.isbn);
+          // alert(isbn: ${book.isbn})
 
-      
-      }));
-      alert(`저장되었습니다.`);
-      navigate('/');
+          // Fetch the total read time from Firebase and convert it to seconds
+
+          const firebaseTotalTime = convertFirebaseTimeToSeconds(
+            book.totalReadTime
+          );
+          // alert(firebase..:${firebaseTotalTime})
+          // Calculate the total reading time in seconds
+          const totalReadingTimeInSeconds =
+            (stoppedTimes[index] || 0) + firebaseTotalTime;
+
+          await updateDoc(bookRef, {
+            currentPage: book.currentPage,
+            totalReadTime: formatTimeForFirebase(totalReadingTimeInSeconds),
+          });
+        })
+      );
+      alert("저장되었습니다.");
+      navigate("/");
     } catch (error) {
       console.error("저장하는 도중 오류가 발생했습니다: ", error);
       alert("저장 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
-  
- 
 
   const convertFirebaseTimeToSeconds = (timeString) => {
     if (!timeString) {
       return 0;
     }
-  
-    const [hours, minutes, seconds] = timeString.split(':').map(Number);
-    return (hours * 3600) + (minutes * 60) + seconds;
-  };
 
+    const [hours, minutes, seconds] = timeString.split(":").map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+  };
 
   const changePage = (bookIndex) => {
     if (!/^\d+$/.test(page)) {
@@ -228,22 +223,18 @@ const Timer = () => {
       return;
     }
 
-  // 타이머가 작동 중이 아닐 때만 페이지 변경을 수행
-  if (!timerOn[bookIndex]) {
-    setBookItems((prevBookItems) => {
-      const updateBooks = [...prevBookItems];
-      updateBooks[bookIndex].currentPage = page;
-      return updateBooks;
-    });
-    setCurrentPage(page);
-  } else {
-    alert("타이머를 정지한 후 페이지를 변경해주세요.");
-  }
-};
-
-
-
-
+    // 타이머가 작동 중이 아닐 때만 페이지 변경을 수행
+    if (!timerOn[bookIndex]) {
+      setBookItems((prevBookItems) => {
+        const updateBooks = [...prevBookItems];
+        updateBooks[bookIndex].currentPage = page;
+        return updateBooks;
+      });
+      setCurrentPage(page);
+    } else {
+      alert("타이머를 정지한 후 페이지를 변경해주세요.");
+    }
+  };
 
   return (
     <Container>
@@ -253,60 +244,59 @@ const Timer = () => {
             <div>
               <img src={book.img} className="img" alt="책 이미지"></img>
               <p>
-                <span
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    marginLeft: "4px",
-                  }}
-                >
-                  책 제목
-                </span>{" "}
-                : {book.title}
+                {book.title}
               </p>
               <p>
-                <span
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    marginLeft: "4px",
-                  }}
-                >
-                  페이지
-                </span>{" "}
-                : {book.totalPage}p 중{" "}
-                <span style={{ color: "red" }}>{book.currentPage}p</span>
-                <input
-                  className="input"
-                  placeholder="책 페이지"
-                  onChange={(e) => setPage(e.target.value)}
-                ></input>{" "}
-                <button className="pageOkBtn" onClick={() => changePage(index)}>
-                  확인
-                </button>
-                <br></br>
                 <div className="timeContainer">
                   <span className="label">누적시간 :</span>
                   <span className="nujuck">{book.totalReadTime}</span>
-                  <span className="nujuck1">  + {formatTime(stoppedTimes[index] || 0)}</span>
+                  <span className="nujuck1">
+                    {" "}
+                    + {formatTime(stoppedTimes[index] || 0)}
+                  </span>
                   {/* <p className="time">{formatTime(times[index] || 0)}</p> */}
                   <p className="time">{formatTime(times[index])}</p>
                 </div>
               </p>
               {!timerOn[index] ? (
-                <button className="timer_button1" onClick={()=>startTimer(index)}>
+                <button
+                  className="timer_button1"
+                  onClick={() => startTimer(index)}
+                >
                   독서 타이머 시작
                 </button>
               ) : (
                 <>
-                  <button className="timer_button1" onClick={()=>stopTimer(index)}>
+                  <button
+                    className="timer_button1"
+                    onClick={() => stopTimer(index)}
+                  >
                     타이머 정지
                   </button>
-                  <button className="timer_button2" onClick={()=>resetTimer(index)}>
+                  <button
+                    className="timer_button2"
+                    onClick={() => resetTimer(index)}
+                  >
                     초기화
                   </button>
                 </>
               )}
+
+
+             
+               {book.totalPage}p 중{" "}{" "}
+                <span style={{ color: "#6F4E37" }}>{book.currentPage}p 읽는중</span>
+                <br/>
+                <input
+                  className="input"
+                  placeholder="책 페이지"
+                  onChange={(e) => setPage(e.target.value)}
+                ></input>{" "}
+                
+                <button className="pageOkBtn" onClick={() => changePage(index)}>
+                  변경
+                </button>
+
             </div>
           );
         })}
@@ -322,18 +312,18 @@ const Timer = () => {
 export default Timer;
 
 const Container = styled.div`
-  background-color: #5F937E;
+  background-color: #5E7E71;
   text-align: center;
-  padding: 20px;
+  padding: 8%;
   position: relative; /* 상대 위치 설정 */
 
-  .nujuck{
-    font-size: large;
-    color: red;
-  }
-  .nujuck1{
+  .nujuck {
     font-size: 20px;
-    color: pink;
+    color: #6F4E37;
+  }
+  .nujuck1 {
+    font-size: large;
+    color: #5E7E71;
   }
 
   .label {
@@ -344,7 +334,7 @@ const Container = styled.div`
     font-weight: bold; /* 글자 굵기 설정 */
     margin: 0; /* 기본 마진 제거 */
     padding: 10px 0; /* 상하 패딩을 조정하여 간격을 조절 */
-    margin-top: 50px;
+    
   }
 
   .img {
@@ -354,30 +344,32 @@ const Container = styled.div`
   }
 
   .pageOkBtn {
-    background-color: #fff;
+    background-color: #6F4E37;
     border: none;
     cursor: pointer;
-    padding: 8px 16px;
-    font-size: 14px;
+    padding: 8px 24px;
+    font-size: 16px;
     border-radius: 20px;
-    margin-left: 3px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 4px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    color: #5e7e71; /* Text color */
+    color: #fff;
 
     &:hover {
-      background-color: #f0f0f0;
+      background-color: #4e3626;
       box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
     }
 
     &:active {
-      background-color: #e0e0e0;
+      background-color: #3a281e;
       box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
     }
   }
 
   .input {
-    margin-left: 25px; /* Adjusted margin */
+    margin-left: 16px; /* Adjusted margin */
     width: 80px; /* Increased width */
     height: 38px;
     border-radius: 20px;
@@ -387,6 +379,8 @@ const Container = styled.div`
     border: 1px solid #ccc;
     font-size: 14px; /* Adjusted font size */
     outline: none;
+    text-align: center;
+    color: #6F4E37;
     background-color: #fff;
 
     &:hover {
@@ -407,11 +401,12 @@ const Container = styled.div`
   .timer_button1 {
     display: block;
     border-radius: 20px;
-    margin: 16px auto 10px auto;
+    margin: 0px auto 32px auto;
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #fff;
+    background-color: #6F4E37;
     border: none;
+    color: white;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -433,7 +428,8 @@ const Container = styled.div`
     margin: 10px auto 40px auto;
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #fff;
+    background-color: #6F4E37;
+    color: white;
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -454,9 +450,10 @@ const Container = styled.div`
     display: block;
     border-radius: 20px;
     margin: 80px auto 100px auto;
-    padding: 10px 20px;
+    padding: 20px 60px;
     font-size: 16px;
-    background-color: #fff;
+    background-color: #6F4E37;
+    color: white;
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -475,9 +472,8 @@ const Container = styled.div`
 `;
 
 const StyledSlider = styled(Slider)`
-
   div {
-    background-color: #83a195;
+    background-color: #fdfbf4;
     border-radius: 3%;
   }
   .slick-list {

@@ -63,7 +63,7 @@ const Container = styled.div`
   .circle {
     border-radius: 50%;
     border: 2px solid #6f4e37;
-    background-color: #5e7e71;
+    background-color: #FFFAED;
     width: 85px; /* 원의 너비와 높이 */
     height: 85px;
     display: flex;

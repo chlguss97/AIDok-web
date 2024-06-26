@@ -2,9 +2,7 @@ import { useRef } from 'react';
 import Modal from 'react-modal'
 import camera from "../assets/camera.png"
 import gallery from "../assets/gallery.png"
-
 Modal.setAppElement('#root');
-
 const modalStyle = {
     content: {
         position: 'absolute',
@@ -25,31 +23,22 @@ const modalStyle = {
         zIndex: 1000,
     },
 };
-
-
-const BottomSheetModal = ({ isOpen, onRequestClose, handleAIExtractClick, handleOpenFileInput, onFileChange }) => {
-
-
-
+const BottomSheetModal = ({ isOpen, onRequestClose, handleAIExtractClick, handleOpenGalleryClick, onFileChange }) => {
     const videoRef = useRef(null);
-
     // const handleOpenFileInput = () => {
     //     document.getElementById('fileInput').click();
     // };
-
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
             console.log(`Selected file: ${file.name}`);
             onFileChange(file);
             onRequestClose();
-
         }
     };
-
     return (
-        <Modal 
-            isOpen={isOpen} 
+        <Modal
+            isOpen={isOpen}
             onRequestClose={onRequestClose}
             style={modalStyle}
             shouldCloseOnOverlayClick={true}
@@ -62,13 +51,11 @@ const BottomSheetModal = ({ isOpen, onRequestClose, handleAIExtractClick, handle
                 justifyContent: 'space-evenly'
             }}>
                 <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleAIExtractClick}><img width={"40px"} height={"40px"} src={camera}></img>카메라</div>
-                <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleOpenFileInput}><img width={"40px"} height={"40px"} src={gallery}></img>갤러리</div>
+                <div style={{display:"flex", flexDirection:"column", alignItems:"center"}} onClick={handleOpenGalleryClick}><img width={"40px"} height={"40px"} src={gallery}></img>갤러리</div>
             </div>
-
             <video ref={videoRef} width="320" height="240" autoPlay style={{ display: 'none' }}></video>
             <input type="file" id="fileInput" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
         </Modal>
   );
 };
-
 export default BottomSheetModal
