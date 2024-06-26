@@ -12,7 +12,7 @@ const SearchBarContainer = styled.div`
   max-width: 240px; /* 최대 너비를 240px로 제한 */
   margin: 0 auto; /* 중앙 정렬 */
   &:focus-within {
-    background-color: #5E7E71; /* 초록색으로 변경 */
+    background-color: #FAECDC; /* 초록색으로 변경 */
   }
 `;
 const SearchInputWrapper = styled.div`
