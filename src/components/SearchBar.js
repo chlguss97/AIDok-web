@@ -7,7 +7,7 @@ const SearchBarContainer = styled.div`
   border: 1px solid #5E7E71;
   border-radius: 20px;
   padding: 10px 10px;
-  background-color: #6F4E37;
+  background-color: #d4bbaa;
   width: 100%;
   max-width: 240px; /* 최대 너비를 240px로 제한 */
   margin: 0 auto; /* 중앙 정렬 */

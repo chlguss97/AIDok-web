@@ -198,8 +198,8 @@ const Home = () => {
           })}
         </BookCardStyledSlider>
 
-        <div className="wantbook">
-          <p id="wantbook" style={{ paddingLeft: "5%" }}>
+        <Box>
+          <p id="wantbook" style={{ paddingLeft: "2%"  }}>
             읽고 싶은 책
           </p>
           <CircleBookStyledSlider ref={sliderRef} {...wantBooksSettings}>
@@ -207,10 +207,12 @@ const Home = () => {
               return <CircleBook key={index} book={book}></CircleBook>;
             })}
           </CircleBookStyledSlider>
-        </div>
+        </Box>
 
-        <div className="endbook">
-          <p id="endbook" style={{ paddingLeft: "7%" }}>
+      <Box>
+        
+      <div className="endbook">
+          <p id="endbook" style={{ paddingLeft: "2%" }}>
             다 읽은 책
           </p>
           <CircleBookStyledSlider {...endBooksSettings}>
@@ -219,6 +221,10 @@ const Home = () => {
             })}
           </CircleBookStyledSlider>
         </div>
+
+
+        </Box>      
+        
       </Container>
     </div>
   );
@@ -227,11 +233,8 @@ const Home = () => {
 export default Home;
 
 const Container = styled.div`
-  /* 패딩래프트 유리가추가 */
   padding-top: 8%;
   padding-bottom: 20%;
-  /* background-image: url(${pageBackground});
-  background-size: cover; 이미지를 컨테이너에 맞게 cover로 설정 */
 
   .headers {
     display: flex;
@@ -245,15 +248,17 @@ const Container = styled.div`
   }
 
   #wantbook {
-    margin-top: 15%;
-    color: #5F5C5C;
+    margin-top: 10%;
+    color: #6F4E37;
     font-weight: bold;
+    font-size: x-large;
   }
 
   #endbook {
-    margin-top: 15%;
-    color: #5F5C5C;
+    margin-top: 10%;
+    color: #6F4E37;
     font-weight: bold;
+    font-size: x-large;
   }
 `;
 
@@ -268,7 +273,7 @@ const BookCardStyledSlider = styled(Slider)`
 
   .slick-dots li button:before {
     margin-top: 10px;
-    font-size: 12px;
+    font-size: 8px;
     color: #e8b897;
     margin-left: -140%;
   }
@@ -276,7 +281,7 @@ const BookCardStyledSlider = styled(Slider)`
   .slick-dots li.slick-active button:before {
     color: #6f4e37;
     margin-top: 10px;
-    font-size: 17px;
+    font-size: 12px;
   }
 `;
 
@@ -291,14 +296,14 @@ const CircleBookStyledSlider = styled(Slider)`
 
   .slick-dots li button:before {
     margin-top: 10px;
-    font-size: 12px;
+    font-size: 8px;
     color: #e8b897;
   }
 
   .slick-dots li.slick-active button:before {
     color: #6f4e37;
     margin-top: 10px;
-    font-size: 20px;
+    font-size: 12px;
   }
 
   .slick-slide.slick-active .slick-slide-inner {
@@ -318,8 +323,6 @@ const TitleContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
-
-  
 `;
 
 const Title = styled.p`
@@ -335,7 +338,6 @@ const SearchBarWrapper = styled.div`
   align-items: center;
   justify-content: center;
   margin-bottom: 10%;
-
   border: 1px solid #5e7e71;
   border-radius: 20px;
   padding: 10px 10px;
@@ -405,3 +407,12 @@ const SearchBarContainer = styled.div`
     margin-left: 30px;
   }
 `;
+
+const Box = styled.div`
+  border: 1px solid #6F4E37;
+  border-radius: 2px;
+  padding: 0px 20px 0px 20px;
+  margin: 60px 0px 40px -6%;
+  background-color: #fbf2e1;
+`;
+
