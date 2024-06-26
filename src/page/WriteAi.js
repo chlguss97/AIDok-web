@@ -260,7 +260,7 @@ const WriteAi = () => {
             <img src={previewUrl} alt="Preview" style={{ maxHeight: '150px', width: '100%', borderRadius: '10px', marginBottom: '1rem'}} />
           </div>
         )} */}
-      <ExtractedText placeholder='사진을 추가해보세요! 텍스트가 자동으로 인식됩니다' defaultValue={ocrText} onChange={(e) =>
+      <ExtractedText placeholder='사진을 추가해보세요! 텍스트가 자동으로 인식됩니다.' defaultValue={ocrText} onChange={(e) =>
         setFormData((prevData) => ({
           ...prevData,
           passage: e.target.value
