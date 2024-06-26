@@ -24,6 +24,7 @@ import {
   query,
 } from "firebase/firestore";
 
+
 const BookEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -407,6 +408,7 @@ const BookEdit = () => {
               <Calendar
                 onChange={startDateChange}
                 value={startDate}
+                formatDay={(locale, date) => moment(date).format("D")}
               />
             )}
 
@@ -427,6 +429,7 @@ const BookEdit = () => {
                 onChange={endDateChange}
                 value={endDate}
                 className="calendar"
+                formatDay={(locale, date) => moment(date).format("D")}
               />
             )}
           </div>

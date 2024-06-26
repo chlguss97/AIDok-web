@@ -171,7 +171,6 @@ const Home = () => {
 
   return (
     <div style={{marginLeft:"10px"}}>
-      
       <Container>
         <SearchBarContainer>
         <img
