@@ -75,17 +75,18 @@ const HomeBookItem = ({ book }) => {
         <div className="contents">
           <div className="title" onClick={btnClick}>
             <span style={{ fontSize: "15px", fontWeight: "bold" }}>
-              제목 :{" "}
+             {book1.title || "책 제목"}
             </span>
-            <span> {book1.title || "책 제목"}</span>
+            <br></br>
+            <br></br>
+           
           </div>
           <div className="writer" onClick={btnClick}>
-            <span style={{ fontSize: "15px", fontWeight: "bold" }}>
-              저자 :{" "}
+            <span style={{ fontSize: "10px", fontWeight: "bold" }}>
+            저자:{" "}{(book1.writer || "글쓴이").replace(/\^/g, ",")}
             </span>
-            <span>{(book1.writer || "글쓴이").replace(/\^/g, ",")}</span>
           </div>
-          <input
+          <input 
             id="slider"
             type="range"
             min="0"
@@ -93,6 +94,17 @@ const HomeBookItem = ({ book }) => {
             value={book1.currentPage ? book1.currentPage : 0}
             step="1"
             onClick={btnClick}
+            style={{
+              appearance: "none",
+              width: "100%",
+              height: "8px",
+              background: "#6F4E37", // 바 색상
+              outline: "none",
+              opacity: "0.7",
+              transition: "opacity 0.2s",
+              cursor: "pointer",
+            }}
+            
           ></input>
           <div className="page" onClick={btnClick}>
             <span style={{ color: "#6F4E37", fontWeight: "bold" }}>
@@ -106,7 +118,7 @@ const HomeBookItem = ({ book }) => {
           </div>
         </div>
         <div className="memoImg" onClick={memoClick}>
-          <span>AI MEMO</span>
+          <span ><p style={{color:'#6F4E37'}}>AI MEMO</p></span>
           <img src={memo4} alt="메모사진" onClick={memoClick}></img>
         </div>
       </div>
@@ -204,7 +216,7 @@ const Container = styled.div`
 
     .memoImg span {
       display: block;
-      color: #1886ec;
+      color: #6F4E37;
       font-size: 13px;
       font-weight: bold;
       opacity: 0; /* 초기에는 투명하게 설정 */
@@ -238,6 +250,8 @@ const VerticalText = styled.div`
   font-size: 3vw;
   color: white;
 `;
+
+
 
 // .bigContents {
 //   border: 1px solid darkblue;

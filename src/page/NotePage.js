@@ -161,9 +161,6 @@ const NotePage = () => {
 
   return (
     <Container>
-      <TitleContainer>
-        <Title>노트</Title>
-      </TitleContainer>
       <SearchBarWrapper>
         <SearchBar
           placeholder="노트 검색"

@@ -38,6 +38,9 @@ const Navigation = () => {
         <li>
           <Link to="/tonggae">Tonggae</Link>
         </li>
+        <li>
+          <Link to="/timer">Tonggae</Link>
+        </li>
         
 
 

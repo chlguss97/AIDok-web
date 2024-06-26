@@ -24,6 +24,7 @@ import {
   query,
 } from "firebase/firestore";
 
+
 const BookEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -624,6 +625,8 @@ const StatusContainer= styled.div`
     }
   }
 `;
+
+
 
 const BookStatus = styled.div`
   display: inline-block;

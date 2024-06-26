@@ -64,7 +64,7 @@ const Ai = () => {
 
     return (
         <Container>
-            <Title>AI 독서 학습</Title>
+            
             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요" />
 
             <div style={{ textAlign: 'center' }}>

@@ -60,9 +60,8 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://13.125.105.124",
-  "proxy": "https://13.125.105.124",
   "devDependencies": {
-    "vite": "^5.3.1"
+   
+
   }
 }
