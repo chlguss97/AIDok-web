@@ -149,6 +149,7 @@ const WriteAi = () => {
     if (window.AndroidInterface && window.AndroidInterface.openCameraForOCR) {
       window.AndroidInterface.openCameraForOCR();
     }
+    setIsVisible(false)
   };
   const handleOpenGalleryClick = () => {
     setIsBottomSheetOpen(false);
