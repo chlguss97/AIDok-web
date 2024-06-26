@@ -125,22 +125,25 @@ const SendButton = styled.button`
 `;
 
 const BoardComment = () => {
-  const { postId } = useParams();
+  const { postId: paramsPostId } = useParams();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const user = useSelector((state) => state.userA.userAccount);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Post ID from params:", postId); // 로그 추가
-    if (postId) {
-      fetchComments();
-    }
-  }, [postId]);
+    const postId = paramsPostId || localStorage.getItem('postId');
+    console.log("Post ID from useParams:", paramsPostId);
+    console.log("Post ID from localStorage:", postId);
 
-  const fetchComments = async () => {
+    if (postId) {
+      fetchComments(postId);
+    }
+  }, [paramsPostId]);
+
+  const fetchComments = async (postId) => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'posts', postId, 'boardComment'));
+      const querySnapshot = await getDocs(collection(db, 'posts', postId, 'comments'));
       const commentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -153,16 +156,22 @@ const BoardComment = () => {
 
   const handleCommentSubmit = async () => {
     if (!newComment) return;
-
+  
+    const postId = paramsPostId || localStorage.getItem('postId');
+    if (!postId) {
+      console.error("Post ID is missing");
+      return;
+    }
+  
     try {
-      await addDoc(collection(db, 'posts', postId, 'boardComment'), {
+      await addDoc(collection(db, 'posts', postId, 'comments'), {
         id: user.userId,
         date: Timestamp.now(),
         comment: newComment,
         userimg: user.userImg
       });
       setNewComment('');
-      fetchComments();
+      fetchComments(postId);
     } catch (e) {
       console.error("Error adding comment: ", e);
     }
@@ -186,7 +195,7 @@ const BoardComment = () => {
             <Avatar src={comment.userimg} />
             <CommentContent>
               <Username>{comment.id}</Username>
-              <Date>{comment.date.toDate().toLocaleString()}</Date>
+              <Date>{comment.date ? comment.date.toDate().toLocaleString() : 'Loading...'}</Date>
               <Text>{comment.comment}</Text>
             </CommentContent>
           </CommentContainer>

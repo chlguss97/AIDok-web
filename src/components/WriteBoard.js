@@ -1,13 +1,14 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
 import backIcon from '../assets/backicon.png';
 import BookModal from '../components/BookModal';
 import book from '../assets/book.png'; // 적절한 이미지 파일 경로를 지정하세요.
 import { db, storage } from '../firebase/firebase'; // firebase.js에서 db를 가져온다고 가정
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Container = styled.div`
   padding: 20px;
@@ -166,11 +167,28 @@ const WriteBoard = () => {
   const fileInputRef2 = useRef(null);
   const navigate = useNavigate();
   const user = useSelector((state) => state.userA.userAccount);
+  const { postId } = useParams();
+
+  useEffect(() => {
+    const fetchPostData = async () => {
+      if (postId) {
+        const postDoc = await getDoc(doc(db, 'posts', postId));
+        if (postDoc.exists()) {
+          const postData = postDoc.data();
+          setContent(postData.writingContent);
+          setSelectedBook({ title: postData.bookTitle, authors: '', cover: postData.bookImg });
+          setImage2(postData.img ? await getDownloadURL(ref(storage, postData.img)) : null);
+        }
+      }
+    };
+
+    fetchPostData();
+  }, [postId]);
 
   const handleImageChange2 = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage2(URL.createObjectURL(file));
+      setImage2(file);
     }
   };
 
@@ -184,23 +202,36 @@ const WriteBoard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    let imageURL = null;
+
+    if (image2) {
+      const storageRef = ref(storage, `images/${image2.name}`);
+      await uploadBytes(storageRef, image2);
+      imageURL = await getDownloadURL(storageRef);
+    }
+
     try {
-      const postRef = await addDoc(collection(db, 'posts'), {
+      const postData = {
         id: user.userId,
         bookTitle: selectedBook.title,
         bookImg: selectedBook.cover,
-        img: image2,
+        img: imageURL,
         writingContent: content,
         date: new Date().toISOString()
-      });
+      };
 
-      // 서브 컬렉션으로 빈 boardComment 컬렉션을 생성
-      await setDoc(doc(db, 'posts', postRef.id, 'boardComment', 'init'), { initialized: true });
+      if (postId) {
+        await updateDoc(doc(db, 'posts', postId), postData);
+        alert("게시물이 수정되었습니다.");
+      } else {
+        const postRef = await addDoc(collection(db, 'posts'), postData);
+        await setDoc(doc(db, 'posts', postRef.id, 'comments', 'init'), { initialized: true });
+        await setDoc(doc(db, 'posts', postRef.id, 'favorites', 'init'), { initialized: true });
+        console.log("Document written with ID: ", postRef.id);
+        alert("게시물이 작성되었습니다.");
+      }
 
-      console.log("Document written with ID: ", postRef.id);
-      alert("게시가 완료되었습니다.");
-      navigate('/board');  // 게시판 페이지로 이동
+      navigate('/board');
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -220,7 +251,7 @@ const WriteBoard = () => {
       <BackButton onClick={handleBackClick}>
         <img src={backIcon} alt="Back" />
       </BackButton>
-      <Title>글 작성</Title>
+      <Title>{postId ? "글 수정" : "글 작성"}</Title>
       <Form onSubmit={handleSubmit}>
         <InfoContainer>
           <BookInfo onClick={handleBookInfoClick}>
@@ -230,7 +261,7 @@ const WriteBoard = () => {
           </BookInfo>
         </InfoContainer>
         <FullWidthImageUploadWrapper hasImage={!!image2} onClick={handleImageUploadClick2}>
-          {image2 ? <ImagePreview src={image2} alt="이미지 미리보기" /> : (
+          {image2 ? <ImagePreview src={typeof image2 === 'string' ? image2 : URL.createObjectURL(image2)} alt="이미지 미리보기" /> : (
             <>
               <PlusIcon />
               <AddPhotoText>사진추가</AddPhotoText>

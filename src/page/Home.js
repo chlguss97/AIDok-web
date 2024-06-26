@@ -171,10 +171,10 @@ const Home = () => {
 
   return (
     <div style={{marginLeft:"10px"}}>
-      <TitleContainer>
+      {/* <TitleContainer>
         
         <Title>홈 화면</Title>
-      </TitleContainer>
+      </TitleContainer> */}
       <Container>
         <SearchBarContainer>
         <img

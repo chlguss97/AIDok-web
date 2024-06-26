@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaHeart, FaRegHeart, FaCommentDots, FaEllipsisH, FaPen } from 'react-icons/fa';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useSelector } from 'react-redux';
 
@@ -49,7 +49,7 @@ const Avatar = styled.div`
   background-image: url(${props => props.src});
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  overflow: hidden; /* Ensure the image doesn't overflow the container */
+  overflow: hidden;
 `;
 
 const Username = styled.span`
@@ -131,7 +131,7 @@ const CommentIconWrapper = styled.div`
 
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 50px;
+  bottom: 80px;
   right: 20px;
   width: 50px;
   height: 50px;
@@ -187,18 +187,28 @@ const Board = () => {
     const fetchPosts = async () => {
       const querySnapshot = await getDocs(collection(db, 'posts'));
       const postsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Fetch like and comment counts and check if the user liked each post
+      for (const post of postsData) {
+        const likesSnapshot = await getDocs(collection(db, 'posts', post.id, 'favorites'));
+        const commentsSnapshot = await getDocs(collection(db, 'posts', post.id, 'comments'));
+        post.likes = likesSnapshot.size;
+        post.commentcount = commentsSnapshot.size;
+        post.liked = likesSnapshot.docs.some(doc => doc.id === user.userId); // Check if the user liked the post
+      }
+
       setPosts(postsData);
     };
 
     fetchPosts();
-  }, []);
+  }, [user.userId]);
 
   const handleCreatePost = () => {
     navigate('/write');
   };
 
-  const handleViewComments = () => {
-    navigate('/comments');
+  const handleViewComments = (postId) => {
+    navigate(`/board/${postId}/comments`);
   };
 
   const toggleDropdown = (postId) => {
@@ -209,24 +219,28 @@ const Board = () => {
   };
 
   const handleEdit = (postId) => {
-    console.log('Edit post', postId);
-    // Add your edit logic here
+    navigate(`/write/${postId}`);
   };
 
-  const handleDelete = (postId) => {
-    console.log('Delete post', postId);
-    // Add your delete logic here
+  const handleDelete = async (postId) => {
+    const confirmDelete = window.confirm("게시물을 삭제하시겠습니까?");
+    if (confirmDelete) {
+      await deleteDoc(doc(db, 'posts', postId));
+      setPosts(posts.filter(post => post.id !== postId));
+    }
   };
 
   const handleLikeToggle = async (postId) => {
-    const updatedPosts = posts.map(post =>
-      post.id === postId ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 } : post
-    );
-    setPosts(updatedPosts);
+    const likeRef = doc(db, 'posts', postId, 'favorites', user.userId);
+    const likeDoc = await getDoc(likeRef);
 
-    const post = updatedPosts.find(post => post.id === postId);
-    const postRef = doc(db, 'posts', postId);
-    await updateDoc(postRef, { likes: post.likes });
+    if (likeDoc.exists()) {
+      await deleteDoc(likeRef);
+      setPosts(posts.map(post => post.id === postId ? { ...post, liked: false, likes: post.likes - 1 } : post));
+    } else {
+      await setDoc(likeRef, { userId: user.userId });
+      setPosts(posts.map(post => post.id === postId ? { ...post, liked: true, likes: post.likes + 1 } : post));
+    }
   };
 
   const handleClickOutside = (event) => {
@@ -261,11 +275,15 @@ const Board = () => {
               </div>
             </HeaderLeft>
             <div style={{ position: 'relative' }}>
-              <OptionsIcon className="options-icon" onClick={() => toggleDropdown(post.id)} />
-              <DropdownMenu ref={dropdownRef} show={showDropdown[post.id]}>
-                <DropdownItem onClick={() => handleEdit(post.id)}><span>수정</span></DropdownItem>
-                <DropdownItem onClick={() => handleDelete(post.id)}><span>삭제</span></DropdownItem>
-              </DropdownMenu>
+              {user.userId === post.id && (
+                <>
+                  <OptionsIcon className="options-icon" onClick={() => toggleDropdown(post.id)} />
+                  <DropdownMenu ref={dropdownRef} show={showDropdown[post.id]}>
+                    <DropdownItem onClick={() => handleEdit(post.id)}><span>수정</span></DropdownItem>
+                    <DropdownItem onClick={() => handleDelete(post.id)}><span>삭제</span></DropdownItem>
+                  </DropdownMenu>
+                </>
+              )}
             </div>
           </PostHeader>
           <PostImage src={post.img} alt="post" />
@@ -280,7 +298,7 @@ const Board = () => {
                 <FaRegHeart onClick={() => handleLikeToggle(post.id)} />
               )}
               <IconText>{post.likes || 0} Likes</IconText>
-              <CommentIconWrapper onClick={handleViewComments}>
+              <CommentIconWrapper onClick={() => handleViewComments(post.id)}>
                 <FaCommentDots style={{ marginLeft: '10px' }} />
                 <IconText>{post.commentcount || 0} Comments</IconText>
               </CommentIconWrapper>
