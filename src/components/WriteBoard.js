@@ -218,6 +218,7 @@ const WriteBoard = () => {
         img: imageURL,
         writingContent: content,
         date: new Date().toISOString()
+
       };
 
       if (postId) {
@@ -232,6 +233,7 @@ const WriteBoard = () => {
       }
 
       navigate('/board');
+
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -261,7 +263,9 @@ const WriteBoard = () => {
           </BookInfo>
         </InfoContainer>
         <FullWidthImageUploadWrapper hasImage={!!image2} onClick={handleImageUploadClick2}>
+
           {image2 ? <ImagePreview src={typeof image2 === 'string' ? image2 : URL.createObjectURL(image2)} alt="이미지 미리보기" /> : (
+
             <>
               <PlusIcon />
               <AddPhotoText>사진추가</AddPhotoText>

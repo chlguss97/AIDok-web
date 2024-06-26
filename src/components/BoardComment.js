@@ -143,7 +143,9 @@ const BoardComment = () => {
 
   const fetchComments = async (postId) => {
     try {
+
       const querySnapshot = await getDocs(collection(db, 'posts', postId, 'comments'));
+
       const commentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -153,7 +155,7 @@ const BoardComment = () => {
       console.error("Error fetching comments: ", e);
     }
   };
-
+  
   const handleCommentSubmit = async () => {
     if (!newComment) return;
   
@@ -164,7 +166,9 @@ const BoardComment = () => {
     }
   
     try {
+
       await addDoc(collection(db, 'posts', postId, 'comments'), {
+
         id: user.userId,
         date: Timestamp.now(),
         comment: newComment,
