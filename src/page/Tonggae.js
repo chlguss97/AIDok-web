@@ -245,10 +245,8 @@ The structure of the answer is '첫째, . . .' and the next paragraph is as clea
         <AIDiv>
           <RotatingImg src={robot} alt="로봇사진" />
           <AnimatedSpan>
-          <span style={{color:"gray"}}> 저는 {user.userId}님의 독서분석가 똑독이가 {user.userId}님의
-          독서 패턴을 분석해보았습니다.</span>
-            저는 {user.userId}님의 독서분석가 똑독이가 {user.userId}님의
-            독서 패턴을 분석해보았습니다. <br></br>
+          <span style={{color:"gray"}}>{user.userId}님의 독서분석가 똑독이가 {user.userId}님의
+          독서 패턴을 분석해보았습니다^^</span> <br></br><br/>
             {data}
           </AnimatedSpan>
           <br />
