@@ -12,8 +12,7 @@ import { db } from '../firebase/firebase';
 import { useSelector } from 'react-redux';
 import { doc, setDoc, collection, Timestamp, query, where, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-const openApiURL = 'http://aiopen.etri.re.kr:8000/MRCServlet';
-const access_key = '9ea2f4ff-9521-4665-aa3f-e16d9178a957';
+
 const proxyUrl = './backend/etri_bert.php'
 const WriteAi = () => {
   // 책 선택 modal
@@ -26,15 +25,13 @@ const WriteAi = () => {
   });
   // 바텀시트 modal
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  // const [selectedFile, setSelectedFile] = useState(null);
-  // const [previewUrl, setPreviewUrl] = useState(null);
 
   // 카메라 OCR
   const [ocrText, setOcrText] = useState('');
   // const [imageData, setImageData] = useState('');
-  const videoRef = useRef(null);
+  // const videoRef = useRef(null);
   // const canvasRef = useRef(null);
-  const [showWebcam, setShowWebcam] = useState(false);
+  // const [showWebcam, setShowWebcam] = useState(false);
   // const [isAIExtract, setIsAIExtract] = useState(false);
   const user = useSelector((state) => state.userA.userAccount);
   const navigate = useNavigate();
@@ -161,18 +158,18 @@ const WriteAi = () => {
     setIsVisible(false)
   };
   useEffect(() => {
-    if (showWebcam && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(stream => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.play();
-          }
-        })
-        .catch(err => {
-          console.error('Error accessing the camera: ', err);
-        });
-    }
+    // if (showWebcam && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    //   navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    //     .then(stream => {
+    //       if (videoRef.current) {
+    //         videoRef.current.srcObject = stream;
+    //         videoRef.current.play();
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.error('Error accessing the camera: ', err);
+    //     });
+    // }
     window.handleOCRResult = (result) => {
       const cleanedResult = result.replace(/(\r\n|\n|\r)/gm, " ");
       // 앞뒤 공백 제거
@@ -183,7 +180,7 @@ const WriteAi = () => {
       //   passage: ocrText
       // }))
     };
-  }, [showWebcam,ocrText]);
+  }, [ocrText]);
   useEffect(() => {
     const checkUserDocumentExists = async () => {
       try {
@@ -240,8 +237,15 @@ const WriteAi = () => {
             position: "absolute",
             left: '50%',
             top: '50%',
-            transform: "translate(-50%, -50%)"
+            transform: "translate(-50%, -50%)",
           }} />
+          <p style={{
+            color:'#5E7E71', 
+            position: "absolute",
+            left: '50%',
+            top: '70%',
+            transform: "translate(-50%, -50%)",
+          }}>사진 추가</p>
         </AddImg>
         )}
         <BottomSheetModal
@@ -256,13 +260,13 @@ const WriteAi = () => {
             <img src={previewUrl} alt="Preview" style={{ maxHeight: '150px', width: '100%', borderRadius: '10px', marginBottom: '1rem'}} />
           </div>
         )} */}
-      <ExtractedText placeholder='사진을 추가하면 텍스트가 추출됩니다' defaultValue={ocrText} onChange={(e) =>
+      <ExtractedText placeholder='사진을 추가해보세요! 텍스트가 자동으로 인식됩니다' defaultValue={ocrText} onChange={(e) =>
         setFormData((prevData) => ({
           ...prevData,
           passage: e.target.value
         }))
       }></ExtractedText>
-      <InputText placeholder="질문 내용을 입력하세요" value={formData.question} onChange={(e) =>
+      <InputText placeholder="질문 내용을 입력하세요." value={formData.question} onChange={(e) =>
         setFormData((prevData) => ({
           ...prevData,
           question: e.target.value
@@ -327,6 +331,7 @@ const AddImg = styled.div`
   width: 100%;
   box-sizing: border-box;
   padding: 10px;
+  text-align: center;
 `;
 const ExtractedText = styled.textarea`
   background-color: #5E7E71;
@@ -340,6 +345,10 @@ const ExtractedText = styled.textarea`
   font-size: 11px;
   width: 100%;
   box-sizing: border-box;
+
+  &::placeholder{
+    color: white;
+  }
 `;
 const InputText = styled.textarea`
   width: 100%;
