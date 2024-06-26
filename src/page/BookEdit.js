@@ -407,6 +407,7 @@ const BookEdit = () => {
               <Calendar
                 onChange={startDateChange}
                 value={startDate}
+                formatDay={(locale, date) => moment(date).format("D")}
               />
             )}
 
@@ -427,6 +428,7 @@ const BookEdit = () => {
                 onChange={endDateChange}
                 value={endDate}
                 className="calendar"
+                formatDay={(locale, date) => moment(date).format("D")}
               />
             )}
           </div>
@@ -620,19 +622,6 @@ const StatusContainer= styled.div`
       color: #6f4e37;
       font-size: 14px;
     }
-  }
-`;
-
-const StatusContainer = styled.div`
-  height: 100px;
-  width: 360px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin: 60px auto;
-  > div {
-    margin: 5px 10px;
   }
 `;
 

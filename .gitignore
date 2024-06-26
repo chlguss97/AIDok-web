@@ -24,3 +24,6 @@ yarn-error.log*
 
 /yarn.lock 
 /package.json
+
+#GPT SecretKey
+src/page/SecretKey.js

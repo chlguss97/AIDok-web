@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FaPlus } from 'react-icons/fa';
 import SaveBtn from '../components/SaveBtn';
@@ -8,21 +8,16 @@ import bookImage from '../assets/book.png';
 import BottomSheetModal from '../components/BottomSheetModal'
 import '@tensorflow/tfjs-backend-webgl'
 import axios from 'axios';
-
 import { db } from '../firebase/firebase';
 import { useSelector } from 'react-redux';
 import { doc, setDoc, collection, Timestamp, query, where, getDocs } from 'firebase/firestore';
-import firebase from 'firebase/compat/app';
 import { useNavigate } from 'react-router-dom';
-import camera from "../assets/camera.png"
-import gallery from "../assets/gallery.png"
 
 const openApiURL = 'http://aiopen.etri.re.kr:8000/MRCServlet';
 const access_key = '9ea2f4ff-9521-4665-aa3f-e16d9178a957';
 const proxyUrl = './backend/etri_bert.php'
 
 const WriteAi = () => {
-
 
   // 책 선택 modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -33,68 +28,52 @@ const WriteAi = () => {
     img: bookImage
   });
 
-
-
   // 바텀시트 modal
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  // const [selectedFile, setSelectedFile] = useState(null);
+  // const [previewUrl, setPreviewUrl] = useState(null);
 
   // 카메라 OCR
   const [ocrText, setOcrText] = useState('');
-  const [imageData, setImageData] = useState('');
+  // const [imageData, setImageData] = useState('');
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
+  // const canvasRef = useRef(null);
   const [showWebcam, setShowWebcam] = useState(false);
-  const [isAIExtract, setIsAIExtract] = useState(false);
+  // const [isAIExtract, setIsAIExtract] = useState(false);
   
   const user = useSelector((state) => state.userA.userAccount);
   const navigate = useNavigate();
 
    // 객체로 모든 필드값을 관리
    const [formData, setFormData] = useState({
-    answer: '',
     bookImgUrl: '',
+    title: '',
     passage: '',
     question: '',
-    title: '',
+    answer: '',
     // date: '',
   });
 
   const [isbn, setIsbn] = useState('')
+  const [isVisible, setIsVisible] = useState(true)
 
-  // // 필드값 변경 핸들러
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     [name]: value
-  //   }));
-  // };
-
-  //  // 이미지 변경 핸들러
-  //  const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         bookImgUrl: reader.result
-  //       }));
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
 
   // 저장하기 버튼
   const save = async () => {
     const timestamp = Timestamp.fromDate(new Date());
-
+  
+    // formData 검증
+    for (const [key, value] of Object.entries(formData)) {
+      if (!value) {
+        alert(`'${key}'가 비어있습니다. 모든 데이터를 입력해주세요.`);
+        return;
+      }
+    }
+  
     // Firestore에 데이터 저장
     try {
       // 'bert' 컬렉션의 user.userId 문서 참조
-      const userDocRef = doc(db, 'bert', user.userId); 
+      const userDocRef = doc(db, 'bert', user.userId);
       // 'bert' 컬렉션의 user.userId 문서의 'books' 서브컬렉션 참조
       const booksCollectionRef = collection(userDocRef, 'books');
       // 'books' 서브컬렉션의 isbn 서브문서 참조
@@ -125,7 +104,7 @@ const WriteAi = () => {
     console.log(formData.answer)
 
     try {
-      const response = await axios.post(proxyUrl, requestJson, { // setupProxy.js에서 프록시 설정
+      const response = await axios.post(proxyUrl, requestJson, {
         headers: {
           'Content-Type': 'application/json',
           // 'Authorization': access_key
@@ -146,19 +125,6 @@ const WriteAi = () => {
     }
   };
 
-  // 책 선택 modal
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState({
-    title: '책 추가',
-    authors: '',
-    cover: bookImage
-  });
-
-
-  // 바텀시트 modal
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
 
   const openBottomSheet = () => {
       setIsBottomSheetOpen(true)
@@ -166,11 +132,6 @@ const WriteAi = () => {
   const closeBottomSheet = () => {
       setIsBottomSheetOpen(false)
   }
-  const handleFileChange = (file) => {
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-  }
-
 
   const onFileChange = (event) => {
     const file = event.target.files[0];
@@ -189,9 +150,13 @@ const WriteAi = () => {
 
   const handleBookSelect = (book) => {
     setSelectedBook(book);
-    console.log(book.isbn)
 
     setIsbn(book.isbn)
+    setFormData((prevData) => ({
+      ...prevData,
+      bookImgUrl: book.img,
+      title: book.title
+    }))
     setModalIsOpen(false);
   };
 
@@ -199,44 +164,20 @@ const WriteAi = () => {
     navigate(-1);
   };
 
-  const handlePictureClick = () => {
-    setIsAIExtract(false);
-    setShowWebcam(true);
-  };
-
-  const handleOpenFileInput = () => {
-    document.getElementById('fileInput').click();
-  };
-
   const handleAIExtractClick = () => {
     setIsBottomSheetOpen(false)
     if (window.AndroidInterface && window.AndroidInterface.openCameraForOCR) {
       window.AndroidInterface.openCameraForOCR();
     }
+    setIsVisible(false)
   };
 
-  const takePicture = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg');
-      if (isAIExtract) {
-        sendImageToApp(dataUrl);
-      } else {
-        setImageData(dataUrl);
-      }
-      setShowWebcam(false); // 웹캠 종료
+  const handleOpenGalleryClick = () => {
+    setIsBottomSheetOpen(false);
+    if (window.AndroidInterface && window.AndroidInterface.openGalleryForImage) {
+        window.AndroidInterface.openGalleryForImage();
     }
-  };
-
-  const sendImageToApp = (dataUrl) => {
-    if (window.AndroidInterface && window.AndroidInterface.receiveImage) {
-      window.AndroidInterface.receiveImage(dataUrl);
-    }
+    setIsVisible(false)
   };
 
   useEffect(() => {
@@ -321,7 +262,7 @@ const WriteAi = () => {
         <BookAuthors>{selectedBook.authors}</BookAuthors>
       </BookInfo>
             
-      {!previewUrl && (
+      {isVisible && (
         <AddImg onClick={openBottomSheet} style={{cursor:"pointer"}}>
           <FaPlus style={{
             color: '#5E7E71',
@@ -338,16 +279,16 @@ const WriteAi = () => {
           isOpen={isBottomSheetOpen}
           onRequestClose={closeBottomSheet}
           handleAIExtractClick={handleAIExtractClick}
-          handleOpenFileInput={handleOpenFileInput}
+          handleOpenGalleryClick={handleOpenGalleryClick}
           onFileChange={onFileChange}>
         </BottomSheetModal>
         
 
-        {previewUrl && (
+        {/* {previewUrl && (
           <div>
             <img src={previewUrl} alt="Preview" style={{ maxHeight: '150px', width: '100%', borderRadius: '10px', marginBottom: '1rem'}} />
           </div>
-        )}
+        )} */}
 
 
       <ExtractedText placeholder='사진을 추가하면 텍스트가 추출됩니다' defaultValue={ocrText} onChange={(e) =>
@@ -363,7 +304,7 @@ const WriteAi = () => {
         }))}>
         </InputText>
       <InputBtn onClick={findAnswer}>입력 완료</InputBtn>
-      <Answer>A: {answer}</Answer>
+      <Answer>A: {formData.answer}</Answer>
       <SaveBtn name="저장하기" onClick={save}></SaveBtn>
       <BookModal
         isOpen={modalIsOpen}
@@ -386,9 +327,10 @@ const Container = styled.div`
   padding-left: 8%;
   padding-right: 8%;
   background-color: white;
-  height: 100vh;
+  height: 100%;
   font-family: Arial, sans-serif;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const BookInfo = styled.div`
@@ -422,7 +364,7 @@ const AddImg = styled.div`
   position: relative;
   border: 2px solid #5E7E71;
   border-radius: 10px;
-  height: 15vh;
+  height: 150px;
   margin-bottom: 1rem;
   width: 100%;
   box-sizing: border-box;
@@ -433,7 +375,7 @@ const ExtractedText = styled.textarea`
   background-color: #5E7E71;
   color: white;
   border: 2px solid #6F4E37;
-  height: 15vh;
+  height: 150px;
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 1rem;
@@ -446,7 +388,7 @@ const ExtractedText = styled.textarea`
 const InputText = styled.textarea`
   width: 100%;
   box-sizing: border-box;
-  height: 5rem;
+  height: 150px;
   background-color: white;
   color: black;
   border: 2px solid #5E7E71;
