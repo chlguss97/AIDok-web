@@ -24,6 +24,7 @@ import {
   query,
 } from "firebase/firestore";
 
+
 const BookEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -407,6 +408,7 @@ const BookEdit = () => {
               <Calendar
                 onChange={startDateChange}
                 value={startDate}
+                formatDay={(locale, date) => moment(date).format("D")}
               />
             )}
 
@@ -427,6 +429,7 @@ const BookEdit = () => {
                 onChange={endDateChange}
                 value={endDate}
                 className="calendar"
+                formatDay={(locale, date) => moment(date).format("D")}
               />
             )}
           </div>
@@ -623,18 +626,7 @@ const StatusContainer= styled.div`
   }
 `;
 
-const StatusContainer = styled.div`
-  height: 100px;
-  width: 360px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin: 60px auto;
-  > div {
-    margin: 5px 10px;
-  }
-`;
+
 
 const BookStatus = styled.div`
   display: inline-block;
