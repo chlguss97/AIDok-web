@@ -4,6 +4,613 @@ import BackBtn from "../components/BackBtn";
 import Toolbar from "../components/Toolbar";
 import { useLocation, useNavigate } from "react-router-dom";
 import backicon from "../assets/backicon.png";
+import { db } from "../firebase/firebase"; // firebase.js에서 db를 가져옴
+import {
+  doc,
+  setDoc,
+  getDoc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+} from "firebase/firestore";
+import { useSelector } from "react-redux";
+
+const BookDetail = () => {
+
+  const jbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
+    "3de6856d1fbee758931e324ef85f34590549f6c5de34db53624fcd28a9684f63"; 
+  const DEAHANjbNaruServiceKey = " ";
+  const HYUNWOLjbNaruServiceKey = "";
+
+  const TEAMJANGjbNaruServiceKey = " ";
+  const location = useLocation();
+  const book = location.state.book; //받아온 book에는 title, img, writer, isbn, summary, link가 있다.
+  
+  const [bookItem, setBookItem] = useState({}); //useLoacation으로 받아온 book객체
+  // bookItem 에는 title, img, writer, isbn, summary, link가 다시깔렸다.
+  const navigate = useNavigate();
+  const [coDetailBooks, setCoDetailBooks] = useState([]);
+  const [maniaDetailBooks, setManiaDetailBooks] = useState([]);
+  const [readerDetailBooks, setReaderDetailBooks] = useState([]);
+  const [shortenedDescription, setShortenedDescription] = useState(""); //책 요약 글자 수 너무많을까봐 줄이깅.. 100글자까지만 나오도록...
+  const user = useSelector((state) => state.userA.userAccount); //user.userId가 유저아이디임
+  const [state, setState] = useState("선택 안함");
+
+  useEffect(() => {
+
+    // List에서넘어온 book객체의 변수 :title, img, writer, isbn, summary, link
+
+
+    if (book) {
+      setBookItem(book);
+
+
+      const url = `http://data4library.kr/api/usageAnalysisList?authKey=${jbNaruServiceKey}&isbn13=${book.isbn}`;
+      fetch(url)
+        .then((res) => res.text()) //정보나루api는 xml줘용
+        .then((xmlText) => {
+          console.log("왜안돼" + xmlText);
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+
+          if (!xmlDoc) {
+            console.error("Failed to parse XML data");
+            return;
+          }
+
+          //===================함께 대출된 도서
+          const coLoanBooks = xmlDoc.getElementsByTagName("coLoanBooks")[0];
+          if (!coLoanBooks) {
+            console.error("coLoanBooks element not found in XML");
+            return;
+          }
+          const coBooks = coLoanBooks.getElementsByTagName("book");
+          const coBooksData = [];
+          const coPromises = [];
+
+          for (let book of coBooks) {
+            const bookNameElement = book.getElementsByTagName("bookname")[0];
+            const isbnElement = book.getElementsByTagName("isbn13")[0];
+            if (bookNameElement && isbnElement) {
+              const title = bookNameElement.textContent
+                .trim()
+                .replace("<![CDATA[", "")
+                .replace("]]>", "");
+              const isbn = isbnElement.textContent
+                .trim()
+                .replace("<![CDATA[", "")
+                .replace("]]>", "");
+              coBooksData.push({ title, isbn });
+
+              // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+              const coPromise = fetch(
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+              )
+                .then((res) => res.text())
+                .then((xmlText) => {
+                  const parser = new DOMParser();
+                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                  console.log("서버잘오나" + xmlDoc);
+
+                  if (!xmlDoc) {
+                    console.error("Failed to parse XML data");
+                    return null;
+                  }
+                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                  const bookData = {
+                    title: bookElement
+                      .getElementsByTagName("bookname")[0]
+                      .textContent.trim(),
+                    writer: bookElement
+                      .getElementsByTagName("authors")[0]
+                      .textContent.trim(),
+                    summary: bookElement
+                      .getElementsByTagName("description")[0]
+                      .textContent.trim(),
+                    img: bookElement
+                      .getElementsByTagName("bookImageURL")[0]
+                      .textContent.trim(),
+                    isbn: bookElement
+                      .getElementsByTagName("isbn13")[0]
+                      .textContent.trim(),
+                  };
+                  return bookData;
+                });
+              coPromises.push(coPromise);
+            }
+          }
+          Promise.all(coPromises).then((books) => {
+            setCoDetailBooks(books.filter((book) => book !== null));
+          });
+
+
+          //===========================마니아를위한 추천도서
+          const maniaRecBooks = xmlDoc.getElementsByTagName("maniaRecBooks")[0];
+          if (!maniaRecBooks) {
+            console.error("maniaRecBooks element 엑스엠엘에서찾을수없어요");
+            return;
+          }
+          const maBooks = maniaRecBooks.getElementsByTagName("book");
+          const maniaPromises = [];
+          // const maBooksData = [];
+          for (let book of maBooks) {
+            const bookNameElement = book.getElementsByTagName("bookname")[0];
+            const isbnElement = book.getElementsByTagName("isbn13")[0];
+            if (bookNameElement && isbnElement) {
+              const title = bookNameElement.textContent
+                .trim()
+                .replace("<![CDATA[", "")
+                .replace("]]>", "");
+              const isbn = isbnElement.textContent
+                .trim()
+                .replace("<![CDATA[", "")
+                .replace("]]>", "");
+              // maBooksData.push({ title, isbn });
+
+              //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+              const maniaPromise = fetch(
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+              )
+                .then((res) => res.text())
+                .then((xmlText) => {
+                  const parser = new DOMParser();
+                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                  if (!xmlDoc) {
+                    console.error("Failed to parse XML data");
+                    return null;
+                  }
+                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                  const bookData = {
+                    title: bookElement
+                      .getElementsByTagName("bookname")[0]
+                      .textContent.trim(),
+                    writer: bookElement
+                      .getElementsByTagName("authors")[0]
+                      .textContent.trim(),
+                    summary: bookElement
+                      .getElementsByTagName("description")[0]
+                      .textContent.trim(),
+                    img: bookElement
+                      .getElementsByTagName("bookImageURL")[0]
+                      .textContent.trim(),
+                    isbn: bookElement
+                      .getElementsByTagName("isbn13")[0]
+                      .textContent.trim(),
+                  };
+                  return bookData;
+                });
+              maniaPromises.push(maniaPromise);
+            }
+          }
+          Promise.all(maniaPromises).then((books) => {
+            setManiaDetailBooks(books.filter((book) => book !== null));
+          });
+
+
+          //==========================다독자를 위한 추천도서
+          const readerRecBooks =
+            xmlDoc.getElementsByTagName("readerRecBooks")[0];
+          if (!readerRecBooks) {
+            console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
+            return;
+          }
+          const reBooks = readerRecBooks.getElementsByTagName("book");
+          // const reBooksData = [];
+          const readerPromises = [];
+          for (let book of reBooks) {
+            const bookNameElement = book.getElementsByTagName("bookname")[0];
+            const isbnElement = book.getElementsByTagName("isbn13")[0];
+            if (bookNameElement && isbnElement) {
+              const title = bookNameElement.textContent
+                .trim()
+                .replace("<![CDATA[", "")
+                .replace("]]>", "");
+              const isbn = isbnElement.textContent
+                .trim()
+                .replace("<![CDATA[", "")
+                .replace("]]>", "");
+
+              //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+              const readerPromise = fetch(
+                `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
+              )
+                .then((res) => res.text())
+                .then((xmlText) => {
+                  const parser = new DOMParser();
+                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                  if (!xmlDoc) {
+                    console.error("Failed to parse XML data");
+                    return null;
+                  }
+                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                  const bookData = {
+                    title: bookElement
+                      .getElementsByTagName("bookname")[0]
+                      .textContent.trim(),
+                    writer: bookElement
+                      .getElementsByTagName("authors")[0]
+                      .textContent.trim(),
+                    summary: bookElement
+                      .getElementsByTagName("description")[0]
+                      .textContent.trim(),
+                    img: bookElement
+                      .getElementsByTagName("bookImageURL")[0]
+                      .textContent.trim(),
+                    isbn: bookElement
+                      .getElementsByTagName("isbn13")[0]
+                      .textContent.trim(),
+                  };
+                  return bookData;
+                });
+              readerPromises.push(readerPromise);
+            }
+          }
+          Promise.all(readerPromises).then((books) => {
+            setReaderDetailBooks(books.filter((book) => book !== null));
+          });
+        })
+
+        .catch((e) => alert(`에러: ${e.message}`));
+    }
+  }, [book]);
+
+
+
+  useEffect(() => {
+    // 요약된 디스크립션 생성
+    if (book.summary?.length > 1) {
+      book.summary.replace(/&lt;/g, "<").replace(/gt;/g, ">");
+      setShortenedDescription(book.summary.substring(0, 180) + "... ...");
+    } else {
+      setShortenedDescription(book.summary);
+    }
+
+    // 사용자가 선택한 책의 상태값 보여주기
+    const checkUserDocumentExists = async () => {
+      try {
+        console.log(`유저아이디 : ${user.userId}, isbn : ${book.isbn}`);
+        const docRef = doc(db, "user", user.userId); //도큐먼트이름이 유저아이디
+        const subDocRef = doc(docRef, "book", book.isbn);
+        // 서브도큐먼트는 isbn13자리..
+        const subDocSnap = await getDoc(subDocRef);
+
+        if (subDocSnap.exists()) {
+          console.log(
+            "서브도큐먼트(isbn)안에 뭐가있나~~보자~~~:",
+            subDocSnap.data()
+          );
+          const stateValue = await subDocSnap.data().state; //필드중state라는애 값 가져와
+          setState(stateValue);
+          console.log("사용자가 저장한 상태 가져오기:" + stateValue);
+        } else {
+          //선택하지않음 보이게하기
+          console.log("도큐먼트가 존재하지 않습니다.");
+        }
+      } catch (error) {
+        console.error("도큐먼트 존재 확인 중 오류 발생:", error);
+      }
+    };
+
+    checkUserDocumentExists();
+  }, [book.summary, user.userId]);
+
+  const clickBackButton = () => {
+    navigate("/List");
+  };
+
+  
+
+  //-------bookClick함수-------- 책 클릭했을때 다시 불러오기....
+  const bookClick = (book) => {
+    setBookItem({ ...book });
+
+    const url = `http://data4library.kr/api/usageAnalysisList?authKey=${jbNaruServiceKey}&isbn13=${book.isbn}`;
+
+    fetch(url)
+      .then((res) => res.text()) //정보나루api는 xml줘용
+      .then((xmlText) => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        if (!xmlDoc) {
+          console.error("Failed to parse XML data");
+          return;
+        }
+
+        //===================함께 대출된 도서
+        const coLoanBooks = xmlDoc.getElementsByTagName("coLoanBooks")[0];
+        if (!coLoanBooks) {
+          console.error("coLoanBooks element not found in XML");
+          return;
+        }
+        const coBooks = coLoanBooks.getElementsByTagName("book");
+        const coPromises = [];
+
+        for (let book of coBooks) {
+          const bookNameElement = book.getElementsByTagName("bookname")[0];
+          const isbnElement = book.getElementsByTagName("isbn13")[0];
+          if (bookNameElement && isbnElement) {
+            const title = bookNameElement.textContent
+              .trim()
+              .replace("<![CDATA[", "")
+              .replace("]]>", "");
+            const isbn = isbnElement.textContent
+              .trim()
+              .replace("<![CDATA[", "")
+              .replace("]]>", "");
+
+            // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+            const coPromise = fetch(
+              `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
+            )
+              .then((res) => res.text())
+              .then((xmlText) => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                if (!xmlDoc) {
+                  console.error("Failed to parse XML data");
+                  return null;
+                }
+                const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                const bookData = {
+                  title: bookElement
+                    .getElementsByTagName("bookname")[0]
+                    .textContent.trim(),
+                  writer: bookElement
+                    .getElementsByTagName("authors")[0]
+                    .textContent.trim(),
+                  summary: bookElement
+                    .getElementsByTagName("description")[0]
+                    .textContent.trim(),
+                  img: bookElement
+                    .getElementsByTagName("bookImageURL")[0]
+                    .textContent.trim(),
+                  isbn: bookElement
+                    .getElementsByTagName("isbn13")[0]
+                    .textContent.trim(),
+                };
+                return bookData;
+              });
+            coPromises.push(coPromise);
+          }
+        }
+        Promise.all(coPromises).then((books) => {
+          setCoDetailBooks(books.filter((book) => book !== null));
+        });
+
+
+        //===========================마니아를위한 추천도서
+        const maniaRecBooks = xmlDoc.getElementsByTagName("maniaRecBooks")[0];
+        if (!maniaRecBooks) {
+          console.error("maniaRecBooks element 엑스엠엘에서찾을수없어요");
+          return;
+        }
+        const maBooks = maniaRecBooks.getElementsByTagName("book");
+        const maniaPromises = [];
+        // const maBooksData = [];
+        for (let book of maBooks) {
+          const bookNameElement = book.getElementsByTagName("bookname")[0];
+          const isbnElement = book.getElementsByTagName("isbn13")[0];
+          if (bookNameElement && isbnElement) {
+            const title = bookNameElement.textContent
+              .trim()
+              .replace("<![CDATA[", "")
+              .replace("]]>", "");
+            const isbn = isbnElement.textContent
+              .trim()
+              .replace("<![CDATA[", "")
+              .replace("]]>", "");
+
+            //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+            const maniaPromise = fetch(
+              `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
+            )
+              .then((res) => res.text())
+              .then((xmlText) => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                if (!xmlDoc) {
+                  console.error("Failed to parse XML data");
+                  return null;
+                }
+                const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                const bookData = {
+                  title: bookElement
+                    .getElementsByTagName("bookname")[0]
+                    .textContent.trim(),
+                  writer: bookElement
+                    .getElementsByTagName("authors")[0]
+                    .textContent.trim(),
+                  summary: bookElement
+                    .getElementsByTagName("description")[0]
+                    .textContent.trim(),
+                  img: bookElement
+                    .getElementsByTagName("bookImageURL")[0]
+                    .textContent.trim(),
+                  isbn: bookElement
+                    .getElementsByTagName("isbn13")[0]
+                    .textContent.trim(),
+                };
+                return bookData;
+              });
+            maniaPromises.push(maniaPromise);
+          }
+        }
+        Promise.all(maniaPromises).then((books) => {
+          setManiaDetailBooks(books.filter((book) => book !== null));
+        });
+
+
+        //==========================다독자를 위한 추천도서
+
+        const readerRecBooks = xmlDoc.getElementsByTagName("readerRecBooks")[0];
+        console.log(readerRecBooks);
+
+        if (!readerRecBooks) {
+          console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
+          return;
+        }
+        const reBooks = readerRecBooks.getElementsByTagName("book");
+        // const reBooksData = [];
+        const readerPromises = [];
+        for (let book of reBooks) {
+          const bookNameElement = book.getElementsByTagName("bookname")[0];
+          const isbnElement = book.getElementsByTagName("isbn13")[0];
+          if (bookNameElement && isbnElement) {
+            const title = bookNameElement.textContent
+              .trim()
+              .replace("<![CDATA[", "")
+              .replace("]]>", "");
+            const isbn = isbnElement.textContent
+              .trim()
+              .replace("<![CDATA[", "")
+              .replace("]]>", "");
+            // reBooksData.push({ bookName, isbn13 });
+
+            //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
+            const readerPromise = fetch(
+              `http://data4library.kr/api/srchDtlList?authKey=${jbNaruServiceKey}&isbn13=${isbn}`
+
+            )
+              .then((res) => res.text())
+              .then((xmlText) => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                if (!xmlDoc) {
+                  console.error("Failed to parse XML data");
+                  return null;
+                }
+                const bookElement = xmlDoc.getElementsByTagName("book")[0];
+                const bookData = {
+                  title: bookElement
+                    .getElementsByTagName("bookname")[0]
+                    .textContent.trim(),
+                  writer: bookElement
+                    .getElementsByTagName("authors")[0]
+                    .textContent.trim(),
+                  summary: bookElement
+                    .getElementsByTagName("description")[0]
+                    .textContent.trim(),
+                  img: bookElement
+                    .getElementsByTagName("bookImageURL")[0]
+                    .textContent.trim(),
+                  isbn: bookElement
+                    .getElementsByTagName("isbn13")[0]
+                    .textContent.trim(),
+                };
+                return bookData;
+              });
+            readerPromises.push(readerPromise);
+          }
+        }
+        Promise.all(readerPromises).then((books) => {
+          setReaderDetailBooks(books.filter((book) => book !== null));
+        });
+      })
+      .catch((e) => alert(`에러: ${e.message}`));
+  };
+
+  return (
+    <Container>
+      <Header>
+        {/* <BackButtonWrapper><BackBtn ></BackBtn></BackButtonWrapper> */}
+        <img
+          src={backicon}
+          alt="백아이콘"
+          className="backImg"
+          onClick={clickBackButton}
+        ></img>
+        <Title>
+          {bookItem.title}
+        </Title>
+      </Header>
+      <ContentWrapper>
+        <Content>
+          <BookInfo>
+            <BookImage
+              src={bookItem.img}
+              alt="트렌드 코리아 2023"
+            />
+            <BookDetails>
+              <BookTitle>
+                {bookItem.title}
+              </BookTitle>
+              <BookAuthors>
+                {bookItem.writer}
+              </BookAuthors>
+              <Button>
+                {state === "선택 안함" && "선택 안함"}
+                {state === "want" && "읽고 싶은 책"}
+                {state === "ing" && "읽고 있는 책"}
+                {state === "end" && "다 읽은 책"}
+              </Button>
+            </BookDetails>
+          </BookInfo>
+          <BookDescription>책 요약 :{shortenedDescription}</BookDescription>
+          <Button
+            onClick={() => navigate("/BookEdit", { state: { book: bookItem } })}
+          >
+            상태 추가/편집
+          </Button>
+
+          <SectionTitle>함께 대출된 도서</SectionTitle>
+          <BookGrid>
+            {coDetailBooks.map((book, index) => (
+              <GridBookCard
+                key={index}
+                onClick={
+                  () => bookClick(book)
+                  //클릭했을때 book.isbn을 활용해서 유즈이팩트에서 처음 api호출하는거.. 다시 해서 화면을 다시 랜더링해야돼.
+                }
+              >
+                <GridBookImage src={book.img} alt={book.title} />
+                <GridBookTitle>{book.title}</GridBookTitle>
+              </GridBookCard>
+            ))}
+          </BookGrid>
+
+          <SectionTitle>마니아를 위한 추천 도서</SectionTitle>
+          <BookGrid>
+            {maniaDetailBooks.map((book, index) => (
+              <GridBookCard
+                key={index}
+                onClick={
+                  () => bookClick(book)
+                  //클릭했을때 book.isbn13을 활용해서 유즈이팩트에서 처음 api호출하는거.. 다시 해서 화면을 다시 랜더링해야돼.
+                }
+              >
+                <GridBookImage src={book.img} alt={book.title} />
+                <GridBookTitle>{book.title}</GridBookTitle>
+              </GridBookCard>
+            ))}
+          </BookGrid>
+
+          <SectionTitle>다독자를 위한 추천 도서</SectionTitle>
+          <BookGrid>
+            {readerDetailBooks.map((book, index) => (
+              <GridBookCard
+                key={index}
+                onClick={
+                  () => bookClick(book)
+                  //클릭했을때 book.isbn13을 활용해서 유즈이팩트에서 처음 api호출하는거.. 다시 해서 화면을 다시 랜더링해야돼.
+                }
+              >
+                <GridBookImage src={book.img} alt={book.title} />
+                <GridBookTitle>{book.title}</GridBookTitle>
+              </GridBookCard>
+            ))}
+          </BookGrid>
+        </Content>
+      </ContentWrapper>
+    </Container>
+  );
+};
+
+export default BookDetail;
 
 const Container = styled.div`
   display: flex;
@@ -156,574 +763,3 @@ const BackButtonWrapper = styled.div`
   position: absolute;
   left: 10%;
 `;
-
-const BookDetail = () => {
-
-  
-  const YULYjbNaruServiceKey = //유리 정보나루 아이디:ddokddok  비번:actbae88^^. 학원ip주소
-    "a6e0e7411107bcf35da8623fb02f13a7b559dd455855d5a44baae620c142d4b8";
-  const DEAHANjbNaruServiceKey = " ";
-  const HYUNWOLjbNaruServiceKey = " ";
-  const TEAMJANGjbNaruServiceKey = " ";
-  const location = useLocation();
-  const [bookItem, setBookItem] = useState({}); //useLoacation으로 받아온 book객체
-  const navigate = useNavigate();
-  // const [coLoanBooks, setCoLoanBooks] = useState([]);
-  // const [maniaRecBooks, setManiaRecBooks] = useState([]);
-  // const [readerRecBooks, setReaderRecBooks] = useState([]);
-  const [coDetailBooks, setCoDetailBooks] = useState([]);
-  const [maniaDetailBooks, setManiaDetailBooks] = useState([]);
-  const [readerDetailBooks, setReaderDetailBooks] = useState([]);
-  const [shortenedDescription, setShortenedDescription] = useState(""); //책 요약 글자 수 너무많을까봐 줄이깅.. 100글자까지만 나오도록...
-
-
-
-
-
-
-  useEffect(() => {
-    // List에서넘어온 book객체의 변수 : 
-    //bookName,title,bookImageUrl,image,authors,isbn13, description, link
-
-    if (location.state.book) {
-      // setBookItem(location.state.book);
-      setBookItem({ ...location.state.book });
-
-  
-
-      
-
-      const url = `https://data4library.kr/api/usageAnalysisList?authKey=${YULYjbNaruServiceKey}&isbn13=${location.state.book.isbn13}`;
-      fetch(url)
-        .then((res) => res.text()) //정보나루api는 xml줘용
-        .then((xmlText) => {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-          if (!xmlDoc) {
-            console.error("Failed to parse XML data");
-            return;
-          }
-
-
-
-          //===================함께 대출된 도서
-          const coLoanBooks = xmlDoc.getElementsByTagName("coLoanBooks")[0];
-          if (!coLoanBooks) {
-            console.error("coLoanBooks element not found in XML");
-            return;
-          }
-          const coBooks = coLoanBooks.getElementsByTagName("book");
-          const coBooksData = [];
-          const coPromises = [];
-
-          for (let book of coBooks) {
-            const bookNameElement = book.getElementsByTagName("bookname")[0];
-            const isbnElement = book.getElementsByTagName("isbn13")[0];
-            if (bookNameElement && isbnElement) {
-              const bookName = bookNameElement.textContent
-                .trim()
-                .replace("<![CDATA[", "")
-                .replace("]]>", "");
-              const isbn13 = isbnElement.textContent
-                .trim()
-                .replace("<![CDATA[", "")
-                .replace("]]>", "");
-              coBooksData.push({ bookName, isbn13 });
-
-              // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
-              const coPromise = fetch(
-                `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
-              )
-                .then((res) => res.text())
-                .then((xmlText) => {
-                  const parser = new DOMParser();
-                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                  if (!xmlDoc) {
-                    console.error("Failed to parse XML data");
-                    return null;
-                  }
-                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
-                  const bookData = {
-                    bookName: bookElement
-                      .getElementsByTagName("bookname")[0]
-                      .textContent.trim(),
-                    authors: bookElement
-                      .getElementsByTagName("authors")[0]
-                      .textContent.trim(),
-                    description: bookElement
-                      .getElementsByTagName("description")[0]
-                      .textContent.trim(),
-                    bookImageUrl: bookElement
-                      .getElementsByTagName("bookImageURL")[0]
-                      .textContent.trim(),
-                    isbn13: bookElement
-                      .getElementsByTagName("isbn13")[0]
-                      .textContent.trim(),
-                  };
-                  return bookData;
-                });
-              coPromises.push(coPromise);
-            }
-          }
-          Promise.all(coPromises).then((books) => {
-            setCoDetailBooks(books.filter((book) => book !== null));
-          });
-
-          // setCoLoanBooks(coBooksData);
-
-          //===========================마니아를위한 추천도서
-          const maniaRecBooks = xmlDoc.getElementsByTagName("maniaRecBooks")[0];
-          if (!maniaRecBooks) {
-            console.error("maniaRecBooks element 엑스엠엘에서찾을수없어요");
-            return;
-          }
-          const maBooks = maniaRecBooks.getElementsByTagName("book");
-          const maniaPromises = [];
-          // const maBooksData = [];
-          for (let book of maBooks) {
-            const bookNameElement = book.getElementsByTagName("bookname")[0];
-            const isbnElement = book.getElementsByTagName("isbn13")[0];
-            if (bookNameElement && isbnElement) {
-              const bookName = bookNameElement.textContent
-                .trim()
-                .replace("<![CDATA[", "")
-                .replace("]]>", "");
-              const isbn13 = isbnElement.textContent
-                .trim()
-                .replace("<![CDATA[", "")
-                .replace("]]>", "");
-              // maBooksData.push({ bookName, isbn13 });
-
-              //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
-              const maniaPromise = fetch(
-                `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
-              )
-                .then((res) => res.text())
-                .then((xmlText) => {
-                  const parser = new DOMParser();
-                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                  if (!xmlDoc) {
-                    console.error("Failed to parse XML data");
-                    return null;
-                  }
-                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
-                  const bookData = {
-                    bookName: bookElement
-                      .getElementsByTagName("bookname")[0]
-                      .textContent.trim(),
-                    authors: bookElement
-                      .getElementsByTagName("authors")[0]
-                      .textContent.trim(),
-                    description: bookElement
-                      .getElementsByTagName("description")[0]
-                      .textContent.trim(),
-                    bookImageUrl: bookElement
-                      .getElementsByTagName("bookImageURL")[0]
-                      .textContent.trim(),
-                    isbn13: bookElement
-                      .getElementsByTagName("isbn13")[0]
-                      .textContent.trim(),
-                  };
-                  return bookData;
-                });
-              maniaPromises.push(maniaPromise);
-            }
-          }
-          Promise.all(maniaPromises).then((books) => {
-            setManiaDetailBooks(books.filter((book) => book !== null));
-          });
-
-          // setManiaRecBooks(maBooksData);
-
-          //==========================다독자를 위한 추천도서
-          const readerRecBooks =
-            xmlDoc.getElementsByTagName("readerRecBooks")[0];
-          if (!readerRecBooks) {
-            console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
-            return;
-          }
-          const reBooks = readerRecBooks.getElementsByTagName("book");
-          // const reBooksData = [];
-          const readerPromises = [];
-          for (let book of reBooks) {
-            const bookNameElement = book.getElementsByTagName("bookname")[0];
-            const isbnElement = book.getElementsByTagName("isbn13")[0];
-            if (bookNameElement && isbnElement) {
-              const bookName = bookNameElement.textContent
-                .trim()
-                .replace("<![CDATA[", "")
-                .replace("]]>", "");
-              const isbn13 = isbnElement.textContent
-                .trim()
-                .replace("<![CDATA[", "")
-                .replace("]]>", "");
-              // reBooksData.push({ bookName, isbn13 });
-
-              //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
-              const readerPromise = fetch(
-                `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
-              )
-                .then((res) => res.text())
-                .then((xmlText) => {
-                  const parser = new DOMParser();
-                  const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                  if (!xmlDoc) {
-                    console.error("Failed to parse XML data");
-                    return null;
-                  }
-                  const bookElement = xmlDoc.getElementsByTagName("book")[0];
-                  const bookData = {
-                    bookName: bookElement
-                      .getElementsByTagName("bookname")[0]
-                      .textContent.trim(),
-                    authors: bookElement
-                      .getElementsByTagName("authors")[0]
-                      .textContent.trim(),
-                    description: bookElement
-                      .getElementsByTagName("description")[0]
-                      .textContent.trim(),
-                    bookImageUrl: bookElement
-                      .getElementsByTagName("bookImageURL")[0]
-                      .textContent.trim(),
-                    isbn13: bookElement
-                      .getElementsByTagName("isbn13")[0]
-                      .textContent.trim(),
-                  };
-                  return bookData;
-                });
-              readerPromises.push(readerPromise);
-            }
-          }
-          Promise.all(readerPromises).then((books) => {
-            setReaderDetailBooks(books.filter((book) => book !== null));
-          });
-
-          // setReaderRecBooks(reBooksData);
-        })
-        .catch((e) => alert(`에러: ${e.message}`));
-    }
-  }, [location.state.book]);
-
-
-  useEffect(()=>{
-    // 요약된 디스크립션 생성
-    if (bookItem?.description?.length > 1) {
-      bookItem?.description.replace(/&lt;/g, "<").replace(/gt;/g, ">")
-      setShortenedDescription(bookItem.description.substring(0, 180) + "... ...");
-  } else {
-      setShortenedDescription(bookItem.description);
-  }
-  },[bookItem.description])
-
-  const clickBackButton = () => {
-    navigate("/List");
-  };
-
-
-
-
-  //책 클릭했을때 다시 불러오기....
-  //-------bookClick함수--------
-  const bookClick = (book) => {
-    
-    setBookItem({...book});
-
-    const url = `https://data4library.kr/api/usageAnalysisList?authKey=${YULYjbNaruServiceKey}&isbn13=${book.isbn13}`;
-    fetch(url)
-      .then((res) => res.text()) //정보나루api는 xml줘용
-      .then((xmlText) => {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-        if (!xmlDoc) {
-          console.error("Failed to parse XML data");
-          return;
-        }
-
-
-        
-        //===================함께 대출된 도서
-        const coLoanBooks = xmlDoc.getElementsByTagName("coLoanBooks")[0];
-        if (!coLoanBooks) {
-          console.error("coLoanBooks element not found in XML");
-          return;
-        }
-        const coBooks = coLoanBooks.getElementsByTagName("book");
-        // const coBooksData = [];
-        const coPromises = [];
-
-        for (let book of coBooks) {
-          const bookNameElement = book.getElementsByTagName("bookname")[0];
-          const isbnElement = book.getElementsByTagName("isbn13")[0];
-          if (bookNameElement && isbnElement) {
-            const bookName = bookNameElement.textContent
-              .trim()
-              .replace("<![CDATA[", "")
-              .replace("]]>", "");
-            const isbn13 = isbnElement.textContent
-              .trim()
-              .replace("<![CDATA[", "")
-              .replace("]]>", "");
-            // coBooksData.push({ bookName, isbn13 });
-
-            // 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
-            const coPromise = fetch(
-              `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
-            )
-              .then((res) => res.text())
-              .then((xmlText) => {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                if (!xmlDoc) {
-                  console.error("Failed to parse XML data");
-                  return null;
-                }
-                const bookElement = xmlDoc.getElementsByTagName("book")[0];
-                const bookData = {
-                  bookName: bookElement
-                    .getElementsByTagName("bookname")[0]
-                    .textContent.trim(),
-                  authors: bookElement
-                    .getElementsByTagName("authors")[0]
-                    .textContent.trim(),
-                  description: bookElement
-                    .getElementsByTagName("description")[0]
-                    .textContent.trim(),
-                  bookImageUrl: bookElement
-                    .getElementsByTagName("bookImageURL")[0]
-                    .textContent.trim(),
-                  isbn13: bookElement
-                    .getElementsByTagName("isbn13")[0]
-                    .textContent.trim(),
-                };
-                return bookData;
-              });
-            coPromises.push(coPromise);
-          }
-        }
-        Promise.all(coPromises).then((books) => {
-          setCoDetailBooks(books.filter((book) => book !== null));
-        });
-
-        // setCoLoanBooks(coBooksData);
-
-        //===========================마니아를위한 추천도서
-        const maniaRecBooks = xmlDoc.getElementsByTagName("maniaRecBooks")[0];
-        if (!maniaRecBooks) {
-          console.error("maniaRecBooks element 엑스엠엘에서찾을수없어요");
-          return;
-        }
-        const maBooks = maniaRecBooks.getElementsByTagName("book");
-        const maniaPromises = [];
-        // const maBooksData = [];
-        for (let book of maBooks) {
-          const bookNameElement = book.getElementsByTagName("bookname")[0];
-          const isbnElement = book.getElementsByTagName("isbn13")[0];
-          if (bookNameElement && isbnElement) {
-            const bookName = bookNameElement.textContent
-              .trim()
-              .replace("<![CDATA[", "")
-              .replace("]]>", "");
-            const isbn13 = isbnElement.textContent
-              .trim()
-              .replace("<![CDATA[", "")
-              .replace("]]>", "");
-            // maBooksData.push({ bookName, isbn13 });
-
-            //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
-            const maniaPromise = fetch(
-              `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
-            )
-              .then((res) => res.text())
-              .then((xmlText) => {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                if (!xmlDoc) {
-                  console.error("Failed to parse XML data");
-                  return null;
-                }
-                const bookElement = xmlDoc.getElementsByTagName("book")[0];
-                const bookData = {
-                  bookName: bookElement
-                    .getElementsByTagName("bookname")[0]
-                    .textContent.trim(),
-                  authors: bookElement
-                    .getElementsByTagName("authors")[0]
-                    .textContent.trim(),
-                  description: bookElement
-                    .getElementsByTagName("description")[0]
-                    .textContent.trim(),
-                  bookImageUrl: bookElement
-                    .getElementsByTagName("bookImageURL")[0]
-                    .textContent.trim(),
-                  isbn13: bookElement
-                    .getElementsByTagName("isbn13")[0]
-                    .textContent.trim(),
-                };
-                return bookData;
-              });
-            maniaPromises.push(maniaPromise);
-          }
-        }
-        Promise.all(maniaPromises).then((books) => {
-          setManiaDetailBooks(books.filter((book) => book !== null));
-        });
-
-        // setManiaRecBooks(maBooksData);
-
-        //==========================다독자를 위한 추천도서
-        const readerRecBooks =
-          xmlDoc.getElementsByTagName("readerRecBooks")[0];
-        if (!readerRecBooks) {
-          console.error("readerRecBooks element 엑스엠엘에서찾을수없어요");
-          return;
-        }
-        const reBooks = readerRecBooks.getElementsByTagName("book");
-        // const reBooksData = [];
-        const readerPromises = [];
-        for (let book of reBooks) {
-          const bookNameElement = book.getElementsByTagName("bookname")[0];
-          const isbnElement = book.getElementsByTagName("isbn13")[0];
-          if (bookNameElement && isbnElement) {
-            const bookName = bookNameElement.textContent
-              .trim()
-              .replace("<![CDATA[", "")
-              .replace("]]>", "");
-            const isbn13 = isbnElement.textContent
-              .trim()
-              .replace("<![CDATA[", "")
-              .replace("]]>", "");
-            // reBooksData.push({ bookName, isbn13 });
-
-            //bookName에서 이미지안줘서..정보나루 도서상세조회로 isbn보내서  api다시받기..
-            const readerPromise = fetch(
-              `http://data4library.kr/api/srchDtlList?authKey=${YULYjbNaruServiceKey}&isbn13=${isbn13}`
-            )
-              .then((res) => res.text())
-              .then((xmlText) => {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                if (!xmlDoc) {
-                  console.error("Failed to parse XML data");
-                  return null;
-                }
-                const bookElement = xmlDoc.getElementsByTagName("book")[0];
-                const bookData = {
-                  bookName: bookElement
-                    .getElementsByTagName("bookname")[0]
-                    .textContent.trim(),
-                  authors: bookElement
-                    .getElementsByTagName("authors")[0]
-                    .textContent.trim(),
-                  description: bookElement
-                    .getElementsByTagName("description")[0]
-                    .textContent.trim(),
-                  bookImageUrl: bookElement
-                    .getElementsByTagName("bookImageURL")[0]
-                    .textContent.trim(),
-                  isbn13: bookElement
-                    .getElementsByTagName("isbn13")[0]
-                    .textContent.trim(),
-                };
-                return bookData;
-              });
-            readerPromises.push(readerPromise);
-          }
-        }
-        Promise.all(readerPromises).then((books) => {
-          setReaderDetailBooks(books.filter((book) => book !== null));
-        });
-
-        // setReaderRecBooks(reBooksData);
-      })
-      .catch((e) => alert(`에러: ${e.message}`));
-
-
-  };
-
-
-
-  return (
-    <Container>
-      <Header>
-        {/* <BackButtonWrapper><BackBtn ></BackBtn></BackButtonWrapper> */}
-        <img
-          src={backicon}
-          alt="백아이콘"
-          className="backImg"
-          onClick={clickBackButton}
-        ></img>
-        <Title>
-          {/* {bookItem.bookName? bookItem.bookName : bookItem.title} */}
-          {bookItem.bookName}
-        </Title>
-      </Header>
-      <ContentWrapper>
-        <Content>
-          <BookInfo>
-            <BookImage src={bookItem.bookImageUrl}
-              alt="트렌드 코리아 2023" />
-            <BookDetails>
-              <BookTitle>
-              {/* {bookItem.bookName? bookItem.bookName : bookItem.title} */}
-              {bookItem.bookName}
-                </BookTitle>
-              <BookAuthors>
-              {/* {bookItem.authors? bookItem.authors : bookItem.author} */}
-              {bookItem.authors}
-                </BookAuthors>
-              <Button>읽고 싶은 책</Button>
-            </BookDetails>
-          </BookInfo>
-          <BookDescription>책 요약 : 
-            {shortenedDescription}
-            </BookDescription>
-          <Button onClick={ ()=>   navigate('/BookEdit', {state: {book:bookItem}} )}>상태 추가/편집</Button>
-
-          <SectionTitle>함께 대출된 도서</SectionTitle>
-          <BookGrid>
-            {coDetailBooks.map((book, index) => (
-              <GridBookCard
-                key={index}
-                onClick={() =>
-                  bookClick(book)
-                  //클릭했을때 book.isbn13을 활용해서 유즈이팩트에서 처음 api호출하는거.. 다시 해서 화면을 다시 랜더링해야돼.
-                }
-              >
-                <GridBookImage src={book.bookImageUrl} alt={book.bookName} />
-                <GridBookTitle>{book.bookName}</GridBookTitle>
-              </GridBookCard>
-            ))}
-          </BookGrid>
-
-          <SectionTitle>마니아를 위한 추천 도서</SectionTitle>
-          <BookGrid>
-            {maniaDetailBooks.map((book, index) => (
-              <GridBookCard key={index} onClick={() =>
-                bookClick(book)
-                //클릭했을때 book.isbn13을 활용해서 유즈이팩트에서 처음 api호출하는거.. 다시 해서 화면을 다시 랜더링해야돼.
-              }>
-                <GridBookImage src={book.bookImageUrl} alt={book.bookName} />
-                <GridBookTitle>{book.bookName}</GridBookTitle>
-              </GridBookCard>
-            ))}
-          </BookGrid>
-
-          <SectionTitle>다독자를 위한 추천 도서</SectionTitle>
-          <BookGrid>
-            {readerDetailBooks.map((book, index) => (
-              <GridBookCard key={index} onClick={() =>
-                bookClick(book)
-                //클릭했을때 book.isbn13을 활용해서 유즈이팩트에서 처음 api호출하는거.. 다시 해서 화면을 다시 랜더링해야돼.
-              }>
-                <GridBookImage src={book.bookImageUrl} alt={book.bookName} />
-                <GridBookTitle>{book.bookName}</GridBookTitle>
-              </GridBookCard>
-            ))}
-          </BookGrid>
-        </Content>
-      </ContentWrapper>
-    </Container>
-  );
-};
-
-export default BookDetail;

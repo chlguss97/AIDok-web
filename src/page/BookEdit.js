@@ -1,127 +1,143 @@
+
 import styled from "styled-components";
-// import BookStatus from "../components/BookStatus"
 import SaveBtn from "../components/SaveBtn";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import BackBtn from "../components/BackBtn";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import blackBook from "../assets/blankBook.png";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import moment from "moment";
+import { useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify"; //토스트 라이브러리 yarn add react-toastify
+import "react-toastify/dist/ReactToastify.css";
+import { db } from "../firebase/firebase"; // firebase.js에서 db를 가져옴
+import {
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  deleteDoc,
+  collection,
+  where,
+  query,
+} from "firebase/firestore";
 
 
 const BookEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const bookName = location.state.book.bookName;
-  const authors = location.state.book.authors;
-  const description = location.state.book.description;
+  // const bookItem = location.state.book;
+  //받아온 book에는 title, img, writer, isbn, summary, link가 있다.
+  const [bookItem, setBookItem] = useState(location.state.book);
   const [shortenedDescription, setShortenedDescription] = useState("");
-  const bookImageUrl = location.state.book.bookImageUrl;
-  const isbn13 = location.state.book.isbn13;
-  const link = location.state.book.link;
   const [page, setPage] = useState("페이지정보없음");
-
   const [clickedIndex, setClickedIndex] = useState(3); //기본이 "선택되지 않음"
-  const [startDate, setStartDate] = useState();
+  const inRef = useRef();
+  const user = useSelector((state) => state.userA.userAccount);
+  const [isStartOpen, setIsStartOpen] = useState(false);
+  const [isEndOpen, setIsEndOpen] = useState(false);
+  const [dateDifference, setDateDifference] = useState("");
+  const [completedDate, setCompletedDate] = useState(""); //다읽은책이면 다읽은 날짜
+  const [totalReadTime, setTotalReadTime] = useState(0); //읽은 누적 시간
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [ingDocExist, setIngDocExist] = useState(false);
 
-
-
-  //<span class="bookBasicInfo_spec__yzTpy">420<!-- -->쪽</span>
   useEffect(() => {
+    const checkDocumentExists = async () => {
+      try {
+        const docRef = doc(db, "user", user.userId);
+        const subDocRef = doc(docRef, "book", bookItem.isbn);
 
-    console.log("링크를 줄까안줄까.:"+link)
+        const docSnap = await getDoc(subDocRef);
+        console.log(`도큐먼트스냅이있는지 여부 : ${docSnap.exists()}`);
 
 
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setBookItem(data);
+          setPage(data.totalPage);
+          setStartDate(data.startDate);
+          setEndDate(data.endDate);
 
-    if(link!==undefined){
-        if(link.match(/catalog\/(\d+)/)){
-            const match = link.match(/catalog\/(\d+)/);
-            if (match) {
-                const query = match[1];
-                console.log(query);
-                fetch(`./backend/naver_link.php?query=${query}`)
-                  .then((res) => res.text())
-                  .then((text) => {
-                    const dom = new DOMParser();
-                    const doc = dom.parseFromString(text, "text/html"); //두번째 파라미터 : mimeType
-                    const es = doc.querySelectorAll(".bookBasicInfo_spec__yzTpy"); // bookBasicInfo_spec__yzTpy라는 클래스 선택자를 이용하여 요소찾기
-                    console.log("es는무엇인가  " + es);
-                    es.forEach((element) => {
-                      const textContent = element.textContent;
-                      if (textContent.includes("쪽")) {
-                        console.log("쪽이 포함된 텍스트:", textContent);
-                        const cleanedText = textContent.replace(/쪽/g, "")
-                        setPage(cleanedText)
-                      }
-                    });
-                  });
-              }
-
+          if (data.state === "want") {
+            console.log("Document exists and state is 'want':", data);
+            setClickedIndex(0);
+          } else if (data.state === "ing") {
+            setIngDocExist(docSnap.exists());
+            console.log("Document exists and state is 'want':", data);
+            setClickedIndex(1);
+          } else if (data.state === "end") {
+            console.log("Document exists and state is 'want':", data);
+            setClickedIndex(2);
+          }
+        } else {
+          console.log("No such document!");
+          setClickedIndex(3); // 기본 상태로 설정, 필요에 따라 변경
         }
+      } catch (error) {
+        console.error("Error checking document existence: ", error);
+      }
+    };
 
-        
+    checkDocumentExists();
+  }, [user.userId, bookItem.isbn]);
+
+  useEffect(() => {
+    console.log("로그인한유저아이디 : " + user.userId);
+    console.log("링크를 줄까안줄까.:" + bookItem.link);
+    if(!ingDocExist){
+      if (bookItem.link) {
+        const match = bookItem.link.match(/catalog\/(\d+)/);
+        if (match) {
+          const query = match[1];
+          console.log(query);
+          fetch(`./backend/naver_link.php?query=${query}`)
+            .then((res) => res.text())
+            .then((text) => {
+              const dom = new DOMParser();
+              const doc = dom.parseFromString(text, "text/html"); //두번째 파라미터 : mimeType
+              const es = doc.querySelectorAll(".bookBasicInfo_spec__yzTpy"); // bookBasicInfo_spec__yzTpy라는 클래스 선택자를 이용하여 요소찾기
+              console.log("es는무엇인가  " + es);
+              es.forEach((element) => {
+                const textContent = element.textContent;
+                if (textContent.includes("쪽")) {
+                  console.log("쪽이 포함된 텍스트:", textContent);
+                  const cleanedText = textContent.replace(/쪽/g, "");
+                  setPage(cleanedText);
+                }
+              });
+            });
+        }
+      }
+
     }
-   
 
-  });
+  }, [bookItem.link]);
 
-
-
-  //알라딘 빠이..... https로 인해 알라딘은 못씀..빠이..안녕..
-//   useEffect(() => {
-//     // 요약된 디스크립션 생성
-//     if (description?.length > 1) {
-//       setShortenedDescription(description.substring(0, 100) + "... ...");
-//     } else {
-//       setShortenedDescription(description);
-//     }
-
-//     console.log(bookName + authors + description + bookImageUrl + isbn13);
-//     const url = `./backend/aladin_search.php?query=${location.state.book.isbn13}`;
-
-//     fetch(url)
-//       .then((response) => response.text())
-//       .then((xmlText) => {
-//         const domParser = new DOMParser();
-//         const xmlDoc = domParser.parseFromString(xmlText, "text/xml");
-
-//         if (!xmlDoc) {
-//           console.error("XML 데이터 파싱 실패");
-//           return;
-//         }
-
-//         // 네임스페이스 URI를 변수로 정의
-//         const namespaceURI = "http://www.aladin.co.kr/ttb/apiguide.aspx";
-
-//         // 네임스페이스 URI를 사용하여 요소를 선택할 때는 getElementsByTagNameNS를 사용
-//         const itemPageElements = xmlDoc.getElementsByTagNameNS(
-//           namespaceURI,
-//           "itemPage"
-//         );
-
-//         if (itemPageElements.length > 0) {
-//           // 여기서는 첫 번째 itemPage 요소를 선택합니다.
-//           const itemPageElement = itemPageElements[0];
-//           const page = itemPageElement.textContent.trim();
-//           setPage(page);
-//           console.log("책의 총 페이지 수: " + page);
-//         } else {
-//           console.log("itemPage 요소를 찾을 수 없습니다.");
-//         }
-//       })
-//       .catch((e) => console.log("에러: " + e.message));
-//   }, []);
-
-  //   const setStartDate = () => {
-  //     <DatePicker selected={startDate} onChange={handleStartDateChange} />;
-  //   };
-
-  const setEndDate = () => {
-    alert("종료일 달력");
-  };
+  useEffect(() => {
+    //     // 요약된 디스크립션 생성
+    if (bookItem.summary?.length > 1) {
+      setShortenedDescription(bookItem.summary.substring(0, 60) + "... ...");
+    } else {
+      setShortenedDescription(bookItem.summary);
+    }
+  }, [bookItem.summary]);
 
   const pageEdit = () => {
-    alert("페이지 수정");
+    if (inRef.current) {
+      const newPage = parseInt(inRef.current.value, 10);
+      if (isNaN(newPage) || newPage < 1 || newPage > 5000) {
+        alert("페이지 수는 1에서 5000 사이의 숫자여야 합니다.");
+        return;
+      } else {
+        setPage(newPage);
+        console.log("사용자가 입력한 바뀐 페이지: " + newPage);
+      }
+    }
   };
 
   const timeEdit = () => {
@@ -132,23 +148,182 @@ const BookEdit = () => {
     if (index === 0) {
       // 읽고싶은책
       setClickedIndex(index);
-      alert("읽고싶은책");
     } else if (index === 1) {
       // 읽고있는책 클릭했을때
       setClickedIndex(index);
-      alert("읽고있는책");
     } else if (index === 2) {
       setClickedIndex(index);
-      alert("다읽은책");
     } else if (index === 3) {
       setClickedIndex(index);
-      alert("해당없음");
     }
   };
 
   const save = () => {
-    alert("저장합니다");
+    let result = null;
+    if (clickedIndex === 1) {
+      // 시작일과 종료일을 설정하지 않은 경우
+      if (!startDate || !endDate) {
+        alert("시작일과 종료일을 지정하셔야 합니다.");
+        return;
+      }
+      result = window.confirm(
+        `${user.userId}님의 읽고 있는 책으로 저장하시겠습니까?`
+      );
+    } else if (clickedIndex === 0) {
+      result = window.confirm(
+        `${user.userId}님의 읽고 싶은 책으로 저장하시겠습니까?`
+      );
+    } else if (clickedIndex === 2) {
+      result = window.confirm(
+        `${user.userId}님의 다 읽은 책으로 저장하시겠습니까?`
+      );
+    } else if (clickedIndex === 3) {
+      result = window.confirm(
+        "선택하지 않음으로 저장하시겠습니까?\n그전에 저장하신 데이터가 있다면 모두 사라지게 됩니다. "
+      );
+    }
+
+    if (result) {
+      onAlertSaveClick(); // 저장 처리 함수 호출
+    } else {
+      // 사용자가 취소를 선택한 경우
+      console.log("얼러트에서 취소눌렀음");
+    }
   };
+
+  const onAlertSaveClick = async () => {
+    console.log("클릭된인덱스번호" + clickedIndex);
+    //만약 clickedIndex가0이면 읽고싶은책. firebase에 user컬렉션-사용자id도큐-book서브컬렉션-isbn도큐 중 이 문서에isbn13과 일치하는게 있으면
+    //덮어쓰기할거고.. 없으면 만들겠지..
+    //clickedIndex가0이면 firebase에 state를 want로..
+    try {
+      const userDocRef = doc(db, "user", user.userId); //도큐먼트만들거나 가져오기
+      const bookSubDocRef = doc(userDocRef, "book", bookItem.isbn); //서브컬렉션은 'book', 서브도큐먼트이름이 isbn으로 만드러주세영
+
+      if (clickedIndex === 0) {
+        await setDoc(bookSubDocRef, {
+          state: "want",
+          title: bookItem.title, //책제목
+          writer: bookItem.writer, //작가
+          totalPage: page, //첵 토탈페이지
+          img: bookItem.img, //책이미지
+          summary: bookItem.summary, //책요약
+          completedDate: completedDate, //다읽은책이면 다읽은날짜
+          totalReadTime: totalReadTime, //누적 읽은 시간
+          startDate: startDate, //시작날짜
+          endDate: endDate, //종료날짜
+          currentPage: currentPage, //현재까지읽은 누적페이지
+          isbn: bookItem.isbn,
+        });
+        console.log("데이터가 성공적으로 Firebase에 추가되써열~~");
+        navigate("/", { replace: true });
+        toast.success("읽고 싶은 책에 저장되었습니다.");
+      } else if (clickedIndex === 1) {
+        await setDoc(bookSubDocRef, {
+          state: "ing",
+          title: bookItem.title, //책제목
+          writer: bookItem.writer, //작가
+          totalPage: page, //첵 토탈페이지
+          img: bookItem.img, //책이미지
+          summary: bookItem.summary, //책요약
+          completedDate: completedDate, //다읽은책이면 다읽은날짜
+          totalReadTime: totalReadTime, //누적 읽은 시간
+          startDate: startDate, //시작날짜
+          endDate: endDate, //종료날짜
+          currentPage: currentPage, //현재까지읽은 누적페이지
+          isbn: bookItem.isbn,
+        });
+        console.log("데이터가 성공적으로 Firebase에 추가되써열~~");
+        toast.success("읽고 있는 책에 저장되었습니다.");
+      } else if (clickedIndex === 2) {
+        await setDoc(bookSubDocRef, {
+          state: "end",
+          title: bookItem.title, //책제목
+          writer: bookItem.writer, //작가
+          totalPage: page, //첵 토탈페이지
+          img: bookItem.img, //책이미지
+          summary: bookItem.summary, //책요약
+          completedDate: completedDate, //다읽은책이면 다읽은날짜
+          totalReadTime: totalReadTime, //누적 읽은 시간
+          startDate: startDate, //시작날짜
+          endDate: endDate, //종료날짜
+          currentPage: currentPage, //현재까지읽은 누적페이지
+          isbn: bookItem.isbn,
+        });
+
+        toast.success("다 읽은 책에 저장되었습니다.");
+      } else if (clickedIndex === 3) {
+        await deleteDoc(bookSubDocRef);
+        toast.success("선택하지 않음.");
+      }
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.log("firebase에 데이터추가 오류발생 : " + error);
+      toast.error("저장에 문제가 생겼습니다." + error.message);
+    }
+  };
+
+  const clickStartCalendar = () => {
+    setIsStartOpen(!isStartOpen);
+  };
+
+  const startDateChange = (selectedDate) => {
+    setIsStartOpen(false);
+    setStartDate(moment(selectedDate).format("YYYY-MM-DD"));
+  };
+
+  const clickEndCalendar = () => {
+    setIsEndOpen(!isEndOpen);
+  };
+
+  const endDateChange = (selectedDate) => {
+    setIsEndOpen(false);
+    setEndDate(moment(selectedDate).format("YYYY-MM-DD"));
+  };
+
+  useEffect(() => {
+    calculateDateDifference();
+  }, [startDate, endDate]);
+
+  // 날짜 차이 계산 함수
+  const calculateDateDifference = () => {
+    if (startDate && endDate) {
+      const start = moment(startDate);
+      const end = moment(endDate);
+
+      // 시작 날짜가 끝 날짜와 같을 때는 일 수 차이를 1로 설정
+      if (start.isSame(end, "day")) {
+        setDateDifference(1);
+      } else if (start.isAfter(end)) {
+        alert("시작 날짜는 끝 날짜보다 이후일 수 없습니다.");
+      } else {
+        const diffInDays = end.diff(start, "days");
+        setDateDifference(diffInDays + 1);
+      }
+    } else {
+      setDateDifference(null);
+    }
+  };
+
+  const onStartChange = (date) => {
+    setStartDate(date);
+  };
+
+  const onEndChange = (date) => {
+    setEndDate(date);
+
+    const currentDate = moment();
+    const endDateMoment = moment(date);
+    const diff = endDateMoment.diff(currentDate, "days");
+
+    setDateDifference(`${diff}일 남았습니다.`);
+  };
+
+
+
+
+
+
 
   return (
     <div style={{ textAlign: "center", padding: "5%" }}>
@@ -161,13 +336,17 @@ const BookEdit = () => {
         <div className="info">
           <img
             className="bookImg"
-            src={bookImageUrl ? bookImageUrl : blackBook}
-            alt={bookName}
+            src={bookItem.img ? bookItem.img : blackBook}
+            alt={bookItem.title}
           ></img>
           <div className="titleAuthor">
-            <p>제목: {bookName ? bookName : "책제목 없음"}</p>
-            <p>저자: {authors ? authors : "작가이름 없음"}</p>
-            <p>
+            <p style={{ fontSize: "15px", fontWeight: "bold" }}>
+              제목: {bookItem.title ? bookItem.title : "책제목 없음"}
+            </p>
+            <p style={{ fontSize: "15px", fontWeight: "bold" }}>
+              저자: {(bookItem.writer).replace(/\^/g, ',') ? (bookItem.writer).replace(/\^/g, ',') : "작가이름 없음"}
+            </p>
+            <p style={{ fontSize: "15px", fontWeight: "bold" }}>
               요약:{" "}
               {shortenedDescription ? shortenedDescription : "요약내용 없음"}
             </p>
@@ -210,69 +389,183 @@ const BookEdit = () => {
       </StatusContainer>
 
       {/* ======================================== 선택 옵션에 따라 보이고 안보이는 부분 ==================== */}
+
       <div style={{ display: clickedIndex !== 1 ? "none" : "block" }}>
         <Period>
           <HeadText>목표 기간</HeadText>
           <div className="startToEnd">
-            <span>시작</span>
-            <Date>2024.6.1.</Date>
-            <FaRegCalendarAlt
-              style={{ cursor: "pointer" }}
-              onClick={setStartDate}
-            />
-            <span>~</span>
-            <span>끝</span>
-            <Date>2024.6.1.</Date>
-            <FaRegCalendarAlt
-              style={{ cursor: "pointer" }}
-              onClick={setEndDate}
-            />
+            {/* ~~~~시작날짜~~~~~ */}
+            <span onClick={clickStartCalendar}>
+              <span>시작일 : </span>
+
+              <FaRegCalendarAlt style={{ cursor: "pointer" }} />
+              <span className="dateText">
+                  {startDate? startDate : '시작일 선택'}
+              </span>
+            </span>
+
+            {isStartOpen && (
+              <Calendar
+                onChange={startDateChange}
+                value={startDate}
+                formatDay={(locale, date) => moment(date).format("D")}
+              />
+            )}
+
+            <span style={{ marginLeft: "5px", marginRight: "5px" }}>~</span>
+
+            {/* ~~~~끝날짜~~~~~ */}
+            <span onClick={clickEndCalendar}>
+              <span>종료일 : </span>
+              &nbsp; &nbsp;
+              <FaRegCalendarAlt style={{ cursor: "pointer" }} />
+              <span className="dateText">
+                  {endDate? endDate : '종료일 선택'}
+              </span>
+            </span>
+
+            {isEndOpen && (
+              <Calendar
+                onChange={endDateChange}
+                value={endDate}
+                className="calendar"
+                formatDay={(locale, date) => moment(date).format("D")}
+              />
+            )}
           </div>
         </Period>
         <Target>
-          <HeadText>페이지 : {page}쪽</HeadText>
+          <HeadText>
+            {bookItem.title} :{page ? `${page}쪽` : "쪽"}
+          </HeadText>
           <div className="graph">
             <Bar>
-              <Progress width="50%" />
-              {/* <div className="progress" width="50%"></div> */}
+            <Progress width={`${(bookItem.currentPage / bookItem.totalPage) * 100}%`} />
             </Bar>
-            <EditBtn onClick={pageEdit}>수정</EditBtn>
+            {/* <input
+              ref={inRef}
+              type="text"
+              placeholder="쪽수"
+              style={{ width: "3rem" }}
+            ></input> */}
+            {/* <EditBtn onClick={() => pageEdit()}>수정</EditBtn> */}
+
           </div>
           <div className="numbers">
-            <Number $left="0%">0p</Number>
-            <Number $left="50%">350p</Number>
-            <Number $left="100%">{page}p</Number>
+            <Number $left="0%">
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  color: "gray",
+                  marginTop: "3rem",
+                }}
+              >
+                0p
+              </span>
+            </Number>
+
+            <Number $left={`${(bookItem.currentPage / bookItem.totalPage) * 100}%`}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  color: "gray",
+                  marginTop: "3rem",
+                }}
+              >
+                {bookItem.currentPage}p
+              </span>
+            </Number>
+            <Number $left="100%">
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  color: "gray",
+                  marginTop: "3rem",
+                }}
+              >
+                {page}p
+              </span>
+            </Number>
           </div>
           <div>
             <p className="note">
-              <span className="nickname">배추껍질</span>님의 하루 적정 독서
-              페이지는 <span className="point">100p</span>입니다.
+              <span className="nickname">
+                {page ? page : "?"}쪽을 {dateDifference ? dateDifference : "?"}
+                일 동안 읽으셔야 하기에, 하루 권장 독서 페이지는
+                <span className="point">
+                  {page && dateDifference
+                    ? (page / dateDifference).toFixed(1)
+                    : "?"}
+                  p
+                </span>
+                입니다.
+                {/* .toFixed(1) 소수점 첫째자리 */}
+              </span>
             </p>
           </div>
         </Target>
         <Target style={{ marginBottom: "20px" }}>
-          <HeadText>시간</HeadText>
+          <HeadText>추천 시간 : {page}분</HeadText>
           <div className="graph">
             <Bar>
-              <Progress width="28.57%" />
+              <Progress width="0%" />
             </Bar>
-            <EditBtn onClick={timeEdit}>수정</EditBtn>
+            {/* <EditBtn onClick={timeEdit}>수정</EditBtn> */}
           </div>
           <div className="numbers">
-            <Number $left="0%">0분</Number>
-            <Number $left="28.57%">200분</Number>
-            <Number $left="100%">700분</Number>
+            <Number $left="0%">
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  color: "gray",
+                  marginTop: "3rem",
+                }}
+              >
+                0분
+              </span>
+            </Number>
+
+
+
+            <Number $left="100%">
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  color: "gray",
+                  marginTop: "3rem",
+                }}
+              >
+                {page}분
+              </span>
+            </Number>
           </div>
           <div>
             <p className="note">
-              <span className="nickname">배추껍질</span>님의 하루 적정 독서
-              시간은 <span className="point">100분</span>입니다.
+              <span className="nickname">{user.userId}</span>님의 하루 적정 독서
+              시간은
+              <span className="point">
+                {page && dateDifference
+                  ? (page / dateDifference).toFixed(1)
+                  : "?"}
+                분
+              </span>
+              입니다.
             </p>
           </div>
         </Target>
       </div>
-
-      <SaveBtn name="저장하기" onClick={save}></SaveBtn>
+      <br></br>
+      <br></br>
+      <br></br>
+      <SaveBtn type="submit" name="저장하기" onClick={save}></SaveBtn>
+      <p style={{marginBottom: "120px"}}></p>
+     
+      <ToastContainer />
     </div>
   );
 };
@@ -280,13 +573,41 @@ export default BookEdit;
 
 const BookInfo = styled.div`
   display: flex;
-  .info {
+    .info{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 0 auto;
+        height: 200px;
+    }
+    .bookImg{
+        height: 150px;
+        margin: 16px;
+        border: 1px solid #6F4E37;
+        border-radius: 5px;
+    }
+    .titleAuthor{
+        height: 150px;
+        margin-right: auto;
+        text-align: start;
+        >p{
+            margin: 10px 0;
+            color: #6F4E37;
+            font-size: 14px;
+        }
+    }
+`
+const StatusContainer= styled.div`
+    height: 100px;
+    width: 320px;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     flex-direction: row;
     align-items: center;
     margin: 0 auto;
     height: 200px;
-  }
+
   .bookImg {
     height: 150px;
     margin: 16px;
@@ -304,18 +625,9 @@ const BookInfo = styled.div`
     }
   }
 `;
-const StatusContainer = styled.div`
-  height: 100px;
-  width: 360px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  > div {
-    margin: 5px 10px;
-  }
-`;
+
+
+
 const BookStatus = styled.div`
   display: inline-block;
   width: 120px;
@@ -385,6 +697,7 @@ const Number = styled.span`
   left: ${(props) => props.$left};
   transform: translate(-50%);
   width: 35px;
+  margin-top: 10px;
 `;
 const Bar = styled.div`
   /* font-size: 11px; */
@@ -423,3 +736,48 @@ const EditBtn = styled.button`
   font-size: 10px;
   cursor: pointer;
 `;
+
+//알라딘 빠이..... https로 인해 알라딘은 못씀..빠이..안녕..
+//   useEffect(() => {
+//     // 요약된 디스크립션 생성
+//     if (description?.length > 1) {
+//       setShortenedDescription(description.substring(0, 100) + "... ...");
+//     } else {
+//       setShortenedDescription(description);
+//     }
+
+//     console.log(bookName + authors + description + bookImageUrl + isbn13);
+//     const url = `./backend/aladin_search.php?query=${location.state.book.isbn13}`;
+
+//     fetch(url)
+//       .then((response) => response.text())
+//       .then((xmlText) => {
+//         const domParser = new DOMParser();
+//         const xmlDoc = domParser.parseFromString(xmlText, "text/xml");
+
+//         if (!xmlDoc) {
+//           console.error("XML 데이터 파싱 실패");
+//           return;
+//         }
+
+//         // 네임스페이스 URI를 변수로 정의
+//         const namespaceURI = "http://www.aladin.co.kr/ttb/apiguide.aspx";
+
+//         // 네임스페이스 URI를 사용하여 요소를 선택할 때는 getElementsByTagNameNS를 사용
+//         const itemPageElements = xmlDoc.getElementsByTagNameNS(
+//           namespaceURI,
+//           "itemPage"
+//         );
+
+//         if (itemPageElements.length > 0) {
+//           // 여기서는 첫 번째 itemPage 요소를 선택합니다.
+//           const itemPageElement = itemPageElements[0];
+//           const page = itemPageElement.textContent.trim();
+//           setPage(page);
+//           console.log("책의 총 페이지 수: " + page);
+//         } else {
+//           console.log("itemPage 요소를 찾을 수 없습니다.");
+//         }
+//       })
+//       .catch((e) => console.log("에러: " + e.message));
+//   }, []);

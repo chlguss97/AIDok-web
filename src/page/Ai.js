@@ -1,59 +1,89 @@
 import styled from 'styled-components'
-import { FaPlusCircle } from "react-icons/fa";
-import { LuSearch } from "react-icons/lu";
 import AiList from '../components/AiList';
 import BookSlick from '../components/BookSlick';
 import SearchBar from '../components/SearchBar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Toolbar from '../components/Toolbar';
+import { collection, doc, getDocs } from "firebase/firestore"; 
+import { db } from '../firebase/firebase';
+
+import { useSelector } from 'react-redux';
+
+const Ai = () => {
+    const [aiData, setAiData] = useState({}); // 객체 데이터
+    const [filteredAiData, setFilteredAiData] = useState(null); // 배열 데이터
+
+    const [searchTerm, setSearchTerm] = useState(''); // 검색어
+
+    const user = useSelector((state) => state.userA.userAccount);
 
 
-const items= [
-    {no:1, date: "2024/5/1", text: "text1 ", q: "질문1", a: "질문1"},
-    {no:2, date: "2024/5/8", text: "text2 ", q: "질문2", a: "질문2"},
-    {no:3, date: "2024/5/30", text: "text3 ", q: "질문3", a: "질문3"}
-]
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
 
-const Ai= ()=>{
+                const bertDocRef = doc(db, 'bert', user.userId); // 'bert' 컬렉션의 id 문서 참조
 
-    const [searchTerm, setSearchTerm]= useState('') 
+                const booksCollectionRef = collection(bertDocRef, 'books'); // 'books' 서브컬렉션 참조
+                const querySnapshot = await getDocs(booksCollectionRef); // 참조의 모든 문서 가져오기
+                const data = {};
 
-    const search= ()=>{
-        alert(searchTerm + "을/를 검색합니다")
+                // 각 문서의 books 서브컬렉션을 반복
+                querySnapshot.forEach(doc => {
+                    data[doc.id] = doc.data();
+                });
+
+                setAiData(data);
+                setFilteredAiData(Object.values(data)); // 초기값 설정
+
+
+                console.log('Fetched AI Data:', data); // 데이터 확인용 console.log
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    
+    // 검색바
+    const search = () => {
+        // alert(searchTerm + "을/를 검색합니다")
+        const filtered = Object.values(aiData).filter(item =>
+            item.passage.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredAiData(filtered);
+
     }
 
-    const navigate= useNavigate()
-
-    const addQnA= ()=>{
-        alert("QnA를 추가합니다")
-        navigate("../WriteAi")
+    // QnA 추가로 이동
+    const navigate = useNavigate();
+    const addQnA = () => {
+        alert("QnA를 추가합니다");
+        navigate("../WriteAi");
     }
 
-    return(
+    return (
         <Container>
-            <Title >AI 독서 학습</Title>
-             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요"></SearchBar>
-            <BookSlick></BookSlick>
+            <Title>AI 독서 학습</Title>
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요" />
 
-            {/* <form style={{position:'relative', textAlign:'center', width:"80%", margin:"2rem auto 2rem auto"}}>
-                <Search type="search" placeholder='AI 검색'></Search><LuSearch style={{position:'absolute', top:10, right:10, color:'white', fontSize:'1.5rem'}}/>
-            </form> */}
-            <div style={{textAlign:'center'}}>
-                <BookSlick></BookSlick>
-                {/* <img alt='seleted book' style={{display:'inline-block'}}></img> */}
+            <div style={{ textAlign: 'center' }}>
+
+                <BookSlick setFilteredAiData={setFilteredAiData}/>
             </div>
-            <>
-            {items.slice().reverse().map((props)=>{
-                    return <AiList key={props.no} date={props.date} text={props.text} q={props.q} a={props.a}></AiList>
-                })}
-            </>
+
+                {filteredAiData ? <AiList data={filteredAiData}></AiList> : <p>loading</p>}
+
+
             <FloatingButton onClick={addQnA}>+</FloatingButton>
         </Container>
     )
 }
 
-export default Ai
+export default Ai;
 
 const Container= styled.div`
     display: flex;
@@ -65,37 +95,19 @@ const Container= styled.div`
     padding-left: 8%;
     padding-right: 8%;
 `
-
-const Search= styled.input`
-    text-align: center;
-    border: none;
-    background-color: #6F4E37;
-    border-radius: 15px;
-    height: 3rem;
-    color: white;
-    width: 100%;
-
-    &::placeholder{
-        color: white;
-        font-size: 1.2rem;
-    }
-`
-
-
-
 const FloatingButton = styled.button`
-  position: fixed;
-  bottom: 10%;
-  right: 6%;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #5E7E71;
-  color: white;
-  font-size: 24px;
-  border: none;
-  cursor: pointer;
-  z-index: 1000;
+    position: fixed;
+    bottom: 10%;
+    right: 6%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #5E7E71;
+    color: white;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
 `
 const Title= styled.p`
     color: #6F4E37;
@@ -104,4 +116,3 @@ const Title= styled.p`
     text-align: center;
     
     margin-bottom: 20%;`
-    
