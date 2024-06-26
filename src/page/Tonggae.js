@@ -245,8 +245,11 @@ The structure of the answer is '첫째, . . .' and the next paragraph is as clea
         <AIDiv>
           <RotatingImg src={robot} alt="로봇사진" />
           <AnimatedSpan>
+          <span style={{color:"gray"}}> 저는 {user.userId}님의 독서분석가 똑독이가 {user.userId}님의
+          독서 패턴을 분석해보았습니다.</span>
             저는 {user.userId}님의 독서분석가 똑독이가 {user.userId}님의
-            독서 패턴을 분석해보았습니다. {data}
+            독서 패턴을 분석해보았습니다. <br></br>
+            {data}
           </AnimatedSpan>
           <br />
           <button onClick={() => navigate("/List")}>
@@ -291,15 +294,20 @@ const PageTitle = styled.h1`
     0%,
     100% {
       color: #4c7397;
+      opacity: 1;
     }
     50% {
       color: #32a852;
+      opacity: 0.5;
     }
   }
 `;
 
+
+
 const GraphContainer1 = styled.div`
   width: 80%;
+  border-radius: 10px;
   margin-bottom: 40px;
   border: 1px solid rgba(75, 192, 192, 1);
   background-color: rgba(75, 192, 192, 0.1);
@@ -307,6 +315,7 @@ const GraphContainer1 = styled.div`
 `;
 
 const GraphContainer2 = styled.div`
+ border-radius: 10px;
   width: 80%;
   margin-bottom: 40px;
   border: 1px solid rgba(75, 192, 192, 1);
@@ -322,7 +331,7 @@ const GraphTitle = styled.p`
 `;
 
 const AIDiv = styled.div`
-  margin-bottom: 100px;
+  margin-bottom: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -356,6 +365,18 @@ const AnimatedSpan = styled.span`
   font-size: 18px;
   font-weight: bold;
   color: #333;
+  animation: slideDown 3s ease-in-out;
+
+  @keyframes slideDown {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 `;
 
 const RotatingImg = styled.img`
@@ -398,9 +419,11 @@ const BottomDiv = styled.div`
     0%,
     100% {
       color: #4c7397;
+      opacity: 1;
     }
     50% {
       color: #32a852;
+      opacity: 0.5;
     }
   }
 
