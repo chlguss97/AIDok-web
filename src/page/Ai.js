@@ -71,10 +71,14 @@ const Ai = () => {
                 <BookSlick setFilteredAiData={setFilteredAiData}/>
             </div>
 
-                {filteredAiData ? 
-                <AiList data={filteredAiData}></AiList> : 
-                <div><img src={robot} alt='loading' style={{width:'200px'}}/>
-                <p style={{color:'#5E7E71'}}>AI가 질문을 기다리는 중입니다.</p></div> }
+                {filteredAiData ? (
+                    <AiList data={filteredAiData}></AiList>
+                ) : ( 
+                <div>
+                    <img src={robot} alt='loading' style={{width:'200px'}}/>
+                    <p style={{color:'#5E7E71'}}>AI가 질문을 기다리는 중입니다.</p>
+                </div>
+                )}
 
             <FloatingButton onClick={addQnA}>+</FloatingButton>
         </Container>
