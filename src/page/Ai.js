@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, doc, getDocs } from "firebase/firestore"; 
 import { db } from '../firebase/firebase';
-
 import { useSelector } from 'react-redux';
+import robot from '../assets/robot.gif'
 
 const Ai = () => {
     const [aiData, setAiData] = useState({}); // 객체 데이터
@@ -36,7 +36,6 @@ const Ai = () => {
                 setAiData(data);
                 setFilteredAiData(Object.values(data)); // 초기값 설정
 
-
                 console.log('Fetched AI Data:', data); // 데이터 확인용 console.log
             } catch (error) {
                 console.error('Error fetching data: ', error);
@@ -45,7 +44,6 @@ const Ai = () => {
 
         fetchData();
     }, []);
-
     
     // 검색바
     const search = () => {
@@ -55,7 +53,6 @@ const Ai = () => {
             item.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredAiData(filtered);
-
     }
 
     // QnA 추가로 이동
@@ -71,12 +68,13 @@ const Ai = () => {
             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onClick={search} placeholder="검색어를 입력하세요" />
 
             <div style={{ textAlign: 'center' }}>
-
                 <BookSlick setFilteredAiData={setFilteredAiData}/>
             </div>
 
-                {filteredAiData ? <AiList data={filteredAiData}></AiList> : <p>loading</p>}
-
+                {filteredAiData ? 
+                <AiList data={filteredAiData}></AiList> : 
+                <div><img src={robot} alt='loading' style={{width:'200px'}}/>
+                <p style={{color:'#5E7E71'}}>AI가 질문을 기다리는 중입니다.</p></div> }
 
             <FloatingButton onClick={addQnA}>+</FloatingButton>
         </Container>

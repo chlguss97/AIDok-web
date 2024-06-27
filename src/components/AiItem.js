@@ -22,10 +22,10 @@ const AiItem= ({item})=>{
     return(
         <Content>
             <div>
-                <p className='title'>{item.title}</p>
                 <p className='date'>작성일자: {formattedDate}</p>
+                <p className='title'>{item.title}</p>
             </div>
-            <ExtractedText>메시지 내용 추출된 텍스트: {item.passage}</ExtractedText>
+            <ExtractedText>{item.passage}</ExtractedText>
                 <QnA>
                     <p>Q: {item.question}</p>
                     <p>A: {item.answer}</p>
@@ -37,13 +37,11 @@ const AiItem= ({item})=>{
 export default AiItem
 
 const Content= styled.div`
-
     width: 93%;
     border: 2px solid #6F4E37;
     border-radius: 10px;
     background-color: #FFFAED;
     margin: 5% auto;
-
 
     .title{
         text-align: left;
