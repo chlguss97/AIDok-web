@@ -94,19 +94,19 @@ const Container= styled.div`
     padding-right: 8%;
 `
 const FloatingButton = styled.button`
-    position: fixed;
-    bottom: 10%;
-    right: 6%;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #5E7E71;
-    color: white;
-    font-size: 24px;
-    border: none;
-    cursor: pointer;
-    z-index: 1000;
-`
+  position: fixed;
+  bottom: 14%;
+  right: 6%;
+  width: 60px;
+  height:60px;
+  border-radius: 50%;
+  background-color: #5E7E71;
+  color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+`;
 const Title= styled.p`
     color: #6F4E37;
     font-size: 1.6rem;
