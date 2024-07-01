@@ -248,11 +248,8 @@ const Timer = () => {
 
 
   const CallGPT = async (question) => {
-    
     const content = question;
-
     console.log("콜쥐피티");
-
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
