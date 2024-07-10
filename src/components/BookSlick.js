@@ -69,7 +69,7 @@ const BookSlick = ({ setFilteredAiData }) => {
     return 3;
   };
   const settings = {
-    centerMode: true,
+    centerMode: books.length !== 2, // 슬라이드가 2개일 때 centerMode 비활성화
     centerPadding: '10px',
     slidesToShow: getSlidesToShow(),
     focusOnSelect: true,

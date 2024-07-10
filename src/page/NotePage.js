@@ -29,7 +29,7 @@ const TitleContainer = styled.div`
 
 const FloatingButton = styled.button`
   position: fixed;
-  bottom: 12%;
+  bottom: 14%;
   right: 6%;
   width: 60px;
   height: 60px;

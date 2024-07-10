@@ -5,7 +5,7 @@ import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import robot from "../assets/robot2.gif";
+import robot from "../assets/robot.gif";
 import { useNavigate } from "react-router-dom";
 // import  SECRETKEY  from '@secretKey';
 import { SECRETKEY } from "./SecretKey";
@@ -247,8 +247,7 @@ The structure of the answer is '첫째, . . .' and the next paragraph is as clea
           <AnimatedSpan>
           <span style={{color:"gray"}}> 저는 {user.userId}님의 독서분석가 똑독이가 {user.userId}님의
           독서 패턴을 분석해보았습니다.</span>
-            저는 {user.userId}님의 독서분석가 똑독이가 {user.userId}님의
-            독서 패턴을 분석해보았습니다. <br></br>
+         <br></br>
             {data}
           </AnimatedSpan>
           <br />
